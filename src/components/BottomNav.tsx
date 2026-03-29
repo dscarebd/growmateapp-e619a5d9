@@ -1,11 +1,11 @@
-import { Home, ListTodo, Plus, Wallet, User } from "lucide-react";
+import { Home, ListTodo, Megaphone, Wallet, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/home" },
-  { icon: Plus, label: "", path: "/create-campaign", isCenter: true },
-  { icon: ListTodo, label: "Tasks", path: "/tasks" },
+  { icon: Megaphone, label: "Campaign", path: "/create-campaign" },
+  { icon: ListTodo, label: "", path: "/tasks", isCenter: true },
   { icon: Wallet, label: "Wallet", path: "/wallet" },
   { icon: User, label: "Profile", path: "/profile" },
 ];
