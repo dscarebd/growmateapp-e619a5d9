@@ -30,6 +30,7 @@ const WalletPage = () => {
   const [transactionRef, setTransactionRef] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [withdrawSubmitting, setWithdrawSubmitting] = useState(false);
+  const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawMethod, setWithdrawMethod] = useState("bKash");
   const [withdrawAccount, setWithdrawAccount] = useState("");
