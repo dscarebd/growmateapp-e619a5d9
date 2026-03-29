@@ -347,7 +347,7 @@ const Admin = () => {
           <div className="space-y-3 animate-fade-in">
             <div className="flex gap-1.5 overflow-x-auto pb-1">
               {(["all", "pending", "processing", "approved", "rejected"] as const).map(f => (
-                <button key={f} onClick={() => setWithdrawalFilter(f)} className={cn(
+                <button key={f} onClick={() => { setWithdrawalFilter(f); setWdPage(1); }} className={cn(
                   "px-3 py-1.5 text-[11px] font-semibold rounded-full capitalize whitespace-nowrap transition-all",
                   withdrawalFilter === f ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                 )}>{f}</button>
@@ -355,7 +355,7 @@ const Admin = () => {
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search by user name..." value={withdrawalSearch} onChange={e => setWithdrawalSearch(e.target.value)} className="pl-9 h-10 rounded-xl bg-muted/50 border-0" />
+              <Input placeholder="Search by user name..." value={withdrawalSearch} onChange={e => { setWithdrawalSearch(e.target.value); setWdPage(1); }} className="pl-9 h-10 rounded-xl bg-muted/50 border-0" />
             </div>
             {(() => {
               const filtered = admin.withdrawals.filter(w => {
