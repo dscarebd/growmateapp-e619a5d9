@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Copy, CheckCircle2, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, FileText, Code2, Users, Gift, Share2 } from "lucide-react";
+import { User, Copy, CheckCircle2, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, FileText, Code2, Users, Gift, Share2, MessageCircle, Send } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
@@ -32,20 +32,25 @@ const Profile = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const shareText = user ? `Use my referral code ${user.referral_code} to sign up and we both earn rewards! ${window.location.origin}/auth` : "";
+
   const shareCode = async () => {
     if (!user) return;
-    const shareData = {
-      title: "Join me on BoostHub!",
-      text: `Use my referral code ${user.referral_code} to sign up and we both earn rewards!`,
-      url: window.location.origin + "/auth",
-    };
     if (navigator.share) {
-      try { await navigator.share(shareData); } catch {}
+      try { await navigator.share({ title: "Join me on BoostHub!", text: shareText }); } catch {}
     } else {
-      navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+      navigator.clipboard.writeText(shareText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const shareWhatsApp = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
+  };
+
+  const shareTelegram = () => {
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.origin + "/auth")}&text=${encodeURIComponent(shareText)}`, "_blank");
   };
 
   if (!user) return null;
@@ -103,8 +108,16 @@ const Profile = () => {
               <Button size="sm" variant="outline" className="rounded-xl h-10 px-3" onClick={copyCode}>
                 {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>
-              <Button size="sm" className="rounded-xl h-10 px-3 gradient-primary text-primary-foreground" onClick={shareCode}>
-                <Share2 className="h-4 w-4" />
+            </div>
+            <div className="flex gap-2 mt-2">
+              <Button size="sm" className="rounded-xl h-9 flex-1 bg-[#25D366] hover:bg-[#1da851] text-white" onClick={shareWhatsApp}>
+                <MessageCircle className="h-4 w-4 mr-1" /> WhatsApp
+              </Button>
+              <Button size="sm" className="rounded-xl h-9 flex-1 bg-[#0088cc] hover:bg-[#006fa1] text-white" onClick={shareTelegram}>
+                <Send className="h-4 w-4 mr-1" /> Telegram
+              </Button>
+              <Button size="sm" className="rounded-xl h-9 flex-1 gradient-primary text-primary-foreground" onClick={shareCode}>
+                <Share2 className="h-4 w-4 mr-1" /> Share
               </Button>
             </div>
             <div className="flex gap-3 mt-3">
