@@ -350,6 +350,15 @@ const WalletPage = () => {
                     if (error) {
                       toast.error("Failed to submit withdrawal request");
                     } else {
+                      // Deduct credits immediately
+                      const newCredits = credits - withdrawNum;
+                      await supabase.from("profiles").update({ credits: newCredits }).eq("id", authUser.id);
+                      await supabase.from("transactions").insert({
+                        user_id: authUser.id,
+                        type: "withdrawn" as const,
+                        amount: withdrawNum,
+                        description: `Withdrawal via ${withdrawMethod}`,
+                      });
                       toast.success("Withdrawal request submitted!");
                       setWithdrawAmount("");
                       setWithdrawAccount("");
