@@ -158,11 +158,14 @@ export type Database = {
           campaigns_run: number
           created_at: string
           credits: number
+          device_fingerprint: string | null
           email: string
           id: string
           joined_date: string
           name: string
+          referral_bonus_awarded: boolean
           referral_code: string
+          referred_by: string | null
           tasks_completed: number
           total_earned: number
           trust_score: number
@@ -173,11 +176,14 @@ export type Database = {
           campaigns_run?: number
           created_at?: string
           credits?: number
+          device_fingerprint?: string | null
           email?: string
           id: string
           joined_date?: string
           name?: string
+          referral_bonus_awarded?: boolean
           referral_code?: string
+          referred_by?: string | null
           tasks_completed?: number
           total_earned?: number
           trust_score?: number
@@ -188,15 +194,45 @@ export type Database = {
           campaigns_run?: number
           created_at?: string
           credits?: number
+          device_fingerprint?: string | null
           email?: string
           id?: string
           joined_date?: string
           name?: string
+          referral_bonus_awarded?: boolean
           referral_code?: string
+          referred_by?: string | null
           tasks_completed?: number
           total_earned?: number
           trust_score?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      referral_bonuses: {
+        Row: {
+          bonus_amount: number
+          created_at: string
+          id: string
+          referred_id: string
+          referrer_id: string
+          trigger_type: string
+        }
+        Insert: {
+          bonus_amount?: number
+          created_at?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+          trigger_type: string
+        }
+        Update: {
+          bonus_amount?: number
+          created_at?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+          trigger_type?: string
         }
         Relationships: []
       }
@@ -322,6 +358,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_referral_bonus: {
+        Args: { _trigger: string; _user_id: string }
+        Returns: undefined
+      }
+      check_device_fingerprint: {
+        Args: { _fingerprint: string }
+        Returns: boolean
+      }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
