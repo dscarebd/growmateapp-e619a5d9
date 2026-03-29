@@ -1,12 +1,14 @@
+import { ReactNode } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useNavigate } from "react-router-dom";
 import { Coins, Megaphone, ShoppingCart, Flame, ArrowRight } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon } from "@/components/PlatformIcons";
 
-const platformIcons: Record<string, string> = {
-  youtube: "🎬", instagram: "📸", tiktok: "🎵", facebook: "📘",
+const platformIcons: Record<string, ReactNode> = {
+  youtube: <YouTubeIcon className="h-6 w-6" />, instagram: <InstagramIcon className="h-6 w-6" />, tiktok: <TikTokIcon className="h-6 w-6" />, facebook: <FacebookIcon className="h-6 w-6" />,
 };
 
 const Home = () => {
