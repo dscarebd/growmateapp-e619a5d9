@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { User, Copy, CheckCircle2, Award, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, Moon, Bell } from "lucide-react";
+import { User, Copy, CheckCircle2, Award, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, Moon, Bell, FileText, Code2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
@@ -37,9 +37,10 @@ const Profile = () => {
   ];
 
   const menuItems = [
-    { icon: Settings, label: "Settings", action: () => {} },
-    { icon: Shield, label: "Security", action: () => {} },
-    { icon: Award, label: "Admin Panel", action: () => navigate("/admin") },
+    { icon: Settings, label: "Settings", action: () => navigate("/settings") },
+    { icon: Shield, label: "Security", action: () => navigate("/security") },
+    { icon: FileText, label: "Policies", action: () => navigate("/policies") },
+    { icon: Code2, label: "Developer", action: () => navigate("/developer") },
   ];
 
   const darkModeRow = (
