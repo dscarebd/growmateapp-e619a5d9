@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider } from "@/contexts/AppContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import BottomNav from "@/components/BottomNav";
 import Splash from "@/pages/Splash";
 import Onboarding from "@/pages/Onboarding";
@@ -47,11 +48,13 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AppProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppLayout />
-        </BrowserRouter>
+        <NotificationProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppLayout />
+          </BrowserRouter>
+        </NotificationProvider>
       </AppProvider>
     </TooltipProvider>
   </QueryClientProvider>

@@ -1,6 +1,7 @@
 import { useApp } from "@/contexts/AppContext";
 import { useNavigate } from "react-router-dom";
 import { Coins, Megaphone, ShoppingCart, Flame, ArrowRight, Zap } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -29,9 +30,7 @@ const Home = () => {
             <p className="text-primary-foreground/70 text-sm">Welcome back,</p>
             <h1 className="text-xl font-bold text-primary-foreground">{user.name}</h1>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-foreground/20">
-            <Zap className="h-5 w-5 text-primary-foreground" />
-          </div>
+          <NotificationBell />
         </div>
         <Card className="border-0 shadow-lg animate-fade-in">
           <CardContent className="flex items-center justify-between p-5">
