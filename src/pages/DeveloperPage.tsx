@@ -39,27 +39,27 @@ const DeveloperPage = () => {
           <CardContent className="p-4 space-y-0">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Contact</h3>
             <div className="space-y-0">
-              <div className="flex items-center gap-3 py-3 border-b border-border/50">
+              <a href="mailto:support@annurdigital.com" className="flex items-center gap-3 py-3 border-b border-border/50 active:bg-muted/50 transition-colors rounded-lg px-1 -mx-1">
                 <Mail className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Email Support</p>
-                  <p className="text-[11px] text-muted-foreground">support@annurdigital.com</p>
+                  <p className="text-[11px] text-primary">support@annurdigital.com</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-3 py-3 border-b border-border/50">
+              </a>
+              <a href="https://annurdigital.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 py-3 border-b border-border/50 active:bg-muted/50 transition-colors rounded-lg px-1 -mx-1">
                 <Globe className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Website</p>
-                  <p className="text-[11px] text-muted-foreground">annurdigital.com</p>
+                  <p className="text-[11px] text-primary">annurdigital.com</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-3 py-3">
+              </a>
+              <a href="https://t.me/nuralamin_official" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 py-3 active:bg-muted/50 transition-colors rounded-lg px-1 -mx-1">
                 <Send className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Telegram</p>
-                  <p className="text-[11px] text-muted-foreground">@nuralamin_official</p>
+                  <p className="text-[11px] text-primary">@nuralamin_official</p>
                 </div>
-              </div>
+              </a>
             </div>
           </CardContent>
         </Card>
