@@ -358,7 +358,7 @@ const Admin = () => {
                     <div className="flex items-center justify-between mb-1">
                       <div>
                         <p className="text-sm font-medium text-foreground">{w.amount} credits</p>
-                        <p className="text-[11px] text-muted-foreground">by {ownerProfile?.name || "Unknown"}</p>
+                        <p className="text-[11px] text-muted-foreground">by {ownerProfile?.name || "Unknown"} • Balance: <span className="font-medium text-foreground">{ownerProfile?.credits ?? 0}</span></p>
                       </div>
                       <span className={cn("text-[10px] font-bold px-2 py-1 rounded-full capitalize",
                         w.status === "approved" ? "bg-success/15 text-success" :
