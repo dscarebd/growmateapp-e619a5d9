@@ -28,8 +28,18 @@ const WalletPage = () => {
   const [paymentAmount, setPaymentAmount] = useState("");
   const [transactionRef, setTransactionRef] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [withdrawSubmitting, setWithdrawSubmitting] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [withdrawMethod, setWithdrawMethod] = useState("bKash");
+  const [withdrawAccount, setWithdrawAccount] = useState("");
   const [myPayments, setMyPayments] = useState<any[]>([]);
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
+
+  const COMMISSION_RATE = 0.15;
+  const MIN_WITHDRAWAL = 500;
+  const withdrawNum = parseInt(withdrawAmount) || 0;
+  const commission = Math.round(withdrawNum * COMMISSION_RATE);
+  const netAmount = withdrawNum - commission;
 
   const loadMyPayments = async () => {
     if (!authUser || paymentsLoaded) return;
@@ -248,10 +258,110 @@ const WalletPage = () => {
         {tab === "withdraw" && (
           <div className="space-y-4 animate-fade-in">
             <Card className="border-border">
-              <CardContent className="p-4 space-y-3">
+              <CardContent className="p-4 space-y-4">
                 <h3 className="text-sm font-semibold text-foreground">Request Withdrawal</h3>
-                <p className="text-xs text-muted-foreground">Minimum: 500 credits • Commission: 15%</p>
-                <Button className="w-full gradient-primary text-primary-foreground rounded-xl h-10 text-sm font-semibold">Request Withdrawal</Button>
+                <p className="text-xs text-muted-foreground">Minimum: {MIN_WITHDRAWAL} credits • Commission: {COMMISSION_RATE * 100}%</p>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Withdrawal Method</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {["bKash", "Nagad", "Bank Transfer", "Binance"].map(m => (
+                      <button
+                        key={m}
+                        onClick={() => setWithdrawMethod(m)}
+                        className={cn(
+                          "py-2.5 px-3 rounded-xl text-xs font-semibold border-2 transition-all",
+                          withdrawMethod === m
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-card text-muted-foreground"
+                        )}
+                      >
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Account / Wallet Address</Label>
+                  <Input
+                    placeholder={withdrawMethod === "Binance" ? "USDT TRC20 address" : withdrawMethod === "Bank Transfer" ? "Account number & bank name" : `${withdrawMethod} number`}
+                    value={withdrawAccount}
+                    onChange={e => setWithdrawAccount(e.target.value)}
+                    className="rounded-xl"
+                    maxLength={200}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Amount (credits)</Label>
+                  <Input
+                    type="number"
+                    placeholder={`Min ${MIN_WITHDRAWAL}`}
+                    value={withdrawAmount}
+                    onChange={e => setWithdrawAmount(e.target.value)}
+                    className="rounded-xl"
+                    min={MIN_WITHDRAWAL}
+                    max={credits}
+                  />
+                </div>
+
+                {withdrawNum > 0 && (
+                  <div className="rounded-xl bg-accent/50 border border-border p-3.5 space-y-1.5">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground">Amount</span>
+                      <span className="text-foreground font-medium">{withdrawNum} credits</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground">Commission ({COMMISSION_RATE * 100}%)</span>
+                      <span className="text-destructive font-medium">-{commission} credits</span>
+                    </div>
+                    <div className="border-t border-border pt-1.5 flex justify-between text-sm">
+                      <span className="text-foreground font-semibold">You receive</span>
+                      <span className="text-success font-bold">{netAmount} credits</span>
+                    </div>
+                  </div>
+                )}
+
+                <Button
+                  onClick={async () => {
+                    if (!authUser) return;
+                    if (withdrawNum < MIN_WITHDRAWAL) {
+                      toast.error(`Minimum withdrawal is ${MIN_WITHDRAWAL} credits`);
+                      return;
+                    }
+                    if (withdrawNum > credits) {
+                      toast.error("Insufficient balance");
+                      return;
+                    }
+                    if (!withdrawAccount.trim()) {
+                      toast.error("Enter your account details");
+                      return;
+                    }
+                    setWithdrawSubmitting(true);
+                    const { error } = await supabase.from("withdrawals").insert({
+                      user_id: authUser.id,
+                      amount: withdrawNum,
+                      commission,
+                      net_amount: netAmount,
+                      method: `${withdrawMethod}: ${withdrawAccount.trim()}`,
+                      status: "pending",
+                    });
+                    if (error) {
+                      toast.error("Failed to submit withdrawal request");
+                    } else {
+                      toast.success("Withdrawal request submitted!");
+                      setWithdrawAmount("");
+                      setWithdrawAccount("");
+                      refreshData();
+                    }
+                    setWithdrawSubmitting(false);
+                  }}
+                  disabled={withdrawSubmitting || withdrawNum < MIN_WITHDRAWAL || withdrawNum > credits}
+                  className="w-full gradient-primary text-primary-foreground rounded-xl h-10 text-sm font-semibold"
+                >
+                  {withdrawSubmitting ? "Submitting..." : "Request Withdrawal"}
+                </Button>
               </CardContent>
             </Card>
             {withdrawals.length > 0 && (
@@ -261,7 +371,7 @@ const WalletPage = () => {
                   <Card key={w.id} className="mb-2 border-border">
                     <CardContent className="p-3.5 flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-foreground">{w.amount} credits → ${Number(w.net_amount).toFixed(2)}</p>
+                        <p className="text-sm font-medium text-foreground">{w.amount} credits → {Number(w.net_amount)} credits</p>
                         <p className="text-[11px] text-muted-foreground">{w.method} • {new Date(w.requested_at).toLocaleDateString()}</p>
                       </div>
                       <span className={cn("text-[10px] font-bold px-2 py-1 rounded-full capitalize",
