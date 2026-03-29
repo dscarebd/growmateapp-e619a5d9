@@ -20,7 +20,7 @@ const Home = () => {
   const quickActions = [
     { icon: Coins, label: "Earn", path: "/tasks", color: "bg-primary/10 text-primary" },
     { icon: Megaphone, label: "Promote", path: "/create-campaign", color: "bg-secondary/10 text-secondary" },
-    { icon: ShoppingCart, label: "Buy Credits", path: "/wallet", color: "bg-warning/10 text-warning" },
+    { icon: ShoppingCart, label: "Buy Credits", path: "/buy-credits", color: "bg-warning/10 text-warning" },
   ];
 
   return (
