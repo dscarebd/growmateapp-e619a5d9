@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef, useCallback } from "react";
+import { toast } from "sonner";
 import { useApp } from "@/contexts/AppContext";
 import { useNavigate } from "react-router-dom";
 import { Coins, Megaphone, ShoppingCart, Flame, ArrowRight } from "lucide-react";
