@@ -89,9 +89,11 @@ const CreateCampaign = () => {
   const [done, setDone] = useState(false);
 
   const budgetNum = parseFloat(budget) || 0;
-  const rewardNum = parseFloat(reward) || 1;
+  const rewardNum = parseFloat(reward) || 0;
   const estimatedReach = rewardNum > 0 ? Math.floor(budgetNum / rewardNum) : 0;
-  const canAfford = budgetNum <= credits && budgetNum > 0 && rewardNum > 0;
+  const budgetError = budget !== "" && budgetNum <= 0 ? "Budget must be greater than 0" : budgetNum > credits ? "Exceeds your balance" : "";
+  const rewardError = reward !== "" && rewardNum <= 0 ? "Reward must be greater than 0" : rewardNum > budgetNum && budgetNum > 0 ? "Reward exceeds budget" : "";
+  const canAfford = budgetNum > 0 && rewardNum > 0 && budgetNum <= credits && rewardNum <= budgetNum;
 
   const handleCreate = () => {
     createCampaign({ platform, action, link, title, totalBudget: budgetNum, rewardPerAction: rewardNum });
