@@ -117,26 +117,22 @@ const Profile = () => {
                 {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              <Button size="sm" className="rounded-xl h-9 bg-[#25D366] hover:bg-[#1da851] text-white" onClick={shareWhatsApp}>
-                <MessageCircle className="h-4 w-4 mr-1" /> WhatsApp
-              </Button>
-              <Button size="sm" className="rounded-xl h-9 bg-[#0088cc] hover:bg-[#006fa1] text-white" onClick={shareTelegram}>
-                <Send className="h-4 w-4 mr-1" /> Telegram
-              </Button>
-              <Button size="sm" className="rounded-xl h-9 bg-[#1877F2] hover:bg-[#1565c0] text-white" onClick={shareFacebook}>
-                <svg className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                Facebook
-              </Button>
-              <Button size="sm" className="rounded-xl h-9 bg-[#000000] hover:bg-[#333333] text-white" onClick={shareTwitter}>
-                <svg className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                X
-              </Button>
-            </div>
-            <div className="flex justify-center mt-2">
-              <Button size="sm" variant="outline" className="rounded-xl h-9 px-6" onClick={shareCode}>
-                <Share2 className="h-4 w-4 mr-1" /> More
-              </Button>
+            <div className="flex justify-center gap-3 mt-3">
+              <button onClick={shareWhatsApp} className="flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] hover:bg-[#1da851] text-white transition-colors">
+                <MessageCircle className="h-5 w-5" />
+              </button>
+              <button onClick={shareTelegram} className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0088cc] hover:bg-[#006fa1] text-white transition-colors">
+                <Send className="h-5 w-5" />
+              </button>
+              <button onClick={shareFacebook} className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1877F2] hover:bg-[#1565c0] text-white transition-colors">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </button>
+              <button onClick={shareTwitter} className="flex h-10 w-10 items-center justify-center rounded-full bg-[#000000] hover:bg-[#333333] text-white transition-colors">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </button>
+              <button onClick={shareCode} className="flex h-10 w-10 items-center justify-center rounded-full bg-muted hover:bg-muted/70 text-foreground transition-colors">
+                <Share2 className="h-5 w-5" />
+              </button>
             </div>
             <div className="flex gap-3 mt-3">
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
