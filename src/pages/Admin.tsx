@@ -53,6 +53,8 @@ const Admin = () => {
   const [withdrawalFilter, setWithdrawalFilter] = useState<"all" | "pending" | "approved" | "rejected" | "processing">("all");
   const [wdPage, setWdPage] = useState(1);
   const WD_PER_PAGE = 10;
+  const [pmPage, setPmPage] = useState(1);
+  const PM_PER_PAGE = 10;
 
   // Charts (hooks must be before conditionals)
   const platformDistribution = useMemo(() => {
@@ -435,44 +437,63 @@ const Admin = () => {
               </CardContent>
             </Card>
 
-            <h3 className="text-sm font-semibold text-foreground">Payment Requests</h3>
-            {admin.payments.map(p => {
-              const ownerProfile = admin.profiles.find(pr => pr.id === p.user_id);
+            {(() => {
+              const totalPages = Math.max(1, Math.ceil(admin.payments.length / PM_PER_PAGE));
+              const safePage = Math.min(pmPage, totalPages);
+              const paginated = admin.payments.slice((safePage - 1) * PM_PER_PAGE, safePage * PM_PER_PAGE);
               return (
-                <Card key={p.id} className="border-border">
-                  <CardContent className="p-3.5">
-                    <div className="flex items-center justify-between mb-1">
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{p.amount} credits</p>
-                        <p className="text-[11px] text-muted-foreground">by {ownerProfile?.name || "Unknown"}</p>
-                      </div>
-                      <span className={cn("text-[10px] font-bold px-2 py-1 rounded-full capitalize",
-                        p.status === "approved" ? "bg-success/15 text-success" :
-                        p.status === "pending" ? "bg-warning/15 text-warning" :
-                        "bg-destructive/15 text-destructive"
-                      )}>{p.status}</span>
+                <>
+                  {paginated.map(p => {
+                    const ownerProfile = admin.profiles.find(pr => pr.id === p.user_id);
+                    return (
+                      <Card key={p.id} className="border-border">
+                        <CardContent className="p-3.5">
+                          <div className="flex items-center justify-between mb-1">
+                            <div>
+                              <p className="text-sm font-medium text-foreground">{p.amount} credits</p>
+                              <p className="text-[11px] text-muted-foreground">by {ownerProfile?.name || "Unknown"}</p>
+                            </div>
+                            <span className={cn("text-[10px] font-bold px-2 py-1 rounded-full capitalize",
+                              p.status === "approved" ? "bg-success/15 text-success" :
+                              p.status === "pending" ? "bg-warning/15 text-warning" :
+                              "bg-destructive/15 text-destructive"
+                            )}>{p.status}</span>
+                          </div>
+                          <div className="text-[11px] text-muted-foreground space-y-0.5">
+                            <p>Method: <span className="text-foreground font-medium">{p.method}</span></p>
+                            {p.transaction_ref && <p>Ref: <span className="text-foreground font-medium">{p.transaction_ref}</span></p>}
+                            {p.notes && <p>Notes: {p.notes}</p>}
+                            <p>{new Date(p.created_at).toLocaleDateString()}</p>
+                          </div>
+                          {p.status === "pending" && (
+                            <div className="flex gap-2 mt-3">
+                              <Button size="sm" className="h-7 text-xs flex-1 rounded-lg bg-success text-success-foreground" onClick={() => admin.approvePayment(p)}>
+                                <CheckCircle2 className="h-3 w-3 mr-1" /> Approve & Add Credits
+                              </Button>
+                              <Button size="sm" variant="outline" className="h-7 text-xs flex-1 rounded-lg text-destructive" onClick={() => admin.rejectPayment(p.id)}>
+                                <XCircle className="h-3 w-3 mr-1" /> Reject
+                              </Button>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                  {admin.payments.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No payment requests yet</p>}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between pt-2">
+                      <Button size="sm" variant="outline" className="h-8 rounded-lg text-xs" disabled={safePage <= 1} onClick={() => setPmPage(safePage - 1)}>
+                        <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Prev
+                      </Button>
+                      <span className="text-xs text-muted-foreground">Page {safePage} of {totalPages}</span>
+                      <Button size="sm" variant="outline" className="h-8 rounded-lg text-xs" disabled={safePage >= totalPages} onClick={() => setPmPage(safePage + 1)}>
+                        Next <ChevronRight className="h-3.5 w-3.5 ml-1" />
+                      </Button>
                     </div>
-                    <div className="text-[11px] text-muted-foreground space-y-0.5">
-                      <p>Method: <span className="text-foreground font-medium">{p.method}</span></p>
-                      {p.transaction_ref && <p>Ref: <span className="text-foreground font-medium">{p.transaction_ref}</span></p>}
-                      {p.notes && <p>Notes: {p.notes}</p>}
-                      <p>{new Date(p.created_at).toLocaleDateString()}</p>
-                    </div>
-                    {p.status === "pending" && (
-                      <div className="flex gap-2 mt-3">
-                        <Button size="sm" className="h-7 text-xs flex-1 rounded-lg bg-success text-success-foreground" onClick={() => admin.approvePayment(p)}>
-                          <CheckCircle2 className="h-3 w-3 mr-1" /> Approve & Add Credits
-                        </Button>
-                        <Button size="sm" variant="outline" className="h-7 text-xs flex-1 rounded-lg text-destructive" onClick={() => admin.rejectPayment(p.id)}>
-                          <XCircle className="h-3 w-3 mr-1" /> Reject
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                  )}
+                </>
               );
-            })}
-            {admin.payments.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No payment requests yet</p>}
+            })()}
           </div>
         )}
       </div>
