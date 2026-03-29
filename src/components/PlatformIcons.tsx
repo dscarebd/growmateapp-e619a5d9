@@ -1,16 +1,14 @@
-import React from "react";
-
 export const YouTubeIcon = ({ className = "h-6 w-6" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-    <path d="M43.2 12.3c-.5-1.8-1.9-3.2-3.7-3.7C36.2 7.6 24 7.6 24 7.6s-12.2 0-15.5 1-3.2 1.9-3.7 3.7C3.8 15.6 3.8 24 3.8 24s0 8.4 1 11.7c.5 1.8 1.9 3.2 3.7 3.7C11.8 40.4 24 40.4 24 40.4s12.2 0 15.5-1c1.8-.5 3.2-1.9 3.7-3.7 1-3.3 1-11.7 1-11.7s0-8.4-1-11.7z" fill="#FF0000"/>
-    <path d="M19.2 31.2L31.2 24l-12-7.2v14.4z" fill="#FFFFFF"/>
+  <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ minWidth: '1em', minHeight: '1em' }}>
+    <rect width="24" height="24" rx="5" fill="#FF0000"/>
+    <polygon points="9.5,7 9.5,17 17.5,12" fill="#fff"/>
   </svg>
 );
 
 export const InstagramIcon = ({ className = "h-6 w-6" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ minWidth: '1em', minHeight: '1em' }}>
     <defs>
-      <radialGradient id="ig-radial" cx="30%" cy="107%" r="150%">
+      <radialGradient id="ig-gradient" cx="30%" cy="107%" r="150%">
         <stop offset="0%" stopColor="#fdf497"/>
         <stop offset="5%" stopColor="#fdf497"/>
         <stop offset="45%" stopColor="#fd5949"/>
@@ -18,39 +16,38 @@ export const InstagramIcon = ({ className = "h-6 w-6" }: { className?: string })
         <stop offset="90%" stopColor="#285AEB"/>
       </radialGradient>
     </defs>
-    <rect width="48" height="48" rx="12" fill="url(#ig-radial)"/>
-    <circle cx="24" cy="24" r="9" stroke="#fff" strokeWidth="3.5" fill="none"/>
-    <circle cx="35" cy="13" r="2.5" fill="#fff"/>
-    <rect x="6" y="6" width="36" height="36" rx="9" stroke="#fff" strokeWidth="3" fill="none"/>
+    <rect width="24" height="24" rx="6" fill="url(#ig-gradient)"/>
+    <circle cx="12" cy="12" r="5" stroke="#fff" strokeWidth="2" fill="none"/>
+    <circle cx="17.5" cy="6.5" r="1.5" fill="#fff"/>
   </svg>
 );
 
 export const TikTokIcon = ({ className = "h-6 w-6" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-    <path d="M33.5 5.5h-5.8v25.3c0 3.5-2.8 6.3-6.3 6.3s-6.3-2.8-6.3-6.3 2.8-6.3 6.3-6.3c.7 0 1.3.1 1.9.3v-6c-.6-.1-1.3-.1-1.9-.1-6.8 0-12.3 5.5-12.3 12.3S14.6 43.2 21.4 43.2s12.3-5.5 12.3-12.3V18.5c2.5 1.8 5.5 2.8 8.8 2.8v-5.8c-5 0-9-4-9-9v-.5h.1-.1z" fill="#000"/>
-    <path d="M33.5 5.5h-5.8v25.3c0 3.5-2.8 6.3-6.3 6.3s-6.3-2.8-6.3-6.3 2.8-6.3 6.3-6.3c.7 0 1.3.1 1.9.3v-6c-.6-.1-1.3-.1-1.9-.1-6.8 0-12.3 5.5-12.3 12.3S14.6 43.2 21.4 43.2s12.3-5.5 12.3-12.3V18.5c2.5 1.8 5.5 2.8 8.8 2.8v-5.8c-5 0-9-4-9-9v-.5z" fill="#25F4EE" transform="translate(-1.5 -1.5)"/>
-    <path d="M33.5 5.5h-5.8v25.3c0 3.5-2.8 6.3-6.3 6.3s-6.3-2.8-6.3-6.3 2.8-6.3 6.3-6.3c.7 0 1.3.1 1.9.3v-6c-.6-.1-1.3-.1-1.9-.1-6.8 0-12.3 5.5-12.3 12.3S14.6 43.2 21.4 43.2s12.3-5.5 12.3-12.3V18.5c2.5 1.8 5.5 2.8 8.8 2.8v-5.8c-5 0-9-4-9-9v-.5z" fill="#FE2C55" transform="translate(1.5 1.5)"/>
-    <path d="M33.5 5.5h-5.8v25.3c0 3.5-2.8 6.3-6.3 6.3s-6.3-2.8-6.3-6.3 2.8-6.3 6.3-6.3c.7 0 1.3.1 1.9.3v-6c-.6-.1-1.3-.1-1.9-.1-6.8 0-12.3 5.5-12.3 12.3S14.6 43.2 21.4 43.2s12.3-5.5 12.3-12.3V18.5c2.5 1.8 5.5 2.8 8.8 2.8v-5.8c-5 0-9-4-9-9v-.5z" fill="#000"/>
+  <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ minWidth: '1em', minHeight: '1em' }}>
+    <rect width="24" height="24" rx="5" fill="#000"/>
+    <path d="M16.5 4h-2.8v12.2c0 1.7-1.4 3-3 3s-3-1.4-3-3 1.4-3 3-3c.3 0 .6 0 .9.1V10.4c-.3 0-.6-.1-.9-.1-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6V10c1.2.9 2.7 1.4 4.3 1.4V8.5c-2.4 0-4.4-2-4.4-4.4V4z" fill="#25F4EE"/>
+    <path d="M17 4.5h-2.8v12.2c0 1.7-1.4 3-3 3s-3-1.4-3-3 1.4-3 3-3c.3 0 .6 0 .9.1V10.9c-.3 0-.6-.1-.9-.1-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6v-6.3c1.2.9 2.7 1.4 4.3 1.4V9c-2.4 0-4.4-2-4.4-4.4V4.5z" fill="#FE2C55"/>
+    <path d="M16.8 4.2h-2.8v12.2c0 1.7-1.4 3-3 3s-3-1.4-3-3 1.4-3 3-3c.3 0 .6 0 .9.1V10.6c-.3 0-.6-.1-.9-.1-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6V10.2c1.2.9 2.7 1.4 4.3 1.4V8.7c-2.4 0-4.4-2-4.4-4.4V4.2z" fill="#fff"/>
   </svg>
 );
 
 export const FacebookIcon = ({ className = "h-6 w-6" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="24" cy="24" r="24" fill="#1877F2"/>
-    <path d="M33.3 30.9l1.1-7.2h-6.9v-4.7c0-2 1-3.9 4-3.9h3.1V9.1S31.8 8.6 29 8.6c-5.7 0-9.4 3.4-9.4 9.7v5.5h-6.3v7.2h6.3V48h7.8V30.9h5.9z" fill="#fff"/>
+  <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ minWidth: '1em', minHeight: '1em' }}>
+    <rect width="24" height="24" rx="5" fill="#1877F2"/>
+    <path d="M16.5 12.8h-2.4V20h-3.2v-7.2H9v-2.7h1.9V8.4c0-1.9 1.1-4 4-4l2.9.1v2.6h-2.1c-.3 0-.8.2-.8.9v2h3L16.5 12.8z" fill="#fff"/>
   </svg>
 );
 
 export const TwitterIcon = ({ className = "h-6 w-6" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="24" cy="24" r="24" fill="#000"/>
-    <path d="M28.3 14h3.8l-8.3 9.5 9.8 12.9h-7.6l-6-7.8-6.8 7.8H9.3l8.9-10.1L8.9 14h7.8l5.4 7.2L28.3 14zm-1.3 20.2h2.1L18 16.2h-2.3l11.3 18z" fill="#fff"/>
+  <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ minWidth: '1em', minHeight: '1em' }}>
+    <rect width="24" height="24" rx="5" fill="#000"/>
+    <path d="M14.2 7h2l-4.3 5 5.1 6.7h-4l-3.1-4.1-3.6 4.1H4.8l4.6-5.3L4.5 7h4l2.8 3.7L14.2 7zm-.7 10.5h1.1L9.5 8.2H8.3l5.2 9.3z" fill="#fff"/>
   </svg>
 );
 
 export const TelegramIcon = ({ className = "h-6 w-6" }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="24" cy="24" r="24" fill="#2AABEE"/>
-    <path d="M10.9 23.5l23.1-8.9c1.1-.4 2 .3 1.7 1.9l-3.9 18.6c-.3 1.3-1.1 1.6-2.2 1l-6-4.4-2.9 2.8c-.3.3-.6.6-1.2.6l.4-6.1 11.1-10c.5-.4-.1-.7-.7-.2l-13.7 8.7-5.9-1.8c-1.3-.4-1.3-1.3.3-1.9z" fill="#fff"/>
+  <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ minWidth: '1em', minHeight: '1em' }}>
+    <rect width="24" height="24" rx="5" fill="#2AABEE"/>
+    <path d="M5.5 11.8l11.6-4.5c.5-.2 1 .1.8.9l-2 9.3c-.1.7-.5.8-1.1.5l-3-2.2-1.4 1.4c-.2.2-.3.3-.6.3l.2-3.1 5.6-5c.2-.2-.1-.3-.4-.1L9.4 13l-3-.9c-.6-.2-.7-.6.1-1z" fill="#fff"/>
   </svg>
 );
