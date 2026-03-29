@@ -3,9 +3,18 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
 
 const NotificationBell = () => {
   const { notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
+
+  const formatTime = (dateStr: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateStr), { addSuffix: true });
+    } catch {
+      return "";
+    }
+  };
 
   return (
     <Sheet>
@@ -53,7 +62,7 @@ const NotificationBell = () => {
                     {!n.read && <div className="h-2 w-2 rounded-full bg-primary shrink-0" />}
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{n.message}</p>
-                  <p className="text-[10px] text-muted-foreground/70 mt-1">{n.time}</p>
+                  <p className="text-[10px] text-muted-foreground/70 mt-1">{formatTime(n.created_at)}</p>
                 </div>
               </button>
             ))

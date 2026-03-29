@@ -1,13 +1,15 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface Notification {
   id: string;
-  type: "task" | "campaign" | "withdrawal" | "promo" | "system";
+  type: string;
   title: string;
   message: string;
-  time: string;
-  read: boolean;
   icon: string;
+  read: boolean;
+  created_at: string;
 }
 
 export interface NotificationPreferences {
@@ -27,20 +29,11 @@ interface NotificationContextType {
   updatePreference: (key: keyof NotificationPreferences, value: boolean) => void;
 }
 
-const mockNotifications: Notification[] = [
-  { id: "n1", type: "task", title: "Task Completed!", message: "You earned 15 credits for subscribing to TechVlog", time: "2 min ago", read: false, icon: "✅" },
-  { id: "n2", type: "campaign", title: "Campaign Milestone", message: "Your YouTube campaign reached 32 completions", time: "1 hr ago", read: false, icon: "🎯" },
-  { id: "n3", type: "withdrawal", title: "Withdrawal Approved", message: "Your PayPal withdrawal of $212.50 was approved", time: "3 hrs ago", read: false, icon: "💰" },
-  { id: "n4", type: "promo", title: "🔥 Double Credits Event!", message: "Complete tasks today and earn 2x credits", time: "5 hrs ago", read: true, icon: "🔥" },
-  { id: "n5", type: "system", title: "Trust Score Updated", message: "Your trust score increased to 92%", time: "1 day ago", read: true, icon: "🛡️" },
-  { id: "n6", type: "task", title: "New High-Reward Task", message: "A 20-credit YouTube task is now available", time: "1 day ago", read: true, icon: "⭐" },
-  { id: "n7", type: "campaign", title: "Campaign Completed", message: "Instagram followers campaign finished successfully", time: "2 days ago", read: true, icon: "🎉" },
-];
-
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     taskCompleted: true,
     campaignUpdates: true,
@@ -51,13 +44,60 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const markAsRead = useCallback((id: string) => {
+  // Fetch existing notifications
+  const fetchNotifications = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("notifications")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (data) {
+      setNotifications(data as Notification[]);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  // Subscribe to realtime inserts on the notifications table for this user
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel("user-notifications")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const newNotif = payload.new as Notification;
+          setNotifications(prev => [newNotif, ...prev]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
+  const markAsRead = useCallback(async (id: string) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    await supabase.from("notifications").update({ read: true }).eq("id", id);
   }, []);
 
-  const markAllRead = useCallback(() => {
+  const markAllRead = useCallback(async () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-  }, []);
+    if (!user) return;
+    await supabase.from("notifications").update({ read: true }).eq("user_id", user.id).eq("read", false);
+  }, [user]);
 
   const updatePreference = useCallback((key: keyof NotificationPreferences, value: boolean) => {
     setPreferences(prev => ({ ...prev, [key]: value }));
