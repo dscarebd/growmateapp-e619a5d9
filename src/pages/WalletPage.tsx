@@ -403,6 +403,8 @@ const WalletPage = () => {
                               amount: withdrawNum,
                               description: `Withdrawal via ${withdrawMethod}`,
                             });
+                            // Trigger referral bonus on first withdrawal
+                            await supabase.rpc("award_referral_bonus", { _user_id: authUser.id, _trigger: "first_withdrawal" });
                             toast.success("Withdrawal request submitted!");
                             setWithdrawAmount("");
                             setWithdrawAccount("");

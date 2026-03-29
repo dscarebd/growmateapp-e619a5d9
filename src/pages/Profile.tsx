@@ -13,6 +13,17 @@ const Profile = () => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const [referralCount, setReferralCount] = useState(0);
+  const [bonusesEarned, setBonusesEarned] = useState(0);
+  const { user: authUser } = useAuth();
+
+  useEffect(() => {
+    if (!authUser) return;
+    supabase.from("profiles").select("id", { count: "exact", head: true }).eq("referred_by", authUser.id)
+      .then(({ count }) => setReferralCount(count ?? 0));
+    supabase.from("referral_bonuses").select("bonus_amount").eq("referrer_id", authUser.id)
+      .then(({ data }) => setBonusesEarned(data?.reduce((s: number, r: any) => s + r.bonus_amount, 0) ?? 0));
+  }, [authUser]);
 
   const copyCode = () => {
     if (!user) return;
@@ -70,12 +81,22 @@ const Profile = () => {
         <Card className="border-border">
           <CardContent className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-1">Invite Friends, Earn Credits</h3>
-            <p className="text-xs text-muted-foreground mb-3">Share your code and earn 50 credits per referral</p>
+            <p className="text-xs text-muted-foreground mb-3">Share your code and earn 50 credits when they withdraw or run a 500+ credit campaign</p>
             <div className="flex items-center gap-2">
               <div className="flex-1 rounded-xl bg-muted px-4 py-2.5 text-sm font-mono font-bold text-foreground">{user.referral_code}</div>
               <Button size="sm" variant="outline" className="rounded-xl h-10 px-3" onClick={copyCode}>
                 {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>
+            </div>
+            <div className="flex gap-3 mt-3">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Users className="h-3.5 w-3.5 text-primary" />
+                <span><span className="font-semibold text-foreground">{referralCount}</span> referred</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Gift className="h-3.5 w-3.5 text-warning" />
+                <span><span className="font-semibold text-foreground">{bonusesEarned}</span> bonus earned</span>
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -65,7 +65,10 @@ const Auth = () => {
 
       <form onSubmit={handleSubmit} className="animate-fade-in-up flex flex-col gap-4 max-w-sm mx-auto w-full">
         {!isLogin && (
-          <Input placeholder="Full name" value={name} onChange={e => setName(e.target.value)} className="h-12 rounded-xl bg-muted/50 border-0" required />
+          <>
+            <Input placeholder="Full name" value={name} onChange={e => setName(e.target.value)} className="h-12 rounded-xl bg-muted/50 border-0" required />
+            <Input placeholder="Referral code (optional)" value={referralCode} onChange={e => setReferralCode(e.target.value)} className="h-12 rounded-xl bg-muted/50 border-0" maxLength={20} />
+          </>
         )}
         <Input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} className="h-12 rounded-xl bg-muted/50 border-0" required />
         <div className="relative">
