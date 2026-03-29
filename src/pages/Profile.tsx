@@ -259,7 +259,7 @@ const Profile = () => {
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>
           ))}
-          <button onClick={async () => { await signOut(); navigate("/", { replace: true }); }} className="flex w-full items-center gap-3 rounded-xl p-3.5 hover:bg-destructive/10 transition-colors">
+          <button onClick={async () => { await signOut(); navigate("/", { replace: true }); }} className="flex w-full items-center gap-3 rounded-xl p-3.5 bg-destructive/10 hover:bg-destructive/20 transition-colors">
             <LogOut className="h-5 w-5 text-destructive" />
             <span className="flex-1 text-left text-sm font-medium text-destructive">Log Out</span>
           </button>
