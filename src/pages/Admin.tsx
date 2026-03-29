@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "@/contexts/AppContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,59 +10,73 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
 } from "recharts";
 
-const revenueData = [
-  { day: "Mon", revenue: 1200, expenses: 400 },
-  { day: "Tue", revenue: 1900, expenses: 600 },
-  { day: "Wed", revenue: 1500, expenses: 500 },
-  { day: "Thu", revenue: 2400, expenses: 700 },
-  { day: "Fri", revenue: 1800, expenses: 550 },
-  { day: "Sat", revenue: 2800, expenses: 900 },
-  { day: "Sun", revenue: 2200, expenses: 650 },
-];
+const PLATFORM_COLORS: Record<string, string> = {
+  YouTube: "hsl(0, 84%, 60%)",
+  Instagram: "hsl(280, 70%, 55%)",
+  TikTok: "hsl(174, 62%, 47%)",
+  Facebook: "hsl(199, 89%, 48%)",
+};
 
-const userGrowthData = [
-  { month: "Jan", users: 820 },
-  { month: "Feb", users: 1100 },
-  { month: "Mar", users: 1450 },
-  { month: "Apr", users: 1800 },
-  { month: "May", users: 2200 },
-  { month: "Jun", users: 2847 },
-];
+const PLATFORM_LABELS: Record<string, string> = {
+  youtube: "YouTube",
+  instagram: "Instagram",
+  tiktok: "TikTok",
+  facebook: "Facebook",
+};
 
-const taskCompletionData = [
-  { day: "Mon", likes: 180, follows: 120, subscribes: 60, shares: 40 },
-  { day: "Tue", likes: 220, follows: 150, subscribes: 80, shares: 55 },
-  { day: "Wed", likes: 190, follows: 130, subscribes: 70, shares: 45 },
-  { day: "Thu", likes: 280, follows: 180, subscribes: 95, shares: 70 },
-  { day: "Fri", likes: 240, follows: 160, subscribes: 85, shares: 60 },
-  { day: "Sat", likes: 310, follows: 200, subscribes: 110, shares: 85 },
-  { day: "Sun", likes: 260, follows: 170, subscribes: 90, shares: 65 },
-];
-
-const platformDistribution = [
-  { name: "YouTube", value: 35 },
-  { name: "Instagram", value: 28 },
-  { name: "TikTok", value: 22 },
-  { name: "Facebook", value: 15 },
-];
-
-const PLATFORM_COLORS = [
-  "hsl(0, 84%, 60%)",
-  "hsl(280, 70%, 55%)",
-  "hsl(174, 62%, 47%)",
-  "hsl(199, 89%, 48%)",
-];
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const Admin = () => {
   const navigate = useNavigate();
-  const { campaigns, withdrawals } = useApp();
+  const { campaigns, withdrawals, tasks, transactions } = useApp();
   const [tab, setTab] = useState<"overview" | "users" | "campaigns" | "withdrawals">("overview");
 
+  // Derive revenue data from transactions (earned = revenue, spent = expenses), grouped by day of week
+  const revenueData = useMemo(() => {
+    const byDay: Record<string, { revenue: number; expenses: number }> = {};
+    DAY_NAMES.forEach(d => { byDay[d] = { revenue: 0, expenses: 0 }; });
+    transactions.forEach(tx => {
+      const day = DAY_NAMES[new Date(tx.created_at).getDay()];
+      if (tx.type === "earned" || tx.type === "purchased") byDay[day].revenue += tx.amount;
+      else byDay[day].expenses += Math.abs(tx.amount);
+    });
+    return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => ({ day: d, revenue: byDay[d].revenue, expenses: byDay[d].expenses }));
+  }, [transactions]);
+
+  // Derive task completion data by action type, grouped by day
+  const taskCompletionData = useMemo(() => {
+    const byDay: Record<string, { likes: number; follows: number; subscribes: number; shares: number }> = {};
+    DAY_NAMES.forEach(d => { byDay[d] = { likes: 0, follows: 0, subscribes: 0, shares: 0 }; });
+    tasks.forEach(t => {
+      const day = DAY_NAMES[new Date(t.created_at).getDay()];
+      if (t.action === "like") byDay[day].likes += t.completed_count;
+      else if (t.action === "follow") byDay[day].follows += t.completed_count;
+      else if (t.action === "subscribe") byDay[day].subscribes += t.completed_count;
+      else if (t.action === "share") byDay[day].shares += t.completed_count;
+    });
+    return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => ({ day: d, ...byDay[d] }));
+  }, [tasks]);
+
+  // Platform distribution from tasks
+  const platformDistribution = useMemo(() => {
+    const counts: Record<string, number> = { youtube: 0, instagram: 0, tiktok: 0, facebook: 0 };
+    tasks.forEach(t => { counts[t.platform] = (counts[t.platform] || 0) + t.completed_count; });
+    const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
+    return Object.entries(counts).map(([key, val]) => ({
+      name: PLATFORM_LABELS[key] || key,
+      value: Math.round((val / total) * 100),
+    }));
+  }, [tasks]);
+
+  // Stats from real data
+  const totalTaskCompletions = tasks.reduce((sum, t) => sum + t.completed_count, 0);
+  const totalRevenue = transactions.filter(t => t.type === "earned" || t.type === "purchased").reduce((sum, t) => sum + t.amount, 0);
+
   const stats = [
-    { icon: Users, label: "Total Users", value: "2,847", change: "+12%", color: "text-primary" },
-    { icon: Megaphone, label: "Active Campaigns", value: campaigns.filter(c => c.status === "active").length.toString(), change: "+5%", color: "text-secondary" },
-    { icon: Banknote, label: "Revenue", value: "$12,450", change: "+23%", color: "text-success" },
-    { icon: TrendingUp, label: "Daily Tasks", value: "1,204", change: "+8%", color: "text-warning" },
+    { icon: Users, label: "Total Tasks", value: tasks.length.toString(), change: "", color: "text-primary" },
+    { icon: Megaphone, label: "Active Campaigns", value: campaigns.filter(c => c.status === "active").length.toString(), change: "", color: "text-secondary" },
+    { icon: Banknote, label: "Credits Earned", value: totalRevenue.toLocaleString(), change: "", color: "text-success" },
+    { icon: TrendingUp, label: "Completions", value: totalTaskCompletions.toLocaleString(), change: "", color: "text-warning" },
   ];
 
   const mockUsers = [
@@ -82,6 +96,8 @@ const Admin = () => {
     },
   };
 
+  const platformColorArray = platformDistribution.map(p => PLATFORM_COLORS[p.name] || "hsl(210, 15%, 46%)");
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="flex items-center gap-3 px-5 pt-12 pb-4">
@@ -100,17 +116,13 @@ const Admin = () => {
       <div className="px-5">
         {tab === "overview" && (
           <div className="space-y-4 animate-fade-in">
-            {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-3">
               {stats.map(s => (
                 <Card key={s.label} className="border-border">
                   <CardContent className="p-4">
                     <s.icon className={cn("h-5 w-5 mb-2", s.color)} />
                     <p className="text-xl font-bold text-foreground">{s.value}</p>
-                    <div className="flex items-center gap-1">
-                      <p className="text-[11px] text-muted-foreground">{s.label}</p>
-                      <span className="text-[10px] text-success font-semibold">{s.change}</span>
-                    </div>
+                    <p className="text-[11px] text-muted-foreground">{s.label}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -119,8 +131,8 @@ const Admin = () => {
             {/* Revenue Area Chart */}
             <Card className="border-border">
               <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-1">Revenue vs Expenses</h3>
-                <p className="text-[11px] text-muted-foreground mb-3">Last 7 days</p>
+                <h3 className="text-sm font-semibold text-foreground mb-1">Credits Earned vs Spent</h3>
+                <p className="text-[11px] text-muted-foreground mb-3">By day of week</p>
                 <ResponsiveContainer width="100%" height={200}>
                   <AreaChart data={revenueData}>
                     <defs>
@@ -137,26 +149,9 @@ const Admin = () => {
                     <XAxis dataKey="day" tick={{ fontSize: 10, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} width={35} />
                     <Tooltip {...chartTooltipStyle} />
-                    <Area type="monotone" dataKey="revenue" stroke="hsl(199, 89%, 48%)" fill="url(#gradRevenue)" strokeWidth={2} animationDuration={1500} />
-                    <Area type="monotone" dataKey="expenses" stroke="hsl(174, 62%, 47%)" fill="url(#gradExpenses)" strokeWidth={2} animationDuration={1500} animationBegin={300} />
+                    <Area type="monotone" dataKey="revenue" name="Earned" stroke="hsl(199, 89%, 48%)" fill="url(#gradRevenue)" strokeWidth={2} animationDuration={1500} />
+                    <Area type="monotone" dataKey="expenses" name="Spent" stroke="hsl(174, 62%, 47%)" fill="url(#gradExpenses)" strokeWidth={2} animationDuration={1500} animationBegin={300} />
                   </AreaChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* User Growth Line Chart */}
-            <Card className="border-border">
-              <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-1">User Growth</h3>
-                <p className="text-[11px] text-muted-foreground mb-3">Last 6 months</p>
-                <ResponsiveContainer width="100%" height={180}>
-                  <LineChart data={userGrowthData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 30%, 18%)" />
-                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 10, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} width={40} />
-                    <Tooltip {...chartTooltipStyle} />
-                    <Line type="monotone" dataKey="users" stroke="hsl(199, 89%, 48%)" strokeWidth={2.5} dot={{ r: 4, fill: "hsl(199, 89%, 48%)", strokeWidth: 2, stroke: "hsl(210, 40%, 9%)" }} activeDot={{ r: 6 }} animationDuration={2000} />
-                  </LineChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
@@ -165,7 +160,7 @@ const Admin = () => {
             <Card className="border-border">
               <CardContent className="p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-1">Task Completions by Type</h3>
-                <p className="text-[11px] text-muted-foreground mb-3">Last 7 days breakdown</p>
+                <p className="text-[11px] text-muted-foreground mb-3">By day of week</p>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={taskCompletionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 30%, 18%)" />
@@ -204,7 +199,7 @@ const Admin = () => {
                     <PieChart>
                       <Pie data={platformDistribution} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={3} dataKey="value" animationDuration={1500} animationBegin={200}>
                         {platformDistribution.map((_, i) => (
-                          <Cell key={i} fill={PLATFORM_COLORS[i]} />
+                          <Cell key={i} fill={platformColorArray[i]} />
                         ))}
                       </Pie>
                       <Tooltip {...chartTooltipStyle} />
@@ -213,7 +208,7 @@ const Admin = () => {
                   <div className="flex flex-col gap-2.5">
                     {platformDistribution.map((p, i) => (
                       <div key={p.name} className="flex items-center gap-2">
-                        <div className="h-3 w-3 rounded-full" style={{ background: PLATFORM_COLORS[i] }} />
+                        <div className="h-3 w-3 rounded-full" style={{ background: platformColorArray[i] }} />
                         <span className="text-xs text-foreground font-medium">{p.name}</span>
                         <span className="text-[10px] text-muted-foreground">{p.value}%</span>
                       </div>
@@ -222,6 +217,26 @@ const Admin = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Campaign Budget Line Chart */}
+            {campaigns.length > 0 && (
+              <Card className="border-border">
+                <CardContent className="p-4">
+                  <h3 className="text-sm font-semibold text-foreground mb-1">Campaign Budgets</h3>
+                  <p className="text-[11px] text-muted-foreground mb-3">Your campaigns</p>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <BarChart data={campaigns.map(c => ({ name: c.title.slice(0, 12), budget: c.total_budget, spent: c.completed_actions * c.reward_per_action }))}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 30%, 18%)" />
+                      <XAxis dataKey="name" tick={{ fontSize: 9, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} width={35} />
+                      <Tooltip {...chartTooltipStyle} />
+                      <Bar dataKey="budget" name="Budget" fill="hsl(199, 89%, 48%)" radius={[4, 4, 0, 0]} animationDuration={1200} />
+                      <Bar dataKey="spent" name="Spent" fill="hsl(174, 62%, 47%)" radius={[4, 4, 0, 0]} animationDuration={1200} animationBegin={300} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
 
@@ -261,6 +276,7 @@ const Admin = () => {
                 </CardContent>
               </Card>
             ))}
+            {campaigns.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No campaigns yet</p>}
           </div>
         )}
 
@@ -283,6 +299,7 @@ const Admin = () => {
                 </CardContent>
               </Card>
             ))}
+            {withdrawals.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No withdrawals yet</p>}
           </div>
         )}
       </div>
