@@ -88,8 +88,8 @@ const CreateCampaign = () => {
   const [reward, setReward] = useState("");
   const [done, setDone] = useState(false);
 
-  const budgetNum = parseInt(budget) || 0;
-  const rewardNum = parseInt(reward) || 1;
+  const budgetNum = parseFloat(budget) || 0;
+  const rewardNum = parseFloat(reward) || 1;
   const estimatedReach = rewardNum > 0 ? Math.floor(budgetNum / rewardNum) : 0;
   const canAfford = budgetNum <= credits && budgetNum > 0 && rewardNum > 0;
 
