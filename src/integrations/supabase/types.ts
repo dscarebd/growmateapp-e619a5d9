@@ -269,7 +269,13 @@ export type Database = {
     }
     Enums: {
       campaign_status: "active" | "paused" | "completed" | "pending"
-      platform_type: "youtube" | "instagram" | "tiktok" | "facebook"
+      platform_type:
+        | "youtube"
+        | "instagram"
+        | "tiktok"
+        | "facebook"
+        | "twitter"
+        | "telegram"
       task_action: "like" | "follow" | "subscribe" | "share" | "comment"
       transaction_type: "earned" | "spent" | "purchased" | "withdrawn"
       withdrawal_status: "pending" | "approved" | "rejected" | "processing"
@@ -401,7 +407,14 @@ export const Constants = {
   public: {
     Enums: {
       campaign_status: ["active", "paused", "completed", "pending"],
-      platform_type: ["youtube", "instagram", "tiktok", "facebook"],
+      platform_type: [
+        "youtube",
+        "instagram",
+        "tiktok",
+        "facebook",
+        "twitter",
+        "telegram",
+      ],
       task_action: ["like", "follow", "subscribe", "share", "comment"],
       transaction_type: ["earned", "spent", "purchased", "withdrawn"],
       withdrawal_status: ["pending", "approved", "rejected", "processing"],
