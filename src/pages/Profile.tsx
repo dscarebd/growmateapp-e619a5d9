@@ -2,14 +2,20 @@ import { useApp } from "@/contexts/AppContext";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Copy, CheckCircle2, Award, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { User, Copy, CheckCircle2, Award, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, Moon } from "lucide-react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 const Profile = () => {
   const { user, credits, setIsAuthenticated } = useApp();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
 
   const copyCode = () => {
     navigator.clipboard.writeText(user.referralCode);
@@ -28,6 +34,14 @@ const Profile = () => {
     { icon: Shield, label: "Security", action: () => {} },
     { icon: Award, label: "Admin Panel", action: () => navigate("/admin") },
   ];
+
+  const darkModeRow = (
+    <div className="flex w-full items-center gap-3 rounded-xl p-3.5">
+      <Moon className="h-5 w-5 text-muted-foreground" />
+      <span className="flex-1 text-left text-sm font-medium text-foreground">Dark Mode</span>
+      <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -77,6 +91,7 @@ const Profile = () => {
 
         {/* Menu */}
         <div className="space-y-1">
+          {darkModeRow}
           {menuItems.map(item => (
             <button key={item.label} onClick={item.action} className="flex w-full items-center gap-3 rounded-xl p-3.5 hover:bg-muted transition-colors">
               <item.icon className="h-5 w-5 text-muted-foreground" />
