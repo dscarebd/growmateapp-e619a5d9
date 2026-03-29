@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Coins, ArrowUpRight, ArrowDownLeft, ShoppingCart, Banknote, CheckCircle, Clock, XCircle, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ const WalletPage = () => {
   const [transactionRef, setTransactionRef] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [withdrawSubmitting, setWithdrawSubmitting] = useState(false);
+  const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawMethod, setWithdrawMethod] = useState("bKash");
   const [withdrawAccount, setWithdrawAccount] = useState("");
@@ -324,7 +326,7 @@ const WalletPage = () => {
                 )}
 
                 <Button
-                  onClick={async () => {
+                  onClick={() => {
                     if (!authUser) return;
                     if (withdrawNum < MIN_WITHDRAWAL) {
                       toast.error(`Minimum withdrawal is ${MIN_WITHDRAWAL} credits`);
@@ -338,39 +340,69 @@ const WalletPage = () => {
                       toast.error("Enter your account details");
                       return;
                     }
-                    setWithdrawSubmitting(true);
-                    const { error } = await supabase.from("withdrawals").insert({
-                      user_id: authUser.id,
-                      amount: withdrawNum,
-                      commission,
-                      net_amount: netAmount,
-                      method: `${withdrawMethod}: ${withdrawAccount.trim()}`,
-                      status: "pending",
-                    });
-                    if (error) {
-                      toast.error("Failed to submit withdrawal request");
-                    } else {
-                      // Deduct credits immediately
-                      const newCredits = credits - withdrawNum;
-                      await supabase.from("profiles").update({ credits: newCredits }).eq("id", authUser.id);
-                      await supabase.from("transactions").insert({
-                        user_id: authUser.id,
-                        type: "withdrawn" as const,
-                        amount: withdrawNum,
-                        description: `Withdrawal via ${withdrawMethod}`,
-                      });
-                      toast.success("Withdrawal request submitted!");
-                      setWithdrawAmount("");
-                      setWithdrawAccount("");
-                      refreshData();
-                    }
-                    setWithdrawSubmitting(false);
+                    setShowWithdrawConfirm(true);
                   }}
                   disabled={withdrawSubmitting || withdrawNum < MIN_WITHDRAWAL || withdrawNum > credits}
                   className="w-full gradient-primary text-primary-foreground rounded-xl h-10 text-sm font-semibold"
                 >
                   {withdrawSubmitting ? "Submitting..." : "Request Withdrawal"}
                 </Button>
+
+                <AlertDialog open={showWithdrawConfirm} onOpenChange={setShowWithdrawConfirm}>
+                  <AlertDialogContent className="max-w-[340px] rounded-2xl">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirm Withdrawal</AlertDialogTitle>
+                      <AlertDialogDescription asChild>
+                        <div className="space-y-2">
+                          <p>Are you sure you want to withdraw?</p>
+                          <div className="rounded-lg bg-accent/50 border border-border p-3 space-y-1 text-xs">
+                            <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><span className="font-medium text-foreground">{withdrawNum} credits</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Commission ({COMMISSION_RATE * 100}%)</span><span className="text-destructive font-medium">-{commission} credits</span></div>
+                            <div className="border-t border-border pt-1 flex justify-between"><span className="font-semibold text-foreground">You receive</span><span className="text-success font-bold">{netAmount} credits</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Method</span><span className="font-medium text-foreground">{withdrawMethod}</span></div>
+                          </div>
+                        </div>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={async () => {
+                          if (!authUser) return;
+                          setWithdrawSubmitting(true);
+                          const { error } = await supabase.from("withdrawals").insert({
+                            user_id: authUser.id,
+                            amount: withdrawNum,
+                            commission,
+                            net_amount: netAmount,
+                            method: `${withdrawMethod}: ${withdrawAccount.trim()}`,
+                            status: "pending",
+                          });
+                          if (error) {
+                            toast.error("Failed to submit withdrawal request");
+                          } else {
+                            const newCredits = credits - withdrawNum;
+                            await supabase.from("profiles").update({ credits: newCredits }).eq("id", authUser.id);
+                            await supabase.from("transactions").insert({
+                              user_id: authUser.id,
+                              type: "withdrawn" as const,
+                              amount: withdrawNum,
+                              description: `Withdrawal via ${withdrawMethod}`,
+                            });
+                            toast.success("Withdrawal request submitted!");
+                            setWithdrawAmount("");
+                            setWithdrawAccount("");
+                            refreshData();
+                          }
+                          setWithdrawSubmitting(false);
+                        }}
+                        className="bg-primary text-primary-foreground"
+                      >
+                        Confirm
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </CardContent>
             </Card>
             {withdrawals.length > 0 && (
