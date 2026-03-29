@@ -28,8 +28,18 @@ const WalletPage = () => {
   const [paymentAmount, setPaymentAmount] = useState("");
   const [transactionRef, setTransactionRef] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [withdrawSubmitting, setWithdrawSubmitting] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [withdrawMethod, setWithdrawMethod] = useState("bKash");
+  const [withdrawAccount, setWithdrawAccount] = useState("");
   const [myPayments, setMyPayments] = useState<any[]>([]);
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
+
+  const COMMISSION_RATE = 0.15;
+  const MIN_WITHDRAWAL = 500;
+  const withdrawNum = parseInt(withdrawAmount) || 0;
+  const commission = Math.round(withdrawNum * COMMISSION_RATE);
+  const netAmount = withdrawNum - commission;
 
   const loadMyPayments = async () => {
     if (!authUser || paymentsLoaded) return;
