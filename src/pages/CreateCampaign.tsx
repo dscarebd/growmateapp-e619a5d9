@@ -61,6 +61,16 @@ const CreateCampaign = () => {
   const [step, setStep] = useState(0);
   const [platform, setPlatform] = useState<Platform>("youtube");
   const [action, setAction] = useState<TaskAction>("like");
+
+  const availableActions = platformActions[platform];
+
+  const handlePlatformChange = (p: Platform) => {
+    setPlatform(p);
+    const newActions = platformActions[p];
+    if (!newActions.some(a => a.key === action)) {
+      setAction(newActions[0].key);
+    }
+  };
   const [link, setLink] = useState("");
   const [title, setTitle] = useState("");
   const [budget, setBudget] = useState("");
