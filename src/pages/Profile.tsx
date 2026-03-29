@@ -268,7 +268,7 @@ const Profile = () => {
 
       {/* Edit Name Dialog */}
       <Dialog open={editDialog} onOpenChange={setEditDialog}>
-        <DialogContent className="rounded-2xl mx-4 max-w-[340px] p-4 gap-3">
+        <DialogContent className="rounded-2xl max-w-[340px] p-4 gap-3 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
           <DialogHeader>
             <DialogTitle className="text-foreground">Edit Name</DialogTitle>
           </DialogHeader>
@@ -290,7 +290,7 @@ const Profile = () => {
 
       {/* Email Change Dialog */}
       <Dialog open={emailDialog} onOpenChange={setEmailDialog}>
-        <DialogContent className="rounded-2xl mx-4 max-w-[340px] p-4 gap-3">
+        <DialogContent className="rounded-2xl max-w-[340px] p-4 gap-3 left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
           <DialogHeader>
             <DialogTitle className="text-foreground">Change Email</DialogTitle>
           </DialogHeader>
