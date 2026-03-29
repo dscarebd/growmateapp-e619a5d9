@@ -76,6 +76,7 @@ export const useAdmin = () => {
   const [payments, setPayments] = useState<ManualPayment[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [referralBonuses, setReferralBonuses] = useState<ReferralBonus[]>([]);
+  const [referralBonusAmount, setReferralBonusAmount] = useState(50);
 
   const checkAdmin = useCallback(async () => {
     if (!user) { setIsAdmin(false); setLoading(false); return; }
@@ -86,13 +87,14 @@ export const useAdmin = () => {
 
   const fetchAll = useCallback(async () => {
     if (!isAdmin) return;
-    const [pRes, cRes, wRes, pmRes, tRes, rbRes] = await Promise.all([
+    const [pRes, cRes, wRes, pmRes, tRes, rbRes, settingsRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("campaigns").select("*").order("created_at", { ascending: false }),
       supabase.from("withdrawals").select("*").order("requested_at", { ascending: false }),
       supabase.from("manual_payments").select("*").order("created_at", { ascending: false }) as any,
       supabase.from("transactions").select("*").order("created_at", { ascending: false }),
       supabase.from("referral_bonuses").select("*").order("created_at", { ascending: false }),
+      supabase.from("site_settings" as any).select("*").eq("key", "referral_bonus_amount").single(),
     ]);
     if (pRes.data) setProfiles(pRes.data as AdminProfile[]);
     if (cRes.data) setCampaigns(cRes.data as AdminCampaign[]);
@@ -100,6 +102,7 @@ export const useAdmin = () => {
     if (pmRes.data) setPayments(pmRes.data as ManualPayment[]);
     if (tRes.data) setTransactions(tRes.data);
     if (rbRes.data) setReferralBonuses(rbRes.data as ReferralBonus[]);
+    if (settingsRes.data) setReferralBonusAmount(parseInt((settingsRes.data as any).value) || 50);
   }, [isAdmin]);
 
   useEffect(() => { checkAdmin(); }, [checkAdmin]);
@@ -270,9 +273,17 @@ export const useAdmin = () => {
     fetchAll();
   };
 
+  const updateReferralBonusAmount = async (amount: number) => {
+    if (amount < 1 || amount > 10000) { toast.error("Bonus must be between 1 and 10000"); return; }
+    const { error } = await supabase.from("site_settings" as any).update({ value: amount.toString(), updated_at: new Date().toISOString() }).eq("key", "referral_bonus_amount");
+    if (error) { toast.error("Failed to update bonus amount"); return; }
+    setReferralBonusAmount(amount);
+    toast.success(`Referral bonus updated to ${amount} credits`);
+  };
+
   return {
-    isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses,
+    isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses, referralBonusAmount,
     updateCampaignStatus, updateWithdrawalStatus, updateUserCredits, updateUserTrustScore,
-    approvePayment, rejectPayment, addCreditsManually, fetchAll,
+    approvePayment, rejectPayment, addCreditsManually, updateReferralBonusAmount, fetchAll,
   };
 };

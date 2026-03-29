@@ -236,6 +236,24 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           action: Database["public"]["Enums"]["task_action"]
@@ -366,6 +384,7 @@ export type Database = {
         Args: { _fingerprint: string }
         Returns: boolean
       }
+      get_referral_bonus_amount: { Args: never; Returns: number }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
