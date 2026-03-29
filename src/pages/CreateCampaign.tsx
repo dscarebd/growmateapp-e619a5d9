@@ -17,13 +17,43 @@ const platformOptions: { key: Platform; label: string; icon: ReactNode }[] = [
   { key: "telegram", label: "Telegram", icon: <TelegramIcon className="h-7 w-7" /> },
 ];
 
-const actionOptions: { key: TaskAction; label: string }[] = [
-  { key: "like", label: "Like" },
-  { key: "follow", label: "Follow" },
-  { key: "subscribe", label: "Subscribe" },
-  { key: "share", label: "Share" },
-  { key: "comment", label: "Comment" },
-];
+const platformActions: Record<Platform, { key: TaskAction; label: string }[]> = {
+  youtube: [
+    { key: "like", label: "Like" },
+    { key: "subscribe", label: "Subscribe" },
+    { key: "comment", label: "Comment" },
+    { key: "share", label: "Share" },
+  ],
+  instagram: [
+    { key: "like", label: "Like" },
+    { key: "follow", label: "Follow" },
+    { key: "comment", label: "Comment" },
+    { key: "share", label: "Share" },
+  ],
+  tiktok: [
+    { key: "like", label: "Like" },
+    { key: "follow", label: "Follow" },
+    { key: "comment", label: "Comment" },
+    { key: "share", label: "Share" },
+  ],
+  facebook: [
+    { key: "like", label: "Like" },
+    { key: "follow", label: "Follow" },
+    { key: "comment", label: "Comment" },
+    { key: "share", label: "Share" },
+  ],
+  twitter: [
+    { key: "like", label: "Like" },
+    { key: "follow", label: "Follow" },
+    { key: "comment", label: "Reply" },
+    { key: "share", label: "Repost" },
+  ],
+  telegram: [
+    { key: "follow", label: "Join Channel" },
+    { key: "comment", label: "Comment" },
+    { key: "share", label: "Share" },
+  ],
+};
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
@@ -31,6 +61,16 @@ const CreateCampaign = () => {
   const [step, setStep] = useState(0);
   const [platform, setPlatform] = useState<Platform>("youtube");
   const [action, setAction] = useState<TaskAction>("like");
+
+  const availableActions = platformActions[platform];
+
+  const handlePlatformChange = (p: Platform) => {
+    setPlatform(p);
+    const newActions = platformActions[p];
+    if (!newActions.some(a => a.key === action)) {
+      setAction(newActions[0].key);
+    }
+  };
   const [link, setLink] = useState("");
   const [title, setTitle] = useState("");
   const [budget, setBudget] = useState("");
@@ -67,7 +107,7 @@ const CreateCampaign = () => {
         <label className="text-sm font-semibold text-foreground mb-3 block">Select Platform</label>
         <div className="grid grid-cols-2 gap-3">
           {platformOptions.map(p => (
-            <button key={p.key} onClick={() => setPlatform(p.key)} className={cn("flex items-center gap-2 rounded-xl p-4 border-2 transition-all", platform === p.key ? "border-primary bg-accent" : "border-border bg-card")}>
+            <button key={p.key} onClick={() => handlePlatformChange(p.key)} className={cn("flex items-center gap-2 rounded-xl p-4 border-2 transition-all", platform === p.key ? "border-primary bg-accent" : "border-border bg-card")}>
               {p.icon}
               <span className="text-sm font-semibold">{p.label}</span>
             </button>
@@ -77,7 +117,7 @@ const CreateCampaign = () => {
       <div>
         <label className="text-sm font-semibold text-foreground mb-3 block">Action Type</label>
         <div className="flex flex-col gap-2">
-          {actionOptions.map(a => (
+          {availableActions.map(a => (
             <button key={a.key} onClick={() => setAction(a.key)} className={cn("w-full rounded-full px-4 py-3 text-sm font-semibold border-2 transition-all", action === a.key ? "border-primary bg-accent text-accent-foreground" : "border-border text-muted-foreground bg-card")}>
               {a.label}
             </button>
