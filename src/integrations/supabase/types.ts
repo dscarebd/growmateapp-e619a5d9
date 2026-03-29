@@ -14,7 +14,219 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      campaigns: {
+        Row: {
+          action: Database["public"]["Enums"]["task_action"]
+          completed_actions: number
+          created_at: string
+          estimated_reach: number
+          id: string
+          link: string
+          platform: Database["public"]["Enums"]["platform_type"]
+          reward_per_action: number
+          status: Database["public"]["Enums"]["campaign_status"]
+          title: string
+          total_budget: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["task_action"]
+          completed_actions?: number
+          created_at?: string
+          estimated_reach?: number
+          id?: string
+          link: string
+          platform: Database["public"]["Enums"]["platform_type"]
+          reward_per_action: number
+          status?: Database["public"]["Enums"]["campaign_status"]
+          title: string
+          total_budget: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["task_action"]
+          completed_actions?: number
+          created_at?: string
+          estimated_reach?: number
+          id?: string
+          link?: string
+          platform?: Database["public"]["Enums"]["platform_type"]
+          reward_per_action?: number
+          status?: Database["public"]["Enums"]["campaign_status"]
+          title?: string
+          total_budget?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          campaigns_run: number
+          created_at: string
+          credits: number
+          email: string
+          id: string
+          joined_date: string
+          name: string
+          referral_code: string
+          tasks_completed: number
+          total_earned: number
+          trust_score: number
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          campaigns_run?: number
+          created_at?: string
+          credits?: number
+          email?: string
+          id: string
+          joined_date?: string
+          name?: string
+          referral_code?: string
+          tasks_completed?: number
+          total_earned?: number
+          trust_score?: number
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          campaigns_run?: number
+          created_at?: string
+          credits?: number
+          email?: string
+          id?: string
+          joined_date?: string
+          name?: string
+          referral_code?: string
+          tasks_completed?: number
+          total_earned?: number
+          trust_score?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          action: Database["public"]["Enums"]["task_action"]
+          advertiser: string
+          completed_count: number
+          created_at: string
+          description: string
+          id: string
+          is_high_reward: boolean
+          link: string
+          platform: Database["public"]["Enums"]["platform_type"]
+          reward: number
+          title: string
+          total_slots: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["task_action"]
+          advertiser?: string
+          completed_count?: number
+          created_at?: string
+          description?: string
+          id?: string
+          is_high_reward?: boolean
+          link: string
+          platform: Database["public"]["Enums"]["platform_type"]
+          reward?: number
+          title: string
+          total_slots?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["task_action"]
+          advertiser?: string
+          completed_count?: number
+          created_at?: string
+          description?: string
+          id?: string
+          is_high_reward?: boolean
+          link?: string
+          platform?: Database["public"]["Enums"]["platform_type"]
+          reward?: number
+          title?: string
+          total_slots?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          id: string
+          platform: Database["public"]["Enums"]["platform_type"] | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string
+          id?: string
+          platform?: Database["public"]["Enums"]["platform_type"] | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          id?: string
+          platform?: Database["public"]["Enums"]["platform_type"] | null
+          type?: Database["public"]["Enums"]["transaction_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      withdrawals: {
+        Row: {
+          amount: number
+          commission: number
+          id: string
+          method: string
+          net_amount: number
+          requested_at: string
+          status: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          commission?: number
+          id?: string
+          method?: string
+          net_amount?: number
+          requested_at?: string
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          commission?: number
+          id?: string
+          method?: string
+          net_amount?: number
+          requested_at?: string
+          status?: Database["public"]["Enums"]["withdrawal_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +235,11 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      campaign_status: "active" | "paused" | "completed" | "pending"
+      platform_type: "youtube" | "instagram" | "tiktok" | "facebook"
+      task_action: "like" | "follow" | "subscribe" | "share" | "comment"
+      transaction_type: "earned" | "spent" | "purchased" | "withdrawn"
+      withdrawal_status: "pending" | "approved" | "rejected" | "processing"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +366,12 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      campaign_status: ["active", "paused", "completed", "pending"],
+      platform_type: ["youtube", "instagram", "tiktok", "facebook"],
+      task_action: ["like", "follow", "subscribe", "share", "comment"],
+      transaction_type: ["earned", "spent", "purchased", "withdrawn"],
+      withdrawal_status: ["pending", "approved", "rejected", "processing"],
+    },
   },
 } as const
