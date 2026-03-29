@@ -69,7 +69,7 @@ const Home = () => {
             {activeCampaigns.map(c => (
               <Card key={c.id} className="mb-2 hover-scale border-border">
                 <CardContent className="p-4 flex items-center gap-3">
-                  <span className="text-2xl">{platformIcons[c.platform]}</span>
+                  <div className="shrink-0">{platformIcons[c.platform]}</div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-foreground truncate">{c.title}</p>
                     <div className="mt-1.5 h-1.5 w-full rounded-full bg-muted overflow-hidden">
@@ -96,7 +96,7 @@ const Home = () => {
             {topTasks.map(t => (
               <Card key={t.id} className="hover-scale border-border" onClick={() => navigate("/tasks")}>
                 <CardContent className="p-4 flex items-center gap-3">
-                  <span className="text-xl">{platformIcons[t.platform]}</span>
+                  <div className="shrink-0">{platformIcons[t.platform]}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <p className="text-sm font-semibold text-foreground truncate">{t.title}</p>
