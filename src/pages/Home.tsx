@@ -1,6 +1,6 @@
 import { useApp } from "@/contexts/AppContext";
 import { useNavigate } from "react-router-dom";
-import { Coins, Megaphone, ShoppingCart, Flame, ArrowRight, Zap } from "lucide-react";
+import { Coins, Megaphone, ShoppingCart, Flame, ArrowRight } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -23,12 +23,11 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Header */}
       <div className="gradient-primary px-5 pb-8 pt-12 rounded-b-3xl">
         <div className="flex items-center justify-between mb-6">
           <div>
             <p className="text-primary-foreground/70 text-sm">Welcome back,</p>
-            <h1 className="text-xl font-bold text-primary-foreground">{user.name}</h1>
+            <h1 className="text-xl font-bold text-primary-foreground">{user?.name || "User"}</h1>
           </div>
           <NotificationBell />
         </div>
@@ -46,7 +45,6 @@ const Home = () => {
       </div>
 
       <div className="px-5 mt-6 space-y-6">
-        {/* Quick Actions */}
         <div className="grid grid-cols-3 gap-3 animate-fade-in-up">
           {quickActions.map(a => (
             <button key={a.label} onClick={() => navigate(a.path)} className="hover-scale flex flex-col items-center gap-2 rounded-2xl bg-card p-4 shadow-sm border border-border">
@@ -58,7 +56,6 @@ const Home = () => {
           ))}
         </div>
 
-        {/* Active Campaigns */}
         {activeCampaigns.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-3">
@@ -74,17 +71,16 @@ const Home = () => {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-foreground truncate">{c.title}</p>
                     <div className="mt-1.5 h-1.5 w-full rounded-full bg-muted overflow-hidden">
-                      <div className="h-full rounded-full gradient-primary transition-all" style={{ width: `${(c.completedActions / c.estimatedReach) * 100}%` }} />
+                      <div className="h-full rounded-full gradient-primary transition-all" style={{ width: `${(c.completed_actions / c.estimated_reach) * 100}%` }} />
                     </div>
                   </div>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">{c.completedActions}/{c.estimatedReach}</span>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">{c.completed_actions}/{c.estimated_reach}</span>
                 </CardContent>
               </Card>
             ))}
           </section>
         )}
 
-        {/* High Reward Tasks */}
         <section>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-base font-bold text-foreground flex items-center gap-1">
@@ -102,7 +98,7 @@ const Home = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <p className="text-sm font-semibold text-foreground truncate">{t.title}</p>
-                      {t.isHighReward && <span className="text-[10px] bg-warning/15 text-warning font-bold px-1.5 py-0.5 rounded-full">🔥</span>}
+                      {t.is_high_reward && <span className="text-[10px] bg-warning/15 text-warning font-bold px-1.5 py-0.5 rounded-full">🔥</span>}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">{t.advertiser}</p>
                   </div>
@@ -110,6 +106,9 @@ const Home = () => {
                 </CardContent>
               </Card>
             ))}
+            {topTasks.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-8">No tasks available yet</p>
+            )}
           </div>
         </section>
       </div>

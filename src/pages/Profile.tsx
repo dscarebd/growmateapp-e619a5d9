@@ -1,4 +1,5 @@
 import { useApp } from "@/contexts/AppContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,7 +10,8 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 const Profile = () => {
-  const { user, credits, setIsAuthenticated } = useApp();
+  const { user, credits } = useApp();
+  const { signOut } = useAuth();
   const { preferences, updatePreference } = useNotifications();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
@@ -20,15 +22,18 @@ const Profile = () => {
   }, [darkMode]);
 
   const copyCode = () => {
-    navigator.clipboard.writeText(user.referralCode);
+    if (!user) return;
+    navigator.clipboard.writeText(user.referral_code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
+  if (!user) return null;
+
   const stats = [
-    { icon: CheckCircle2, label: "Tasks Done", value: user.tasksCompleted, color: "text-success" },
-    { icon: Megaphone, label: "Campaigns", value: user.campaignsRun, color: "text-primary" },
-    { icon: Coins, label: "Total Earned", value: user.totalEarned, color: "text-warning" },
+    { icon: CheckCircle2, label: "Tasks Done", value: user.tasks_completed, color: "text-success" },
+    { icon: Megaphone, label: "Campaigns", value: user.campaigns_run, color: "text-primary" },
+    { icon: Coins, label: "Total Earned", value: user.total_earned, color: "text-warning" },
   ];
 
   const menuItems = [
@@ -57,14 +62,13 @@ const Profile = () => {
             <p className="text-sm text-primary-foreground/70">{user.email}</p>
             <div className="flex items-center gap-1 mt-1">
               <Shield className="h-3 w-3 text-primary-foreground/70" />
-              <span className="text-xs text-primary-foreground/70">Trust Score: {user.trustScore}%</span>
+              <span className="text-xs text-primary-foreground/70">Trust Score: {user.trust_score}%</span>
             </div>
           </div>
         </div>
       </div>
 
       <div className="px-5 -mt-4 space-y-4">
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-2 animate-fade-in-up">
           {stats.map(s => (
             <Card key={s.label} className="border-border">
@@ -77,13 +81,12 @@ const Profile = () => {
           ))}
         </div>
 
-        {/* Referral */}
         <Card className="border-border">
           <CardContent className="p-4">
             <h3 className="text-sm font-semibold text-foreground mb-1">Invite Friends, Earn Credits</h3>
             <p className="text-xs text-muted-foreground mb-3">Share your code and earn 50 credits per referral</p>
             <div className="flex items-center gap-2">
-              <div className="flex-1 rounded-xl bg-muted px-4 py-2.5 text-sm font-mono font-bold text-foreground">{user.referralCode}</div>
+              <div className="flex-1 rounded-xl bg-muted px-4 py-2.5 text-sm font-mono font-bold text-foreground">{user.referral_code}</div>
               <Button size="sm" variant="outline" className="rounded-xl h-10 px-3" onClick={copyCode}>
                 {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>
@@ -91,7 +94,6 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        {/* Notification Preferences */}
         <Card className="border-border">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
@@ -116,7 +118,6 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        {/* Menu */}
         <div className="space-y-1">
           {darkModeRow}
           {menuItems.map(item => (
@@ -126,7 +127,7 @@ const Profile = () => {
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>
           ))}
-          <button onClick={() => { setIsAuthenticated(false); navigate("/", { replace: true }); }} className="flex w-full items-center gap-3 rounded-xl p-3.5 hover:bg-destructive/10 transition-colors">
+          <button onClick={async () => { await signOut(); navigate("/", { replace: true }); }} className="flex w-full items-center gap-3 rounded-xl p-3.5 hover:bg-destructive/10 transition-colors">
             <LogOut className="h-5 w-5 text-destructive" />
             <span className="flex-1 text-left text-sm font-medium text-destructive">Log Out</span>
           </button>

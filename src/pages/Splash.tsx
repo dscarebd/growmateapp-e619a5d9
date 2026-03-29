@@ -1,24 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useApp } from "@/contexts/AppContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Zap } from "lucide-react";
 
 const Splash = () => {
   const navigate = useNavigate();
-  const { hasOnboarded, isAuthenticated } = useApp();
+  const { user, loading } = useAuth();
   const [show, setShow] = useState(true);
 
   useEffect(() => {
+    if (loading) return;
     const timer = setTimeout(() => {
       setShow(false);
       setTimeout(() => {
-        if (isAuthenticated) navigate("/home", { replace: true });
-        else if (hasOnboarded) navigate("/auth", { replace: true });
-        else navigate("/onboarding", { replace: true });
+        if (user) navigate("/home", { replace: true });
+        else navigate("/auth", { replace: true });
       }, 300);
     }, 2000);
     return () => clearTimeout(timer);
-  }, [navigate, hasOnboarded, isAuthenticated]);
+  }, [navigate, user, loading]);
 
   return (
     <div className={`flex min-h-screen flex-col items-center justify-center gradient-primary transition-opacity duration-300 ${show ? "opacity-100" : "opacity-0"}`}>
