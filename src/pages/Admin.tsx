@@ -49,6 +49,7 @@ const Admin = () => {
   const [creditNotes, setCreditNotes] = useState("");
   const [userDetailDialog, setUserDetailDialog] = useState<string | null>(null);
   const [editTrust, setEditTrust] = useState("");
+  const [withdrawalFilter, setWithdrawalFilter] = useState<"all" | "pending" | "approved" | "rejected" | "processing">("all");
 
   // Charts (hooks must be before conditionals)
   const platformDistribution = useMemo(() => {
@@ -341,7 +342,15 @@ const Admin = () => {
         {/* WITHDRAWALS TAB */}
         {tab === "withdrawals" && (
           <div className="space-y-3 animate-fade-in">
-            {admin.withdrawals.map(w => {
+            <div className="flex gap-1.5 overflow-x-auto pb-1">
+              {(["all", "pending", "processing", "approved", "rejected"] as const).map(f => (
+                <button key={f} onClick={() => setWithdrawalFilter(f)} className={cn(
+                  "px-3 py-1.5 text-[11px] font-semibold rounded-full capitalize whitespace-nowrap transition-all",
+                  withdrawalFilter === f ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                )}>{f}</button>
+              ))}
+            </div>
+            {admin.withdrawals.filter(w => withdrawalFilter === "all" || w.status === withdrawalFilter).map(w => {
               const ownerProfile = admin.profiles.find(p => p.id === w.user_id);
               return (
                 <Card key={w.id} className="border-border">
@@ -377,7 +386,7 @@ const Admin = () => {
                 </Card>
               );
             })}
-            {admin.withdrawals.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No withdrawals yet</p>}
+            {admin.withdrawals.filter(w => withdrawalFilter === "all" || w.status === withdrawalFilter).length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No {withdrawalFilter === "all" ? "" : withdrawalFilter} withdrawals found</p>}
           </div>
         )}
 
