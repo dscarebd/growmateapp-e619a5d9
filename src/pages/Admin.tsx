@@ -50,6 +50,25 @@ const Admin = () => {
   const [userDetailDialog, setUserDetailDialog] = useState<string | null>(null);
   const [editTrust, setEditTrust] = useState("");
 
+  // Charts (hooks must be before conditionals)
+  const platformDistribution = useMemo(() => {
+    const counts: Record<string, number> = {};
+    admin.campaigns.forEach(c => { counts[c.platform] = (counts[c.platform] || 0) + 1; });
+    const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
+    return Object.entries(counts).map(([key, val]) => ({
+      name: PLATFORM_LABELS[key] || key, value: Math.round((val / total) * 100),
+    }));
+  }, [admin.campaigns]);
+
+  const revenueByDay = useMemo(() => {
+    const days: Record<string, number> = {};
+    admin.transactions.filter(t => t.type === "purchased").forEach((t: any) => {
+      const day = new Date(t.created_at).toLocaleDateString("en", { weekday: "short" });
+      days[day] = (days[day] || 0) + t.amount;
+    });
+    return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => ({ day: d, revenue: days[d] || 0 }));
+  }, [admin.transactions]);
+
   if (admin.loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -79,25 +98,6 @@ const Admin = () => {
   const pendingWithdrawals = admin.withdrawals.filter(w => w.status === "pending").length;
   const pendingPayments = admin.payments.filter(p => p.status === "pending").length;
   const totalRevenue = admin.transactions.filter(t => t.type === "purchased").reduce((s: number, t: any) => s + t.amount, 0);
-
-  // Charts
-  const platformDistribution = useMemo(() => {
-    const counts: Record<string, number> = {};
-    admin.campaigns.forEach(c => { counts[c.platform] = (counts[c.platform] || 0) + 1; });
-    const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
-    return Object.entries(counts).map(([key, val]) => ({
-      name: PLATFORM_LABELS[key] || key, value: Math.round((val / total) * 100),
-    }));
-  }, [admin.campaigns]);
-
-  const revenueByDay = useMemo(() => {
-    const days: Record<string, number> = {};
-    admin.transactions.filter(t => t.type === "purchased").forEach((t: any) => {
-      const day = new Date(t.created_at).toLocaleDateString("en", { weekday: "short" });
-      days[day] = (days[day] || 0) + t.amount;
-    });
-    return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => ({ day: d, revenue: days[d] || 0 }));
-  }, [admin.transactions]);
 
   const platformColors = platformDistribution.map(p => PLATFORM_COLORS[p.name] || "hsl(210, 15%, 46%)");
 
