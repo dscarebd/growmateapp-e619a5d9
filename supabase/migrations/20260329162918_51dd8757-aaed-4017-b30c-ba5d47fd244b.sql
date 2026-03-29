@@ -1,0 +1,1 @@
+ALTER TYPE public.task_action ADD VALUE IF NOT EXISTS 'view';

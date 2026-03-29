@@ -397,7 +397,13 @@ export type Database = {
         | "facebook"
         | "twitter"
         | "telegram"
-      task_action: "like" | "follow" | "subscribe" | "share" | "comment"
+      task_action:
+        | "like"
+        | "follow"
+        | "subscribe"
+        | "share"
+        | "comment"
+        | "view"
       transaction_type: "earned" | "spent" | "purchased" | "withdrawn"
       withdrawal_status: "pending" | "approved" | "rejected" | "processing"
     }
@@ -536,7 +542,7 @@ export const Constants = {
         "twitter",
         "telegram",
       ],
-      task_action: ["like", "follow", "subscribe", "share", "comment"],
+      task_action: ["like", "follow", "subscribe", "share", "comment", "view"],
       transaction_type: ["earned", "spent", "purchased", "withdrawn"],
       withdrawal_status: ["pending", "approved", "rejected", "processing"],
     },
