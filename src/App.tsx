@@ -119,7 +119,7 @@ const AnimatedRoutes = () => {
 
 const AppLayout = () => {
   const location = useLocation();
-  const showNav = navPages.includes(location.pathname);
+  const hideNav = ["/", "/onboarding", "/auth"].includes(location.pathname);
 
   return (
     <>
