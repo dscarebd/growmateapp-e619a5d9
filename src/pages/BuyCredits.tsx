@@ -112,7 +112,6 @@ const BuyCredits = () => {
       {/* Header */}
       <div className="gradient-primary px-5 pb-6 pt-12 rounded-b-3xl">
         <h1 className="text-xl font-bold text-primary-foreground mb-4">Buy Credits</h1>
-        </div>
         <div className="flex items-center gap-3 bg-white/15 rounded-2xl p-3.5 backdrop-blur-sm">
           <Coins className="h-6 w-6 text-primary-foreground" />
           <div>
