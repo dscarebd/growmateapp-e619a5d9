@@ -6,13 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon } from "@/components/PlatformIcons";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
 
 const platformOptions: { key: Platform; label: string; icon: ReactNode }[] = [
   { key: "youtube", label: "YouTube", icon: <YouTubeIcon className="h-7 w-7" /> },
   { key: "instagram", label: "Instagram", icon: <InstagramIcon className="h-7 w-7" /> },
   { key: "tiktok", label: "TikTok", icon: <TikTokIcon className="h-7 w-7" /> },
   { key: "facebook", label: "Facebook", icon: <FacebookIcon className="h-7 w-7" /> },
+  { key: "twitter", label: "X (Twitter)", icon: <TwitterIcon className="h-7 w-7" /> },
+  { key: "telegram", label: "Telegram", icon: <TelegramIcon className="h-7 w-7" /> },
 ];
 
 const actionOptions: { key: TaskAction; label: string }[] = [
@@ -63,7 +65,7 @@ const CreateCampaign = () => {
     <div key="0" className="space-y-6 animate-fade-in-up">
       <div>
         <label className="text-sm font-semibold text-foreground mb-3 block">Select Platform</label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           {platformOptions.map(p => (
             <button key={p.key} onClick={() => setPlatform(p.key)} className={cn("flex items-center gap-2 rounded-xl p-4 border-2 transition-all", platform === p.key ? "border-primary bg-accent" : "border-border bg-card")}>
               {p.icon}
