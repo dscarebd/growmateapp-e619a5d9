@@ -1,9 +1,32 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Code2, Globe, Mail, Send } from "lucide-react";
+import { Globe, Mail, Send } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRef, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import annurLogo from "@/assets/annur-logo.jpeg";
 
 const DeveloperPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const tapCountRef = useRef(0);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleLogoTap = useCallback(async () => {
+    tapCountRef.current += 1;
+
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+    tapTimerRef.current = setTimeout(() => { tapCountRef.current = 0; }, 2000);
+
+    if (tapCountRef.current >= 7) {
+      tapCountRef.current = 0;
+      if (!user) return;
+      const { data } = await supabase.rpc("is_admin", { _user_id: user.id } as any);
+      if (data) {
+        navigate("/admin");
+      }
+    }
+  }, [user, navigate]);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -16,12 +39,14 @@ const DeveloperPage = () => {
       <div className="px-5 mt-4 space-y-4">
         <Card className="border-border">
           <CardContent className="p-5 text-center space-y-3">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 mx-auto">
-              <Code2 className="h-8 w-8 text-primary" />
-            </div>
+            <button
+              onClick={handleLogoTap}
+              className="mx-auto block rounded-2xl overflow-hidden h-20 w-20 active:scale-95 transition-transform select-none"
+            >
+              <img src={annurLogo} alt="An-Nur Digital" className="h-full w-full object-contain" />
+            </button>
             <div>
               <h2 className="text-lg font-bold text-foreground">An-Nur Digital</h2>
-              
             </div>
           </CardContent>
         </Card>
