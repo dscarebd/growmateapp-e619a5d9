@@ -181,17 +181,19 @@ const CreateCampaign = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="flex items-center gap-3 px-5 pt-12 pb-4">
-        <button onClick={() => step > 0 ? setStep(step - 1) : navigate(-1)}>
-          <ArrowLeft className="h-5 w-5 text-foreground" />
-        </button>
-        <h1 className="text-lg font-bold text-foreground">Create Campaign</h1>
-      </div>
-      <div className="flex gap-1.5 px-5 mb-6">
-        {[0, 1, 2].map(i => (
-          <div key={i} className={cn("h-1 flex-1 rounded-full transition-all", i <= step ? "gradient-primary" : "bg-muted")} />
-        ))}
+    <div className="min-h-screen bg-background pb-24">
+      <div className="gradient-primary px-5 pb-6 pt-12 rounded-b-3xl">
+        <div className="flex items-center gap-3 mb-4">
+          <button onClick={() => step > 0 ? setStep(step - 1) : navigate(-1)} className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 transition-colors active:bg-white/25">
+            <ArrowLeft className="h-5 w-5 text-primary-foreground" />
+          </button>
+          <h1 className="text-lg font-bold text-primary-foreground">Create Campaign</h1>
+        </div>
+        <div className="flex gap-1.5">
+          {[0, 1, 2].map(i => (
+            <div key={i} className={cn("h-1 flex-1 rounded-full transition-all", i <= step ? "bg-primary-foreground" : "bg-white/20")} />
+          ))}
+        </div>
       </div>
       <div className="px-5">
         {steps[step]}
