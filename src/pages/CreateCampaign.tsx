@@ -17,13 +17,43 @@ const platformOptions: { key: Platform; label: string; icon: ReactNode }[] = [
   { key: "telegram", label: "Telegram", icon: <TelegramIcon className="h-7 w-7" /> },
 ];
 
-const actionOptions: { key: TaskAction; label: string }[] = [
-  { key: "like", label: "Like" },
-  { key: "follow", label: "Follow" },
-  { key: "subscribe", label: "Subscribe" },
-  { key: "share", label: "Share" },
-  { key: "comment", label: "Comment" },
-];
+const platformActions: Record<Platform, { key: TaskAction; label: string }[]> = {
+  youtube: [
+    { key: "like", label: "Like" },
+    { key: "subscribe", label: "Subscribe" },
+    { key: "comment", label: "Comment" },
+    { key: "share", label: "Share" },
+  ],
+  instagram: [
+    { key: "like", label: "Like" },
+    { key: "follow", label: "Follow" },
+    { key: "comment", label: "Comment" },
+    { key: "share", label: "Share" },
+  ],
+  tiktok: [
+    { key: "like", label: "Like" },
+    { key: "follow", label: "Follow" },
+    { key: "comment", label: "Comment" },
+    { key: "share", label: "Share" },
+  ],
+  facebook: [
+    { key: "like", label: "Like" },
+    { key: "follow", label: "Follow" },
+    { key: "comment", label: "Comment" },
+    { key: "share", label: "Share" },
+  ],
+  twitter: [
+    { key: "like", label: "Like" },
+    { key: "follow", label: "Follow" },
+    { key: "comment", label: "Reply" },
+    { key: "share", label: "Repost" },
+  ],
+  telegram: [
+    { key: "follow", label: "Join Channel" },
+    { key: "comment", label: "Comment" },
+    { key: "share", label: "Share" },
+  ],
+};
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
