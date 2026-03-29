@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import type { Tables } from "@/integrations/supabase/types";
 
-export type Platform = "youtube" | "instagram" | "tiktok" | "facebook";
+export type Platform = "youtube" | "instagram" | "tiktok" | "facebook" | "twitter" | "telegram";
 export type TaskAction = "like" | "follow" | "subscribe" | "share" | "comment";
 export type CampaignStatus = "active" | "paused" | "completed" | "pending";
 export type TransactionType = "earned" | "spent" | "purchased" | "withdrawn";

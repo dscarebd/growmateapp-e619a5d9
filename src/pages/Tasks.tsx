@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Timer, CheckCircle2, Flame, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon } from "@/components/PlatformIcons";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
 
 const platforms: { key: Platform | "all"; label: string; icon: ReactNode }[] = [
   { key: "all", label: "All", icon: <Globe className="h-4 w-4" /> },
@@ -12,6 +12,8 @@ const platforms: { key: Platform | "all"; label: string; icon: ReactNode }[] = [
   { key: "instagram", label: "Instagram", icon: <InstagramIcon className="h-4 w-4" /> },
   { key: "tiktok", label: "TikTok", icon: <TikTokIcon className="h-4 w-4" /> },
   { key: "facebook", label: "Facebook", icon: <FacebookIcon className="h-4 w-4" /> },
+  { key: "twitter", label: "X", icon: <TwitterIcon className="h-4 w-4" /> },
+  { key: "telegram", label: "Telegram", icon: <TelegramIcon className="h-4 w-4" /> },
 ];
 
 const Tasks = () => {

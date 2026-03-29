@@ -38,3 +38,16 @@ export const FacebookIcon = ({ className = "h-6 w-6" }: { className?: string }) 
     <path d="M16.671 15.469l.547-3.585h-3.44v-2.328c0-.981.48-1.938 2.022-1.938h1.564V4.544s-1.42-.243-2.777-.243c-2.834 0-4.687 1.718-4.687 4.83v2.734H6.72v3.585h3.18V24h3.91V15.469h2.861z" fill="#fff"/>
   </svg>
 );
+
+export const TwitterIcon = ({ className = "h-6 w-6" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor"/>
+  </svg>
+);
+
+export const TelegramIcon = ({ className = "h-6 w-6" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="12" fill="#29B6F6"/>
+    <path d="M5.491 11.74l11.57-4.461c.537-.194 1.006.131.832.943l.001-.001-1.97 9.281c-.146.658-.537.818-1.084.508l-3-2.211-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953z" fill="#fff"/>
+  </svg>
+);
