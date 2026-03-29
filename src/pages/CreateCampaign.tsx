@@ -87,6 +87,12 @@ const CreateCampaign = () => {
   const [budget, setBudget] = useState("");
   const [reward, setReward] = useState("");
   const [done, setDone] = useState(false);
+  const [step1Touched, setStep1Touched] = useState(false);
+
+  const isValidUrl = (url: string) => { try { const u = new URL(url); return u.protocol === "http:" || u.protocol === "https:"; } catch { return false; } };
+  const titleError = step1Touched && title.trim() === "" ? "Title is required" : title.length > 100 ? "Title must be under 100 characters" : "";
+  const linkError = step1Touched && link.trim() === "" ? "Link is required" : link.trim() !== "" && !isValidUrl(link.trim()) ? "Enter a valid URL (https://...)" : "";
+  const step1Valid = title.trim() !== "" && title.length <= 100 && isValidUrl(link.trim());
 
   const budgetNum = parseFloat(budget) || 0;
   const rewardNum = parseFloat(reward) || 0;
@@ -143,11 +149,13 @@ const CreateCampaign = () => {
     <div key="1" className="space-y-4 animate-fade-in-up">
       <div>
         <label className="text-sm font-semibold text-foreground mb-2 block">Campaign Title</label>
-        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g., Grow my channel" className="h-12 rounded-xl bg-muted/50 border-0" />
+        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g., Grow my channel" maxLength={100} className={cn("h-12 rounded-xl bg-muted/50 border-0", titleError && "ring-2 ring-destructive")} />
+        {titleError && <p className="text-xs text-destructive mt-1">{titleError}</p>}
       </div>
       <div>
         <label className="text-sm font-semibold text-foreground mb-2 block">Content Link</label>
-        <Input value={link} onChange={e => setLink(e.target.value)} placeholder="https://..." className="h-12 rounded-xl bg-muted/50 border-0" />
+        <Input value={link} onChange={e => setLink(e.target.value)} placeholder="https://..." className={cn("h-12 rounded-xl bg-muted/50 border-0", linkError && "ring-2 ring-destructive")} />
+        {linkError && <p className="text-xs text-destructive mt-1">{linkError}</p>}
       </div>
     </div>,
     // Step 2: Budget
@@ -190,7 +198,7 @@ const CreateCampaign = () => {
       </div>
       <div className="fixed bottom-24 left-0 right-0 px-5 max-w-lg mx-auto">
         {step < 2 ? (
-          <Button className="w-full h-12 rounded-xl gradient-primary text-primary-foreground font-semibold gap-1.5" onClick={() => setStep(step + 1)}>
+          <Button className="w-full h-12 rounded-xl gradient-primary text-primary-foreground font-semibold gap-1.5" disabled={step === 1 && !step1Valid} onClick={() => { if (step === 1) setStep1Touched(true); if (step === 0 || step1Valid) setStep(step + 1); }}>
             Continue <ArrowRight className="h-4 w-4" />
           </Button>
         ) : (
