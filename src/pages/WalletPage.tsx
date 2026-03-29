@@ -25,6 +25,7 @@ const paymentMethods = [
 const WalletPage = () => {
   const { credits, transactions, withdrawals, refreshData } = useApp();
   const { user: authUser } = useAuth();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<"history" | "buy" | "withdraw">("history");
   const [paymentMethod, setPaymentMethod] = useState<string>("bKash");
   const [paymentAmount, setPaymentAmount] = useState("");
