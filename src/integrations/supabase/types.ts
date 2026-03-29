@@ -384,6 +384,7 @@ export type Database = {
         Args: { _fingerprint: string }
         Returns: boolean
       }
+      get_min_campaign_budget_referral: { Args: never; Returns: number }
       get_referral_bonus_amount: { Args: never; Returns: number }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
     }

@@ -77,6 +77,7 @@ export const useAdmin = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [referralBonuses, setReferralBonuses] = useState<ReferralBonus[]>([]);
   const [referralBonusAmount, setReferralBonusAmount] = useState(50);
+  const [minCampaignBudgetReferral, setMinCampaignBudgetReferral] = useState(500);
 
   const checkAdmin = useCallback(async () => {
     if (!user) { setIsAdmin(false); setLoading(false); return; }
@@ -94,7 +95,7 @@ export const useAdmin = () => {
       supabase.from("manual_payments").select("*").order("created_at", { ascending: false }) as any,
       supabase.from("transactions").select("*").order("created_at", { ascending: false }),
       supabase.from("referral_bonuses").select("*").order("created_at", { ascending: false }),
-      supabase.from("site_settings" as any).select("*").eq("key", "referral_bonus_amount").single(),
+      supabase.from("site_settings" as any).select("*"),
     ]);
     if (pRes.data) setProfiles(pRes.data as AdminProfile[]);
     if (cRes.data) setCampaigns(cRes.data as AdminCampaign[]);
@@ -102,7 +103,13 @@ export const useAdmin = () => {
     if (pmRes.data) setPayments(pmRes.data as ManualPayment[]);
     if (tRes.data) setTransactions(tRes.data);
     if (rbRes.data) setReferralBonuses(rbRes.data as ReferralBonus[]);
-    if (settingsRes.data) setReferralBonusAmount(parseInt((settingsRes.data as any).value) || 50);
+    if (settingsRes.data) {
+      const settings = settingsRes.data as any[];
+      const bonusVal = settings.find((s: any) => s.key === "referral_bonus_amount");
+      const budgetVal = settings.find((s: any) => s.key === "min_campaign_budget_referral");
+      if (bonusVal) setReferralBonusAmount(parseInt(bonusVal.value) || 50);
+      if (budgetVal) setMinCampaignBudgetReferral(parseInt(budgetVal.value) || 500);
+    }
   }, [isAdmin]);
 
   useEffect(() => { checkAdmin(); }, [checkAdmin]);
@@ -281,9 +288,18 @@ export const useAdmin = () => {
     toast.success(`Referral bonus updated to ${amount} credits`);
   };
 
+  const updateMinCampaignBudgetReferral = async (amount: number) => {
+    if (amount < 1 || amount > 100000) { toast.error("Budget must be between 1 and 100,000"); return; }
+    const { error } = await supabase.from("site_settings" as any).update({ value: amount.toString(), updated_at: new Date().toISOString() }).eq("key", "min_campaign_budget_referral");
+    if (error) { toast.error("Failed to update min budget"); return; }
+    setMinCampaignBudgetReferral(amount);
+    toast.success(`Min campaign budget updated to ${amount} credits`);
+  };
+
   return {
-    isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses, referralBonusAmount,
+    isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses,
+    referralBonusAmount, minCampaignBudgetReferral,
     updateCampaignStatus, updateWithdrawalStatus, updateUserCredits, updateUserTrustScore,
-    approvePayment, rejectPayment, addCreditsManually, updateReferralBonusAmount, fetchAll,
+    approvePayment, rejectPayment, addCreditsManually, updateReferralBonusAmount, updateMinCampaignBudgetReferral, fetchAll,
   };
 };

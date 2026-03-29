@@ -159,8 +159,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       campaigns_run: (profile?.campaigns_run ?? 0) + 1,
     }).eq("id", authUser.id);
 
-    // Trigger referral bonus if campaign budget >= 500
-    if (campaign.totalBudget >= 500) {
+    // Trigger referral bonus if campaign budget >= min threshold
+    const { data: minBudget } = await supabase.rpc("get_min_campaign_budget_referral" as any);
+    const threshold = (minBudget as number) || 500;
+    if (campaign.totalBudget >= threshold) {
       await supabase.rpc("award_referral_bonus", { _user_id: authUser.id, _trigger: "campaign_500" });
     }
 

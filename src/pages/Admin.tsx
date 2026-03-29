@@ -58,6 +58,7 @@ const Admin = () => {
   const [refPage, setRefPage] = useState(1);
   const REF_PER_PAGE = 10;
   const [editBonusAmount, setEditBonusAmount] = useState("");
+  const [editMinBudget, setEditMinBudget] = useState("");
 
   // Charts (hooks must be before conditionals)
   const platformDistribution = useMemo(() => {
@@ -505,27 +506,27 @@ const Admin = () => {
           <div className="space-y-4 animate-fade-in">
             {/* Bonus Settings */}
             <Card className="border-primary/30 bg-accent/30">
-              <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-1">Referral Bonus Settings</h3>
-                <p className="text-[11px] text-muted-foreground mb-3">Current bonus: <span className="font-bold text-foreground">{admin.referralBonusAmount} credits</span> per referral</p>
-                <div className="flex gap-2">
-                  <Input
-                    type="number"
-                    placeholder={admin.referralBonusAmount.toString()}
-                    value={editBonusAmount}
-                    onChange={e => setEditBonusAmount(e.target.value)}
-                    className="h-9 rounded-xl flex-1"
-                    min={1}
-                    max={10000}
-                  />
-                  <Button
-                    size="sm"
-                    className="h-9 rounded-xl gradient-primary text-primary-foreground"
-                    disabled={!editBonusAmount || parseInt(editBonusAmount) < 1}
-                    onClick={() => { admin.updateReferralBonusAmount(parseInt(editBonusAmount)); setEditBonusAmount(""); }}
-                  >
-                    Update
-                  </Button>
+              <CardContent className="p-4 space-y-4">
+                <h3 className="text-sm font-semibold text-foreground">Referral Settings</h3>
+
+                <div>
+                  <p className="text-[11px] text-muted-foreground mb-1.5">Bonus per referral: <span className="font-bold text-foreground">{admin.referralBonusAmount} credits</span></p>
+                  <div className="flex gap-2">
+                    <Input type="number" placeholder={admin.referralBonusAmount.toString()} value={editBonusAmount} onChange={e => setEditBonusAmount(e.target.value)} className="h-9 rounded-xl flex-1" min={1} max={10000} />
+                    <Button size="sm" className="h-9 rounded-xl gradient-primary text-primary-foreground" disabled={!editBonusAmount || parseInt(editBonusAmount) < 1} onClick={() => { admin.updateReferralBonusAmount(parseInt(editBonusAmount)); setEditBonusAmount(""); }}>
+                      Update
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[11px] text-muted-foreground mb-1.5">Min campaign budget for referral trigger: <span className="font-bold text-foreground">{admin.minCampaignBudgetReferral} credits</span></p>
+                  <div className="flex gap-2">
+                    <Input type="number" placeholder={admin.minCampaignBudgetReferral.toString()} value={editMinBudget} onChange={e => setEditMinBudget(e.target.value)} className="h-9 rounded-xl flex-1" min={1} max={100000} />
+                    <Button size="sm" className="h-9 rounded-xl gradient-primary text-primary-foreground" disabled={!editMinBudget || parseInt(editMinBudget) < 1} onClick={() => { admin.updateMinCampaignBudgetReferral(parseInt(editMinBudget)); setEditMinBudget(""); }}>
+                      Update
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
