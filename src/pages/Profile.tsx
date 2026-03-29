@@ -1,10 +1,11 @@
 import { useApp } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Copy, CheckCircle2, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, FileText, Code2 } from "lucide-react";
-import { useState } from "react";
+import { User, Copy, CheckCircle2, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, FileText, Code2, Users, Gift } from "lucide-react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 const Profile = () => {

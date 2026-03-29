@@ -6,7 +6,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, name: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, name: string, referralCode?: string, deviceFingerprint?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
@@ -34,11 +34,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, name: string) => {
+  const signUp = async (email: string, password: string, name: string, referralCode?: string, deviceFingerprint?: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name }, emailRedirectTo: window.location.origin },
+      options: {
+        data: {
+          name,
+          ...(referralCode ? { referral_code: referralCode } : {}),
+          ...(deviceFingerprint ? { device_fingerprint: deviceFingerprint } : {}),
+        },
+        emailRedirectTo: window.location.origin,
+      },
     });
     return { error: error as Error | null };
   };
