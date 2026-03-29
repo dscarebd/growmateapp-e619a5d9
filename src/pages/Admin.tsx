@@ -498,7 +498,6 @@ const Admin = () => {
             })()}
           </div>
         )}
-      </div>
 
         {/* REFERRALS TAB */}
         {tab === "referrals" && (
