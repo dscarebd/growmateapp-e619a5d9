@@ -1,14 +1,16 @@
 import { useApp } from "@/contexts/AppContext";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { User, Copy, CheckCircle2, Award, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, Moon } from "lucide-react";
+import { User, Copy, CheckCircle2, Award, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, Moon, Bell } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 const Profile = () => {
   const { user, credits, setIsAuthenticated } = useApp();
+  const { preferences, updatePreference } = useNotifications();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
@@ -86,6 +88,31 @@ const Profile = () => {
                 {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Notification Preferences */}
+        <Card className="border-border">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Bell className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">Notification Preferences</h3>
+            </div>
+            {([
+              { key: "taskCompleted" as const, label: "Task Completions", desc: "When you earn credits" },
+              { key: "campaignUpdates" as const, label: "Campaign Updates", desc: "Progress and milestones" },
+              { key: "withdrawalStatus" as const, label: "Withdrawals", desc: "Approval and payout status" },
+              { key: "promotions" as const, label: "Promotions", desc: "Special events and offers" },
+              { key: "systemAlerts" as const, label: "System Alerts", desc: "Security and trust score" },
+            ]).map(pref => (
+              <div key={pref.key} className="flex items-center justify-between py-2.5 border-b border-border/50 last:border-0">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{pref.label}</p>
+                  <p className="text-[11px] text-muted-foreground">{pref.desc}</p>
+                </div>
+                <Switch checked={preferences[pref.key]} onCheckedChange={v => updatePreference(pref.key, v)} />
+              </div>
+            ))}
           </CardContent>
         </Card>
 
