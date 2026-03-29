@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useApp, TransactionType } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -118,7 +119,13 @@ const WalletPage = () => {
       <div className="px-5 mt-5">
         <div className="flex gap-1 bg-muted rounded-xl p-1 mb-5">
           {(["history", "buy", "withdraw"] as const).map(t => (
-            <button key={t} onClick={() => setTab(t)} className={cn("flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all capitalize", tab === t ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}>
+            <button key={t} onClick={() => {
+              if (t === "buy") {
+                navigate("/buy-credits");
+                return;
+              }
+              setTab(t);
+            }} className={cn("flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all capitalize", tab === t && t !== "buy" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}>
               {t === "buy" ? "Buy Credits" : t === "withdraw" ? "Withdraw" : "History"}
             </button>
           ))}
