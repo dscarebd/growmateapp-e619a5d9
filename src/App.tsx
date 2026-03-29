@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AppProvider } from "@/contexts/AppContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
+import { AnimatePresence, motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 import Splash from "@/pages/Splash";
 import Onboarding from "@/pages/Onboarding";
@@ -17,10 +18,18 @@ import WalletPage from "@/pages/WalletPage";
 import Profile from "@/pages/Profile";
 import Admin from "@/pages/Admin";
 import NotFound from "@/pages/NotFound";
+import { useRef } from "react";
 
 const queryClient = new QueryClient();
 
 const navPages = ["/home", "/tasks", "/create-campaign", "/wallet", "/profile"];
+const navOrder: Record<string, number> = {
+  "/home": 0,
+  "/create-campaign": 1,
+  "/tasks": 2,
+  "/wallet": 3,
+  "/profile": 4,
+};
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -29,24 +38,84 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const pageVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 60 : -60,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? -30 : 30,
+    opacity: 0,
+  }),
+};
+
+const pageTransition = {
+  type: "tween" as const,
+  ease: [0.25, 0.46, 0.45, 0.94],
+  duration: 0.25,
+};
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  const prevPathRef = useRef(location.pathname);
+  const isNavPage = navPages.includes(location.pathname);
+  const wasNavPage = navPages.includes(prevPathRef.current);
+
+  // Determine swipe direction based on nav order
+  let direction = 0;
+  if (isNavPage && wasNavPage) {
+    const cur = navOrder[location.pathname] ?? 0;
+    const prev = navOrder[prevPathRef.current] ?? 0;
+    direction = cur > prev ? 1 : cur < prev ? -1 : 0;
+  }
+
+  // Update ref after calculating direction
+  if (prevPathRef.current !== location.pathname) {
+    prevPathRef.current = location.pathname;
+  }
+
+  const shouldAnimate = isNavPage;
+
+  return (
+    <AnimatePresence mode="wait" custom={direction}>
+      <motion.div
+        key={location.pathname}
+        custom={direction}
+        variants={shouldAnimate ? pageVariants : undefined}
+        initial={shouldAnimate ? "enter" : false}
+        animate="center"
+        exit={shouldAnimate ? "exit" : undefined}
+        transition={pageTransition}
+        className="min-h-screen"
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Splash />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
+          <Route path="/create-campaign" element={<ProtectedRoute><CreateCampaign /></ProtectedRoute>} />
+          <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 const AppLayout = () => {
   const location = useLocation();
   const showNav = navPages.includes(location.pathname);
 
   return (
     <>
-      <Routes>
-        <Route path="/" element={<Splash />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
-        <Route path="/create-campaign" element={<ProtectedRoute><CreateCampaign /></ProtectedRoute>} />
-        <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <AnimatedRoutes />
       {showNav && <BottomNav />}
     </>
   );
