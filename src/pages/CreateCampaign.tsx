@@ -107,7 +107,7 @@ const CreateCampaign = () => {
         <label className="text-sm font-semibold text-foreground mb-3 block">Select Platform</label>
         <div className="grid grid-cols-2 gap-3">
           {platformOptions.map(p => (
-            <button key={p.key} onClick={() => setPlatform(p.key)} className={cn("flex items-center gap-2 rounded-xl p-4 border-2 transition-all", platform === p.key ? "border-primary bg-accent" : "border-border bg-card")}>
+            <button key={p.key} onClick={() => handlePlatformChange(p.key)} className={cn("flex items-center gap-2 rounded-xl p-4 border-2 transition-all", platform === p.key ? "border-primary bg-accent" : "border-border bg-card")}>
               {p.icon}
               <span className="text-sm font-semibold">{p.label}</span>
             </button>
@@ -117,7 +117,7 @@ const CreateCampaign = () => {
       <div>
         <label className="text-sm font-semibold text-foreground mb-3 block">Action Type</label>
         <div className="flex flex-col gap-2">
-          {actionOptions.map(a => (
+          {availableActions.map(a => (
             <button key={a.key} onClick={() => setAction(a.key)} className={cn("w-full rounded-full px-4 py-3 text-sm font-semibold border-2 transition-all", action === a.key ? "border-primary bg-accent text-accent-foreground" : "border-border text-muted-foreground bg-card")}>
               {a.label}
             </button>
