@@ -52,7 +52,7 @@ const Tasks = () => {
               className={cn("flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold transition-all",
                 filter === p.key ? "bg-primary-foreground text-primary shadow-sm" : "bg-primary-foreground/20 text-primary-foreground"
               )}>
-              <span>{p.icon}</span> {p.label}
+              {p.icon} {p.label}
             </button>
           ))}
         </div>
