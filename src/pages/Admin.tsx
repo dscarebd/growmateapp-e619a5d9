@@ -42,6 +42,7 @@ const Admin = () => {
   const admin = useAdmin();
   const [tab, setTab] = useState<Tab>("overview");
   const [search, setSearch] = useState("");
+  const [withdrawalSearch, setWithdrawalSearch] = useState("");
   const [addCreditsDialog, setAddCreditsDialog] = useState<string | null>(null);
   const [creditAmount, setCreditAmount] = useState("");
   const [creditMethod, setCreditMethod] = useState("bKash");
@@ -350,7 +351,14 @@ const Admin = () => {
                 )}>{f}</button>
               ))}
             </div>
-            {admin.withdrawals.filter(w => withdrawalFilter === "all" || w.status === withdrawalFilter).map(w => {
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search by user name..." value={withdrawalSearch} onChange={e => setWithdrawalSearch(e.target.value)} className="pl-9 h-10 rounded-xl bg-muted/50 border-0" />
+            </div>
+            {admin.withdrawals.filter(w => {
+              const ownerName = admin.profiles.find(p => p.id === w.user_id)?.name || "";
+              return (withdrawalFilter === "all" || w.status === withdrawalFilter) && ownerName.toLowerCase().includes(withdrawalSearch.toLowerCase());
+            }).map(w => {
               const ownerProfile = admin.profiles.find(p => p.id === w.user_id);
               return (
                 <Card key={w.id} className="border-border">
@@ -386,7 +394,10 @@ const Admin = () => {
                 </Card>
               );
             })}
-            {admin.withdrawals.filter(w => withdrawalFilter === "all" || w.status === withdrawalFilter).length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No {withdrawalFilter === "all" ? "" : withdrawalFilter} withdrawals found</p>}
+            {admin.withdrawals.filter(w => {
+              const ownerName = admin.profiles.find(p => p.id === w.user_id)?.name || "";
+              return (withdrawalFilter === "all" || w.status === withdrawalFilter) && ownerName.toLowerCase().includes(withdrawalSearch.toLowerCase());
+            }).length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No {withdrawalFilter === "all" ? "" : withdrawalFilter} withdrawals found</p>}
           </div>
         )}
 
