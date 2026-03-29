@@ -28,14 +28,14 @@ const BottomNav = () => {
     <nav className="fixed bottom-0 left-0 right-0 z-50">
       <div className="absolute inset-0 bg-card/80 backdrop-blur-2xl border-t border-border/50" />
 
-      <div className="relative flex items-end justify-around px-1 pb-[env(safe-area-inset-bottom,0px)] max-w-lg mx-auto">
+      <div className="relative flex items-end justify-between px-0 pb-[env(safe-area-inset-bottom,0px)] max-w-lg mx-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           const isTapped = tapped === item.path;
 
           if (item.isCenter) {
             return (
-              <div key={item.path} className="flex flex-col items-center -mt-6 px-1">
+              <div key={item.path} className="flex flex-col items-center -mt-6 w-[20%]">
                 <button
                   onClick={() => handleTap(item.path)}
                   className={cn(
@@ -68,7 +68,7 @@ const BottomNav = () => {
             <button
               key={item.path}
               onClick={() => handleTap(item.path)}
-              className="flex flex-col items-center gap-[2px] pt-2.5 pb-1.5 px-3 min-w-[56px] group"
+              className="flex flex-col items-center gap-[2px] pt-2.5 pb-1.5 w-[20%] group"
             >
               <div className={cn(
                 "relative flex items-center justify-center h-7 w-7 transition-all duration-200 origin-center",
