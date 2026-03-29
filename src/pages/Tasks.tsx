@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { useApp, Platform } from "@/contexts/AppContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Timer, CheckCircle2, Flame } from "lucide-react";
+import { ExternalLink, Timer, CheckCircle2, Flame, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon } from "@/components/PlatformIcons";
 
-const platforms: { key: Platform | "all"; label: string; icon: string }[] = [
-  { key: "all", label: "All", icon: "🌐" },
-  { key: "youtube", label: "YouTube", icon: "🎬" },
-  { key: "instagram", label: "Instagram", icon: "📸" },
-  { key: "tiktok", label: "TikTok", icon: "🎵" },
-  { key: "facebook", label: "Facebook", icon: "📘" },
+const platforms: { key: Platform | "all"; label: string; icon: ReactNode }[] = [
+  { key: "all", label: "All", icon: <Globe className="h-4 w-4" /> },
+  { key: "youtube", label: "YouTube", icon: <YouTubeIcon className="h-4 w-4" /> },
+  { key: "instagram", label: "Instagram", icon: <InstagramIcon className="h-4 w-4" /> },
+  { key: "tiktok", label: "TikTok", icon: <TikTokIcon className="h-4 w-4" /> },
+  { key: "facebook", label: "Facebook", icon: <FacebookIcon className="h-4 w-4" /> },
 ];
 
 const Tasks = () => {
@@ -51,7 +52,7 @@ const Tasks = () => {
               className={cn("flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold transition-all",
                 filter === p.key ? "bg-primary-foreground text-primary shadow-sm" : "bg-primary-foreground/20 text-primary-foreground"
               )}>
-              <span>{p.icon}</span> {p.label}
+              {p.icon} {p.label}
             </button>
           ))}
         </div>
@@ -65,7 +66,7 @@ const Tasks = () => {
             <Card key={task.id} className={cn("border-border animate-fade-in-up overflow-hidden", isDone && "opacity-60")} style={{ animationDelay: `${i * 50}ms` }}>
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl mt-0.5">{platforms.find(p => p.key === task.platform)?.icon}</span>
+                  <div className="mt-0.5 shrink-0">{platforms.find(p => p.key === task.platform)?.icon}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-0.5">
                       <h3 className="text-sm font-semibold text-foreground truncate">{task.title}</h3>
