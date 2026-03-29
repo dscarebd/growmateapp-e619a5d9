@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 const Profile = () => {
-  const { user, credits } = useApp();
+  const { user } = useApp();
   const { signOut } = useAuth();
   const { preferences, updatePreference } = useNotifications();
   const navigate = useNavigate();

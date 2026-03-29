@@ -252,7 +252,7 @@ const Admin = () => {
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{c.title}</p>
-                    <p className="text-[11px] text-muted-foreground">{c.platform} • {c.rewardPerAction} credits/action • {c.completedActions}/{c.estimatedReach}</p>
+                    <p className="text-[11px] text-muted-foreground">{c.platform} • {c.reward_per_action} credits/action • {c.completed_actions}/{c.estimated_reach}</p>
                   </div>
                   <div className="flex gap-1">
                     <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-success"><CheckCircle2 className="h-4 w-4" /></Button>
@@ -273,7 +273,7 @@ const Admin = () => {
                     <p className="text-sm font-medium text-foreground">{w.amount} credits</p>
                     <span className={cn("text-[10px] font-bold px-2 py-1 rounded-full capitalize", w.status === "approved" ? "bg-success/15 text-success" : w.status === "pending" ? "bg-warning/15 text-warning" : "bg-destructive/15 text-destructive")}>{w.status}</span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground">{w.method} • Net: ${w.netAmount} • {w.requestedAt}</p>
+                  <p className="text-[11px] text-muted-foreground">{w.method} • Net: ${Number(w.net_amount).toFixed(2)} • {new Date(w.requested_at).toLocaleDateString()}</p>
                   {w.status === "pending" && (
                     <div className="flex gap-2 mt-2">
                       <Button size="sm" className="h-7 text-xs flex-1 bg-success text-success-foreground rounded-lg">Approve</Button>
