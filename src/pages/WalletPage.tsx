@@ -6,14 +6,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Coins, ArrowUpRight, ArrowDownLeft, ShoppingCart, Banknote, CreditCard, CheckCircle, Clock, XCircle } from "lucide-react";
+import { Coins, ArrowUpRight, ArrowDownLeft, ShoppingCart, Banknote, CheckCircle, Clock, XCircle, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 const txIcon: Record<TransactionType, typeof ArrowUpRight> = { earned: ArrowDownLeft, spent: ArrowUpRight, purchased: ShoppingCart, withdrawn: Banknote };
 const txColor: Record<TransactionType, string> = { earned: "text-success", spent: "text-destructive", purchased: "text-primary", withdrawn: "text-warning" };
 
-const paymentMethods = ["bKash", "Nagad", "Bank Transfer", "Binance"] as const;
+const paymentMethods = [
+  { id: "bKash", label: "bKash", instructions: "Send payment to:", detail: "01XXXXXXXXX", note: "Use 'Send Money' option. Personal number." },
+  { id: "Nagad", label: "Nagad", instructions: "Send payment to:", detail: "01XXXXXXXXX", note: "Use 'Send Money' from Nagad app." },
+  { id: "Bank Transfer", label: "Bank Transfer", instructions: "Transfer to:", detail: "AC: 1234567890 • Bank: Example Bank • Branch: Main", note: "Include your username in the reference." },
+  { id: "Binance", label: "Binance", instructions: "Send USDT (TRC20) to:", detail: "TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", note: "Only send USDT via TRC20 network. Other tokens will be lost." },
+] as const;
 
 const WalletPage = () => {
   const { credits, transactions, withdrawals, refreshData } = useApp();
@@ -143,20 +148,45 @@ const WalletPage = () => {
                   <div className="grid grid-cols-2 gap-2">
                     {paymentMethods.map(m => (
                       <button
-                        key={m}
-                        onClick={() => setPaymentMethod(m)}
+                        key={m.id}
+                        onClick={() => setPaymentMethod(m.id)}
                         className={cn(
                           "py-2.5 px-3 rounded-xl text-xs font-semibold border-2 transition-all",
-                          paymentMethod === m
+                          paymentMethod === m.id
                             ? "border-primary bg-primary/10 text-primary"
                             : "border-border bg-card text-muted-foreground"
                         )}
                       >
-                        {m}
+                        {m.label}
                       </button>
                     ))}
                   </div>
                 </div>
+
+                {(() => {
+                  const selected = paymentMethods.find(m => m.id === paymentMethod);
+                  if (!selected) return null;
+                  return (
+                    <div className="rounded-xl bg-accent/50 border border-border p-3.5 space-y-2">
+                      <p className="text-xs font-semibold text-foreground">{selected.instructions}</p>
+                      <div className="flex items-center gap-2">
+                        <code className="text-sm font-bold text-primary bg-primary/10 px-2.5 py-1.5 rounded-lg flex-1 break-all">
+                          {selected.detail}
+                        </code>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(selected.detail);
+                            toast.success("Copied!");
+                          }}
+                          className="p-2 rounded-lg bg-card border border-border hover:bg-muted transition-colors"
+                        >
+                          <Copy className="h-3.5 w-3.5 text-muted-foreground" />
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">{selected.note}</p>
+                    </div>
+                  );
+                })()}
 
                 <div className="space-y-1.5">
                   <Label className="text-xs">Amount (credits)</Label>
