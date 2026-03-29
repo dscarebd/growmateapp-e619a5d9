@@ -17,41 +17,52 @@ const platformOptions: { key: Platform; label: string; icon: ReactNode }[] = [
   { key: "telegram", label: "Telegram", icon: <TelegramIcon className="h-7 w-7" /> },
 ];
 
-const platformActions: Record<Platform, { key: TaskAction; label: string }[]> = {
+const actionIcons: Record<string, ReactNode> = {
+  like: <Heart className="h-4 w-4" />,
+  follow: <UserPlus className="h-4 w-4" />,
+  subscribe: <Bell className="h-4 w-4" />,
+  comment: <MessageCircle className="h-4 w-4" />,
+  share: <Share2 className="h-4 w-4" />,
+  reply: <MessageCircle className="h-4 w-4" />,
+  repost: <Repeat2 className="h-4 w-4" />,
+  "join channel": <DoorOpen className="h-4 w-4" />,
+};
+
+const platformActions: Record<Platform, { key: TaskAction; label: string; icon: ReactNode }[]> = {
   youtube: [
-    { key: "like", label: "Like" },
-    { key: "subscribe", label: "Subscribe" },
-    { key: "comment", label: "Comment" },
-    { key: "share", label: "Share" },
+    { key: "like", label: "Like", icon: actionIcons.like },
+    { key: "subscribe", label: "Subscribe", icon: actionIcons.subscribe },
+    { key: "comment", label: "Comment", icon: actionIcons.comment },
+    { key: "share", label: "Share", icon: actionIcons.share },
   ],
   instagram: [
-    { key: "like", label: "Like" },
-    { key: "follow", label: "Follow" },
-    { key: "comment", label: "Comment" },
-    { key: "share", label: "Share" },
+    { key: "like", label: "Like", icon: actionIcons.like },
+    { key: "follow", label: "Follow", icon: actionIcons.follow },
+    { key: "comment", label: "Comment", icon: actionIcons.comment },
+    { key: "share", label: "Share", icon: actionIcons.share },
   ],
   tiktok: [
-    { key: "like", label: "Like" },
-    { key: "follow", label: "Follow" },
-    { key: "comment", label: "Comment" },
-    { key: "share", label: "Share" },
+    { key: "like", label: "Like", icon: actionIcons.like },
+    { key: "follow", label: "Follow", icon: actionIcons.follow },
+    { key: "comment", label: "Comment", icon: actionIcons.comment },
+    { key: "share", label: "Share", icon: actionIcons.share },
   ],
   facebook: [
-    { key: "like", label: "Like" },
-    { key: "follow", label: "Follow" },
-    { key: "comment", label: "Comment" },
-    { key: "share", label: "Share" },
+    { key: "like", label: "Like", icon: actionIcons.like },
+    { key: "follow", label: "Follow", icon: actionIcons.follow },
+    { key: "comment", label: "Comment", icon: actionIcons.comment },
+    { key: "share", label: "Share", icon: actionIcons.share },
   ],
   twitter: [
-    { key: "like", label: "Like" },
-    { key: "follow", label: "Follow" },
-    { key: "comment", label: "Reply" },
-    { key: "share", label: "Repost" },
+    { key: "like", label: "Like", icon: actionIcons.like },
+    { key: "follow", label: "Follow", icon: actionIcons.follow },
+    { key: "comment", label: "Reply", icon: actionIcons.reply },
+    { key: "share", label: "Repost", icon: actionIcons.repost },
   ],
   telegram: [
-    { key: "follow", label: "Join Channel" },
-    { key: "comment", label: "Comment" },
-    { key: "share", label: "Share" },
+    { key: "follow", label: "Join Channel", icon: actionIcons["join channel"] },
+    { key: "comment", label: "Comment", icon: actionIcons.comment },
+    { key: "share", label: "Share", icon: actionIcons.share },
   ],
 };
 
