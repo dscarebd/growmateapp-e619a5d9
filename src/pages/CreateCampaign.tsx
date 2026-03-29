@@ -4,7 +4,7 @@ import { useApp, Platform, TaskAction } from "@/contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Heart, UserPlus, Bell, Share2, MessageCircle, Repeat2, DoorOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
 
@@ -17,41 +17,52 @@ const platformOptions: { key: Platform; label: string; icon: ReactNode }[] = [
   { key: "telegram", label: "Telegram", icon: <TelegramIcon className="h-7 w-7" /> },
 ];
 
-const platformActions: Record<Platform, { key: TaskAction; label: string }[]> = {
+const actionIcons: Record<string, ReactNode> = {
+  like: <Heart className="h-4 w-4" />,
+  follow: <UserPlus className="h-4 w-4" />,
+  subscribe: <Bell className="h-4 w-4" />,
+  comment: <MessageCircle className="h-4 w-4" />,
+  share: <Share2 className="h-4 w-4" />,
+  reply: <MessageCircle className="h-4 w-4" />,
+  repost: <Repeat2 className="h-4 w-4" />,
+  "join channel": <DoorOpen className="h-4 w-4" />,
+};
+
+const platformActions: Record<Platform, { key: TaskAction; label: string; icon: ReactNode }[]> = {
   youtube: [
-    { key: "like", label: "Like" },
-    { key: "subscribe", label: "Subscribe" },
-    { key: "comment", label: "Comment" },
-    { key: "share", label: "Share" },
+    { key: "like", label: "Like", icon: actionIcons.like },
+    { key: "subscribe", label: "Subscribe", icon: actionIcons.subscribe },
+    { key: "comment", label: "Comment", icon: actionIcons.comment },
+    { key: "share", label: "Share", icon: actionIcons.share },
   ],
   instagram: [
-    { key: "like", label: "Like" },
-    { key: "follow", label: "Follow" },
-    { key: "comment", label: "Comment" },
-    { key: "share", label: "Share" },
+    { key: "like", label: "Like", icon: actionIcons.like },
+    { key: "follow", label: "Follow", icon: actionIcons.follow },
+    { key: "comment", label: "Comment", icon: actionIcons.comment },
+    { key: "share", label: "Share", icon: actionIcons.share },
   ],
   tiktok: [
-    { key: "like", label: "Like" },
-    { key: "follow", label: "Follow" },
-    { key: "comment", label: "Comment" },
-    { key: "share", label: "Share" },
+    { key: "like", label: "Like", icon: actionIcons.like },
+    { key: "follow", label: "Follow", icon: actionIcons.follow },
+    { key: "comment", label: "Comment", icon: actionIcons.comment },
+    { key: "share", label: "Share", icon: actionIcons.share },
   ],
   facebook: [
-    { key: "like", label: "Like" },
-    { key: "follow", label: "Follow" },
-    { key: "comment", label: "Comment" },
-    { key: "share", label: "Share" },
+    { key: "like", label: "Like", icon: actionIcons.like },
+    { key: "follow", label: "Follow", icon: actionIcons.follow },
+    { key: "comment", label: "Comment", icon: actionIcons.comment },
+    { key: "share", label: "Share", icon: actionIcons.share },
   ],
   twitter: [
-    { key: "like", label: "Like" },
-    { key: "follow", label: "Follow" },
-    { key: "comment", label: "Reply" },
-    { key: "share", label: "Repost" },
+    { key: "like", label: "Like", icon: actionIcons.like },
+    { key: "follow", label: "Follow", icon: actionIcons.follow },
+    { key: "comment", label: "Reply", icon: actionIcons.reply },
+    { key: "share", label: "Repost", icon: actionIcons.repost },
   ],
   telegram: [
-    { key: "follow", label: "Join Channel" },
-    { key: "comment", label: "Comment" },
-    { key: "share", label: "Share" },
+    { key: "follow", label: "Join Channel", icon: actionIcons["join channel"] },
+    { key: "comment", label: "Comment", icon: actionIcons.comment },
+    { key: "share", label: "Share", icon: actionIcons.share },
   ],
 };
 
@@ -118,7 +129,8 @@ const CreateCampaign = () => {
         <label className="text-sm font-semibold text-foreground mb-3 block">Action Type</label>
         <div className="flex flex-col gap-2">
           {availableActions.map(a => (
-            <button key={a.key} onClick={() => setAction(a.key)} className={cn("w-full rounded-full px-4 py-3 text-sm font-semibold border-2 transition-all", action === a.key ? "border-primary bg-accent text-accent-foreground" : "border-border text-muted-foreground bg-card")}>
+            <button key={a.key} onClick={() => setAction(a.key)} className={cn("w-full rounded-full px-4 py-3 text-sm font-semibold border-2 transition-all flex items-center justify-center gap-2", action === a.key ? "border-primary bg-accent text-accent-foreground" : "border-border text-muted-foreground bg-card")}>
+              {a.icon}
               {a.label}
             </button>
           ))}
