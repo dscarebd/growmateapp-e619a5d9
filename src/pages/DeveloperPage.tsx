@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Code2, Github, Globe, Mail, Heart } from "lucide-react";
+import { ArrowLeft, Code2, Globe, Mail, Send } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const DeveloperPage = () => {
@@ -57,21 +57,16 @@ const DeveloperPage = () => {
                 </div>
               </div>
               <div className="flex items-center gap-3 py-3">
-                <Github className="h-5 w-5 text-muted-foreground" />
+                <Send className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium text-foreground">GitHub</p>
-                  <p className="text-[11px] text-muted-foreground">Open source contributions</p>
+                  <p className="text-sm font-medium text-foreground">Telegram</p>
+                  <p className="text-[11px] text-muted-foreground">@nuralamin_official</p>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <div className="text-center py-4">
-          <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-            Made with <Heart className="h-3 w-3 text-destructive" /> by An-Nur Digital
-          </p>
-        </div>
       </div>
     </div>
   );
