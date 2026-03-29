@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Copy, CheckCircle2, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, FileText, Code2, Users, Gift } from "lucide-react";
+import { User, Copy, CheckCircle2, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, FileText, Code2, Users, Gift, Share2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +30,22 @@ const Profile = () => {
     navigator.clipboard.writeText(user.referral_code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shareCode = async () => {
+    if (!user) return;
+    const shareData = {
+      title: "Join me on BoostHub!",
+      text: `Use my referral code ${user.referral_code} to sign up and we both earn rewards!`,
+      url: window.location.origin + "/auth",
+    };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch {}
+    } else {
+      navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   if (!user) return null;
@@ -86,6 +102,9 @@ const Profile = () => {
               <div className="flex-1 rounded-xl bg-muted px-4 py-2.5 text-sm font-mono font-bold text-foreground">{user.referral_code}</div>
               <Button size="sm" variant="outline" className="rounded-xl h-10 px-3" onClick={copyCode}>
                 {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+              </Button>
+              <Button size="sm" className="rounded-xl h-10 px-3 gradient-primary text-primary-foreground" onClick={shareCode}>
+                <Share2 className="h-4 w-4" />
               </Button>
             </div>
             <div className="flex gap-3 mt-3">
