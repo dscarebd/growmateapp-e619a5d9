@@ -5,6 +5,53 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  AreaChart, Area, BarChart, Bar, LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
+} from "recharts";
+
+const revenueData = [
+  { day: "Mon", revenue: 1200, expenses: 400 },
+  { day: "Tue", revenue: 1900, expenses: 600 },
+  { day: "Wed", revenue: 1500, expenses: 500 },
+  { day: "Thu", revenue: 2400, expenses: 700 },
+  { day: "Fri", revenue: 1800, expenses: 550 },
+  { day: "Sat", revenue: 2800, expenses: 900 },
+  { day: "Sun", revenue: 2200, expenses: 650 },
+];
+
+const userGrowthData = [
+  { month: "Jan", users: 820 },
+  { month: "Feb", users: 1100 },
+  { month: "Mar", users: 1450 },
+  { month: "Apr", users: 1800 },
+  { month: "May", users: 2200 },
+  { month: "Jun", users: 2847 },
+];
+
+const taskCompletionData = [
+  { day: "Mon", likes: 180, follows: 120, subscribes: 60, shares: 40 },
+  { day: "Tue", likes: 220, follows: 150, subscribes: 80, shares: 55 },
+  { day: "Wed", likes: 190, follows: 130, subscribes: 70, shares: 45 },
+  { day: "Thu", likes: 280, follows: 180, subscribes: 95, shares: 70 },
+  { day: "Fri", likes: 240, follows: 160, subscribes: 85, shares: 60 },
+  { day: "Sat", likes: 310, follows: 200, subscribes: 110, shares: 85 },
+  { day: "Sun", likes: 260, follows: 170, subscribes: 90, shares: 65 },
+];
+
+const platformDistribution = [
+  { name: "YouTube", value: 35 },
+  { name: "Instagram", value: 28 },
+  { name: "TikTok", value: 22 },
+  { name: "Facebook", value: 15 },
+];
+
+const PLATFORM_COLORS = [
+  "hsl(0, 84%, 60%)",
+  "hsl(280, 70%, 55%)",
+  "hsl(174, 62%, 47%)",
+  "hsl(199, 89%, 48%)",
+];
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -25,6 +72,16 @@ const Admin = () => {
     { id: 4, name: "Tom Hardy", email: "tom@mail.com", tasks: 312, trust: 98, status: "active" },
   ];
 
+  const chartTooltipStyle = {
+    contentStyle: {
+      background: "hsl(210, 40%, 9%)",
+      border: "1px solid hsl(210, 30%, 18%)",
+      borderRadius: "0.75rem",
+      fontSize: "11px",
+      color: "hsl(200, 20%, 95%)",
+    },
+  };
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="flex items-center gap-3 px-5 pt-12 pb-4">
@@ -43,6 +100,7 @@ const Admin = () => {
       <div className="px-5">
         {tab === "overview" && (
           <div className="space-y-4 animate-fade-in">
+            {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-3">
               {stats.map(s => (
                 <Card key={s.label} className="border-border">
@@ -57,16 +115,110 @@ const Admin = () => {
                 </Card>
               ))}
             </div>
+
+            {/* Revenue Area Chart */}
             <Card className="border-border">
               <CardContent className="p-4">
-                <h3 className="text-sm font-semibold mb-3">Revenue Trend (7 days)</h3>
-                <div className="flex items-end gap-1 h-24">
-                  {[40, 65, 50, 80, 60, 90, 75].map((h, i) => (
-                    <div key={i} className="flex-1 gradient-primary rounded-t-sm transition-all" style={{ height: `${h}%` }} />
+                <h3 className="text-sm font-semibold text-foreground mb-1">Revenue vs Expenses</h3>
+                <p className="text-[11px] text-muted-foreground mb-3">Last 7 days</p>
+                <ResponsiveContainer width="100%" height={200}>
+                  <AreaChart data={revenueData}>
+                    <defs>
+                      <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(199, 89%, 48%)" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="hsl(199, 89%, 48%)" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="gradExpenses" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(174, 62%, 47%)" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="hsl(174, 62%, 47%)" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 30%, 18%)" />
+                    <XAxis dataKey="day" tick={{ fontSize: 10, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} width={35} />
+                    <Tooltip {...chartTooltipStyle} />
+                    <Area type="monotone" dataKey="revenue" stroke="hsl(199, 89%, 48%)" fill="url(#gradRevenue)" strokeWidth={2} animationDuration={1500} />
+                    <Area type="monotone" dataKey="expenses" stroke="hsl(174, 62%, 47%)" fill="url(#gradExpenses)" strokeWidth={2} animationDuration={1500} animationBegin={300} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* User Growth Line Chart */}
+            <Card className="border-border">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold text-foreground mb-1">User Growth</h3>
+                <p className="text-[11px] text-muted-foreground mb-3">Last 6 months</p>
+                <ResponsiveContainer width="100%" height={180}>
+                  <LineChart data={userGrowthData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 30%, 18%)" />
+                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} width={40} />
+                    <Tooltip {...chartTooltipStyle} />
+                    <Line type="monotone" dataKey="users" stroke="hsl(199, 89%, 48%)" strokeWidth={2.5} dot={{ r: 4, fill: "hsl(199, 89%, 48%)", strokeWidth: 2, stroke: "hsl(210, 40%, 9%)" }} activeDot={{ r: 6 }} animationDuration={2000} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Task Completion Bar Chart */}
+            <Card className="border-border">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold text-foreground mb-1">Task Completions by Type</h3>
+                <p className="text-[11px] text-muted-foreground mb-3">Last 7 days breakdown</p>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={taskCompletionData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 30%, 18%)" />
+                    <XAxis dataKey="day" tick={{ fontSize: 10, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "hsl(210, 15%, 46%)" }} axisLine={false} tickLine={false} width={30} />
+                    <Tooltip {...chartTooltipStyle} />
+                    <Bar dataKey="likes" stackId="a" fill="hsl(199, 89%, 48%)" radius={[0, 0, 0, 0]} animationDuration={1200} />
+                    <Bar dataKey="follows" stackId="a" fill="hsl(174, 62%, 47%)" animationDuration={1200} animationBegin={200} />
+                    <Bar dataKey="subscribes" stackId="a" fill="hsl(38, 92%, 50%)" animationDuration={1200} animationBegin={400} />
+                    <Bar dataKey="shares" stackId="a" fill="hsl(280, 70%, 55%)" radius={[4, 4, 0, 0]} animationDuration={1200} animationBegin={600} />
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="flex flex-wrap gap-3 mt-3">
+                  {[
+                    { label: "Likes", color: "bg-primary" },
+                    { label: "Follows", color: "bg-secondary" },
+                    { label: "Subscribes", color: "bg-warning" },
+                    { label: "Shares", color: "bg-[hsl(280,70%,55%)]" },
+                  ].map(l => (
+                    <div key={l.label} className="flex items-center gap-1.5">
+                      <div className={cn("h-2.5 w-2.5 rounded-full", l.color)} />
+                      <span className="text-[10px] text-muted-foreground">{l.label}</span>
+                    </div>
                   ))}
                 </div>
-                <div className="flex justify-between mt-1 text-[9px] text-muted-foreground">
-                  {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d => <span key={d}>{d}</span>)}
+              </CardContent>
+            </Card>
+
+            {/* Platform Distribution Pie Chart */}
+            <Card className="border-border">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-semibold text-foreground mb-1">Platform Distribution</h3>
+                <p className="text-[11px] text-muted-foreground mb-3">Tasks by platform</p>
+                <div className="flex items-center gap-4">
+                  <ResponsiveContainer width="50%" height={160}>
+                    <PieChart>
+                      <Pie data={platformDistribution} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={3} dataKey="value" animationDuration={1500} animationBegin={200}>
+                        {platformDistribution.map((_, i) => (
+                          <Cell key={i} fill={PLATFORM_COLORS[i]} />
+                        ))}
+                      </Pie>
+                      <Tooltip {...chartTooltipStyle} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="flex flex-col gap-2.5">
+                    {platformDistribution.map((p, i) => (
+                      <div key={p.name} className="flex items-center gap-2">
+                        <div className="h-3 w-3 rounded-full" style={{ background: PLATFORM_COLORS[i] }} />
+                        <span className="text-xs text-foreground font-medium">{p.name}</span>
+                        <span className="text-[10px] text-muted-foreground">{p.value}%</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>
