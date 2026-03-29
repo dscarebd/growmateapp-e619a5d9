@@ -159,6 +159,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       campaigns_run: (profile?.campaigns_run ?? 0) + 1,
     }).eq("id", authUser.id);
 
+    // Trigger referral bonus if campaign budget >= 500
+    if (campaign.totalBudget >= 500) {
+      await supabase.rpc("award_referral_bonus", { _user_id: authUser.id, _trigger: "campaign_500" });
+    }
+
     const { data } = await supabase.from("transactions").select("*").eq("user_id", authUser.id).order("created_at", { ascending: false });
     if (data) setTransactions(data);
   }, [authUser, spendCredits, profile]);

@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Zap, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { generateDeviceFingerprint } from "@/lib/deviceFingerprint";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -28,7 +31,16 @@ const Auth = () => {
         return;
       }
     } else {
-      const { error } = await signUp(email, password, name);
+      // Device fingerprint check
+      const fingerprint = generateDeviceFingerprint();
+      const { data: exists } = await supabase.rpc("check_device_fingerprint", { _fingerprint: fingerprint });
+      if (exists) {
+        toast.error("This device already has an account. Multiple accounts are not allowed.");
+        setLoading(false);
+        return;
+      }
+
+      const { error } = await signUp(email, password, name, referralCode.trim() || undefined, fingerprint);
       if (error) {
         toast.error(error.message);
         setLoading(false);
@@ -53,7 +65,10 @@ const Auth = () => {
 
       <form onSubmit={handleSubmit} className="animate-fade-in-up flex flex-col gap-4 max-w-sm mx-auto w-full">
         {!isLogin && (
-          <Input placeholder="Full name" value={name} onChange={e => setName(e.target.value)} className="h-12 rounded-xl bg-muted/50 border-0" required />
+          <>
+            <Input placeholder="Full name" value={name} onChange={e => setName(e.target.value)} className="h-12 rounded-xl bg-muted/50 border-0" required />
+            <Input placeholder="Referral code (optional)" value={referralCode} onChange={e => setReferralCode(e.target.value)} className="h-12 rounded-xl bg-muted/50 border-0" maxLength={20} />
+          </>
         )}
         <Input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} className="h-12 rounded-xl bg-muted/50 border-0" required />
         <div className="relative">
