@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Coins, ArrowUpRight, ArrowDownLeft, ShoppingCart, Banknote, CreditCard, CheckCircle, Clock, XCircle } from "lucide-react";
+import { Coins, ArrowUpRight, ArrowDownLeft, ShoppingCart, Banknote, CheckCircle, Clock, XCircle, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
