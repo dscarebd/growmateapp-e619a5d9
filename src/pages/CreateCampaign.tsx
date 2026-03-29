@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp, Platform, TaskAction } from "@/contexts/AppContext";
 import { Button } from "@/components/ui/button";
@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon } from "@/components/PlatformIcons";
 
-const platformOptions: { key: Platform; label: string; icon: string }[] = [
-  { key: "youtube", label: "YouTube", icon: "🎬" },
-  { key: "instagram", label: "Instagram", icon: "📸" },
-  { key: "tiktok", label: "TikTok", icon: "🎵" },
-  { key: "facebook", label: "Facebook", icon: "📘" },
+const platformOptions: { key: Platform; label: string; icon: ReactNode }[] = [
+  { key: "youtube", label: "YouTube", icon: <YouTubeIcon className="h-7 w-7" /> },
+  { key: "instagram", label: "Instagram", icon: <InstagramIcon className="h-7 w-7" /> },
+  { key: "tiktok", label: "TikTok", icon: <TikTokIcon className="h-7 w-7" /> },
+  { key: "facebook", label: "Facebook", icon: <FacebookIcon className="h-7 w-7" /> },
 ];
 
 const actionOptions: { key: TaskAction; label: string }[] = [
@@ -65,7 +66,7 @@ const CreateCampaign = () => {
         <div className="grid grid-cols-2 gap-3">
           {platformOptions.map(p => (
             <button key={p.key} onClick={() => setPlatform(p.key)} className={cn("flex items-center gap-2 rounded-xl p-4 border-2 transition-all", platform === p.key ? "border-primary bg-accent" : "border-border bg-card")}>
-              <span className="text-2xl">{p.icon}</span>
+              {p.icon}
               <span className="text-sm font-semibold">{p.label}</span>
             </button>
           ))}
