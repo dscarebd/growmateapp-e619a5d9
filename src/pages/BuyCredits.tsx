@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Coins, Copy, Sparkles, CheckCircle, Clock, XCircle, Zap, Crown, Gem, Rocket } from "lucide-react";
+import { Coins, Copy, Sparkles, CheckCircle, Clock, XCircle, Zap, Crown, Gem, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -111,11 +111,7 @@ const BuyCredits = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="gradient-primary px-5 pb-6 pt-12 rounded-b-3xl">
-        <div className="flex items-center gap-3 mb-4">
-          <button onClick={() => step === "payment" ? setStep("packs") : navigate(-1)} className="p-1.5 rounded-xl bg-white/20 text-primary-foreground">
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <h1 className="text-xl font-bold text-primary-foreground">Buy Credits</h1>
+        <h1 className="text-xl font-bold text-primary-foreground mb-4">Buy Credits</h1>
         </div>
         <div className="flex items-center gap-3 bg-white/15 rounded-2xl p-3.5 backdrop-blur-sm">
           <Coins className="h-6 w-6 text-primary-foreground" />
