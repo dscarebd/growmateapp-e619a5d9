@@ -4,18 +4,33 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Copy, CheckCircle2, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, FileText, Code2, Users, Gift, Share2, MessageCircle, Send } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  User, Copy, CheckCircle2, Megaphone, Coins, Shield, Settings, LogOut,
+  ChevronRight, FileText, Code2, Users, Gift, Share2, MessageCircle, Send,
+  Pencil, Camera, Mail,
+} from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const Profile = () => {
-  const { user } = useApp();
-  const { signOut } = useAuth();
+  const { user, refreshData } = useApp();
+  const { signOut, user: authUser } = useAuth();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [referralCount, setReferralCount] = useState(0);
   const [bonusesEarned, setBonusesEarned] = useState(0);
-  const { user: authUser } = useAuth();
+
+  // Edit states
+  const [editDialog, setEditDialog] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [emailDialog, setEmailDialog] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!authUser) return;
@@ -45,23 +60,81 @@ const Profile = () => {
     }
   };
 
-  const shareWhatsApp = () => {
-    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
+  const shareWhatsApp = () => window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
+  const shareTelegram = () => window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.origin + "/auth")}&text=${encodeURIComponent(shareText)}`, "_blank");
+  const shareFacebook = () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin + "/auth")}&quote=${encodeURIComponent(shareText)}`, "_blank");
+  const shareTwitter = () => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, "_blank");
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !authUser) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image must be under 2MB");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const filePath = `${authUser.id}/avatar.${ext}`;
+
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      const avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+
+      const { error: updateError } = await supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", authUser.id);
+      if (updateError) throw updateError;
+
+      toast.success("Avatar updated!");
+      refreshData();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to upload avatar");
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const shareTelegram = () => {
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.origin + "/auth")}&text=${encodeURIComponent(shareText)}`, "_blank");
+  const handleSaveName = async () => {
+    if (!authUser || !editName.trim()) return;
+    if (editName.trim().length > 100) {
+      toast.error("Name must be under 100 characters");
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase.from("profiles").update({ name: editName.trim() }).eq("id", authUser.id);
+    setSaving(false);
+    if (error) { toast.error("Failed to update name"); return; }
+    toast.success("Name updated!");
+    setEditDialog(false);
+    refreshData();
   };
 
-  const shareFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin + "/auth")}&quote=${encodeURIComponent(shareText)}`, "_blank");
-  };
-
-  const shareTwitter = () => {
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, "_blank");
+  const handleEmailChangeRequest = async () => {
+    if (!newEmail.trim()) return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newEmail.trim())) {
+      toast.error("Please enter a valid email");
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase.auth.updateUser({ email: newEmail.trim() });
+    setSaving(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Confirmation email sent to both old and new addresses. Please check your inbox.");
+    setEmailDialog(false);
+    setNewEmail("");
   };
 
   if (!user) return null;
+
+  const avatarUrl = user.avatar_url && user.avatar_url !== "" ? user.avatar_url : null;
 
   const stats = [
     { icon: CheckCircle2, label: "Tasks Done", value: user.tasks_completed, color: "text-success" },
@@ -80,12 +153,43 @@ const Profile = () => {
     <div className="min-h-screen bg-background pb-24">
       <div className="gradient-primary px-5 pb-8 pt-12 rounded-b-3xl">
         <div className="flex items-center gap-4 animate-fade-in">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-foreground/20">
-            <User className="h-8 w-8 text-primary-foreground" />
+          {/* Avatar with upload */}
+          <div className="relative">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-foreground/20 overflow-hidden relative group"
+              disabled={uploading}
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="h-16 w-16 rounded-full object-cover" />
+              ) : (
+                <User className="h-8 w-8 text-primary-foreground" />
+              )}
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+                <Camera className="h-5 w-5 text-white" />
+              </div>
+            </button>
+            {uploading && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
+                <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-primary-foreground">{user.name}</h1>
-            <p className="text-sm text-primary-foreground/70">{user.email}</p>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold text-primary-foreground truncate">{user.name}</h1>
+              <button onClick={() => { setEditName(user.name); setEditDialog(true); }} className="shrink-0">
+                <Pencil className="h-3.5 w-3.5 text-primary-foreground/70 hover:text-primary-foreground transition-colors" />
+              </button>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm text-primary-foreground/70 truncate">{user.email}</p>
+              <button onClick={() => { setNewEmail(""); setEmailDialog(true); }} className="shrink-0">
+                <Mail className="h-3 w-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors" />
+              </button>
+            </div>
             <div className="flex items-center gap-1 mt-1">
               <Shield className="h-3 w-3 text-primary-foreground/70" />
               <span className="text-xs text-primary-foreground/70">Trust Score: {user.trust_score}%</span>
@@ -161,6 +265,52 @@ const Profile = () => {
           </button>
         </div>
       </div>
+
+      {/* Edit Name Dialog */}
+      <Dialog open={editDialog} onOpenChange={setEditDialog}>
+        <DialogContent className="rounded-2xl mx-4">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Edit Name</DialogTitle>
+          </DialogHeader>
+          <Input
+            placeholder="Your name"
+            value={editName}
+            onChange={e => setEditName(e.target.value)}
+            className="h-10 rounded-xl"
+            maxLength={100}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialog(false)} className="rounded-xl">Cancel</Button>
+            <Button className="rounded-xl gradient-primary text-primary-foreground" disabled={!editName.trim() || saving} onClick={handleSaveName}>
+              {saving ? "Saving..." : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Email Change Dialog */}
+      <Dialog open={emailDialog} onOpenChange={setEmailDialog}>
+        <DialogContent className="rounded-2xl mx-4">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Change Email</DialogTitle>
+          </DialogHeader>
+          <p className="text-xs text-muted-foreground">A confirmation link will be sent to both your current and new email addresses.</p>
+          <Input
+            type="email"
+            placeholder="New email address"
+            value={newEmail}
+            onChange={e => setNewEmail(e.target.value)}
+            className="h-10 rounded-xl"
+            maxLength={255}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmailDialog(false)} className="rounded-xl">Cancel</Button>
+            <Button className="rounded-xl gradient-primary text-primary-foreground" disabled={!newEmail.trim() || saving} onClick={handleEmailChangeRequest}>
+              {saving ? "Sending..." : "Send Confirmation"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
