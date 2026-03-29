@@ -154,13 +154,13 @@ const CreateCampaign = () => {
     <div key="2" className="space-y-4 animate-fade-in-up">
       <div>
         <label className="text-sm font-semibold text-foreground mb-2 block">Total Budget (credits)</label>
-        <Input type="number" value={budget} onChange={e => setBudget(e.target.value)} placeholder="e.g., 500" className="h-12 rounded-xl bg-muted/50 border-0" />
-        <p className="text-xs text-muted-foreground mt-1">Your balance: {credits} credits</p>
+        <Input type="number" min="0.01" step="any" value={budget} onChange={e => setBudget(e.target.value)} placeholder="e.g., 500" className={cn("h-12 rounded-xl bg-muted/50 border-0", budgetError && "ring-2 ring-destructive")} />
+        {budgetError ? <p className="text-xs text-destructive mt-1">{budgetError}</p> : <p className="text-xs text-muted-foreground mt-1">Your balance: {credits} credits</p>}
       </div>
       <div>
         <label className="text-sm font-semibold text-foreground mb-2 block">Reward per Action (credits)</label>
-        <Input type="number" value={reward} onChange={e => setReward(e.target.value)} placeholder="e.g., 10" className="h-12 rounded-xl bg-muted/50 border-0" />
-        <p className="text-xs text-muted-foreground mt-1">Higher reward = more visibility 🔥</p>
+        <Input type="number" min="0.01" step="any" value={reward} onChange={e => setReward(e.target.value)} placeholder="e.g., 10" className={cn("h-12 rounded-xl bg-muted/50 border-0", rewardError && "ring-2 ring-destructive")} />
+        {rewardError ? <p className="text-xs text-destructive mt-1">{rewardError}</p> : <p className="text-xs text-muted-foreground mt-1">Higher reward = more visibility 🔥</p>}
       </div>
       <Card className="border-border mt-4">
         <CardContent className="p-4 space-y-2">
