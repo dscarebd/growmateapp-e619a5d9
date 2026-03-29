@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   ArrowLeft, Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle,
-  Pause, Play, Search, Plus, CreditCard, Eye, Wallet,
+  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -51,6 +51,8 @@ const Admin = () => {
   const [userDetailDialog, setUserDetailDialog] = useState<string | null>(null);
   const [editTrust, setEditTrust] = useState("");
   const [withdrawalFilter, setWithdrawalFilter] = useState<"all" | "pending" | "approved" | "rejected" | "processing">("all");
+  const [wdPage, setWdPage] = useState(1);
+  const WD_PER_PAGE = 10;
 
   // Charts (hooks must be before conditionals)
   const platformDistribution = useMemo(() => {
@@ -355,49 +357,67 @@ const Admin = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search by user name..." value={withdrawalSearch} onChange={e => setWithdrawalSearch(e.target.value)} className="pl-9 h-10 rounded-xl bg-muted/50 border-0" />
             </div>
-            {admin.withdrawals.filter(w => {
-              const ownerName = admin.profiles.find(p => p.id === w.user_id)?.name || "";
-              return (withdrawalFilter === "all" || w.status === withdrawalFilter) && ownerName.toLowerCase().includes(withdrawalSearch.toLowerCase());
-            }).map(w => {
-              const ownerProfile = admin.profiles.find(p => p.id === w.user_id);
+            {(() => {
+              const filtered = admin.withdrawals.filter(w => {
+                const ownerName = admin.profiles.find(p => p.id === w.user_id)?.name || "";
+                return (withdrawalFilter === "all" || w.status === withdrawalFilter) && ownerName.toLowerCase().includes(withdrawalSearch.toLowerCase());
+              });
+              const totalPages = Math.max(1, Math.ceil(filtered.length / WD_PER_PAGE));
+              const safePage = Math.min(wdPage, totalPages);
+              const paginated = filtered.slice((safePage - 1) * WD_PER_PAGE, safePage * WD_PER_PAGE);
               return (
-                <Card key={w.id} className="border-border">
-                  <CardContent className="p-3.5">
-                    <div className="flex items-center justify-between mb-1">
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{w.amount} credits</p>
-                        <p className="text-[11px] text-muted-foreground">by {ownerProfile?.name || "Unknown"} • Balance: <span className="font-medium text-foreground">{ownerProfile?.credits ?? 0}</span></p>
-                      </div>
-                      <span className={cn("text-[10px] font-bold px-2 py-1 rounded-full capitalize",
-                        w.status === "approved" ? "bg-success/15 text-success" :
-                        w.status === "pending" ? "bg-warning/15 text-warning" :
-                        w.status === "processing" ? "bg-primary/15 text-primary" :
-                        "bg-destructive/15 text-destructive"
-                      )}>{w.status}</span>
+                <>
+                  {paginated.map(w => {
+                    const ownerProfile = admin.profiles.find(p => p.id === w.user_id);
+                    return (
+                      <Card key={w.id} className="border-border">
+                        <CardContent className="p-3.5">
+                          <div className="flex items-center justify-between mb-1">
+                            <div>
+                              <p className="text-sm font-medium text-foreground">{w.amount} credits</p>
+                              <p className="text-[11px] text-muted-foreground">by {ownerProfile?.name || "Unknown"} • Balance: <span className="font-medium text-foreground">{ownerProfile?.credits ?? 0}</span></p>
+                            </div>
+                            <span className={cn("text-[10px] font-bold px-2 py-1 rounded-full capitalize",
+                              w.status === "approved" ? "bg-success/15 text-success" :
+                              w.status === "pending" ? "bg-warning/15 text-warning" :
+                              w.status === "processing" ? "bg-primary/15 text-primary" :
+                              "bg-destructive/15 text-destructive"
+                            )}>{w.status}</span>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground">{w.method} • Net: ${Number(w.net_amount).toFixed(2)} • Commission: ${Number(w.commission).toFixed(2)}</p>
+                          <p className="text-[10px] text-muted-foreground">{new Date(w.requested_at).toLocaleDateString()}</p>
+                          {w.status === "pending" && (
+                            <div className="flex gap-2 mt-3">
+                              <Button size="sm" className="h-7 text-xs flex-1 rounded-lg bg-success text-success-foreground" onClick={() => admin.updateWithdrawalStatus(w.id, "approved")}>
+                                <CheckCircle2 className="h-3 w-3 mr-1" /> Approve
+                              </Button>
+                              <Button size="sm" variant="outline" className="h-7 text-xs flex-1 rounded-lg" onClick={() => admin.updateWithdrawalStatus(w.id, "processing")}>
+                                Processing
+                              </Button>
+                              <Button size="sm" variant="outline" className="h-7 text-xs flex-1 rounded-lg text-destructive" onClick={() => admin.updateWithdrawalStatus(w.id, "rejected")}>
+                                <XCircle className="h-3 w-3 mr-1" /> Reject
+                              </Button>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                  {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No {withdrawalFilter === "all" ? "" : withdrawalFilter} withdrawals found</p>}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between pt-2">
+                      <Button size="sm" variant="outline" className="h-8 rounded-lg text-xs" disabled={safePage <= 1} onClick={() => setWdPage(safePage - 1)}>
+                        <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Prev
+                      </Button>
+                      <span className="text-xs text-muted-foreground">Page {safePage} of {totalPages}</span>
+                      <Button size="sm" variant="outline" className="h-8 rounded-lg text-xs" disabled={safePage >= totalPages} onClick={() => setWdPage(safePage + 1)}>
+                        Next <ChevronRight className="h-3.5 w-3.5 ml-1" />
+                      </Button>
                     </div>
-                    <p className="text-[11px] text-muted-foreground">{w.method} • Net: ${Number(w.net_amount).toFixed(2)} • Commission: ${Number(w.commission).toFixed(2)}</p>
-                    <p className="text-[10px] text-muted-foreground">{new Date(w.requested_at).toLocaleDateString()}</p>
-                    {w.status === "pending" && (
-                      <div className="flex gap-2 mt-3">
-                        <Button size="sm" className="h-7 text-xs flex-1 rounded-lg bg-success text-success-foreground" onClick={() => admin.updateWithdrawalStatus(w.id, "approved")}>
-                          <CheckCircle2 className="h-3 w-3 mr-1" /> Approve
-                        </Button>
-                        <Button size="sm" variant="outline" className="h-7 text-xs flex-1 rounded-lg" onClick={() => admin.updateWithdrawalStatus(w.id, "processing")}>
-                          Processing
-                        </Button>
-                        <Button size="sm" variant="outline" className="h-7 text-xs flex-1 rounded-lg text-destructive" onClick={() => admin.updateWithdrawalStatus(w.id, "rejected")}>
-                          <XCircle className="h-3 w-3 mr-1" /> Reject
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                  )}
+                </>
               );
-            })}
-            {admin.withdrawals.filter(w => {
-              const ownerName = admin.profiles.find(p => p.id === w.user_id)?.name || "";
-              return (withdrawalFilter === "all" || w.status === withdrawalFilter) && ownerName.toLowerCase().includes(withdrawalSearch.toLowerCase());
-            }).length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No {withdrawalFilter === "all" ? "" : withdrawalFilter} withdrawals found</p>}
+            })()}
           </div>
         )}
 
