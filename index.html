@@ -22,5 +22,26 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Disable right-click
+      document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+      // Disable text selection
+      document.addEventListener('selectstart', function(e) { e.preventDefault(); });
+      // Disable copy/cut/paste
+      document.addEventListener('copy', function(e) { e.preventDefault(); });
+      document.addEventListener('cut', function(e) { e.preventDefault(); });
+      // Disable drag
+      document.addEventListener('dragstart', function(e) { e.preventDefault(); });
+      // Disable dev tools shortcuts
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12') { e.preventDefault(); return; }
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) { e.preventDefault(); return; }
+        if (e.ctrlKey && e.key === 'u') { e.preventDefault(); return; }
+        if (e.ctrlKey && e.key === 's') { e.preventDefault(); return; }
+        if (e.ctrlKey && e.key === 'a') { e.preventDefault(); return; }
+        if (e.ctrlKey && e.key === 'c') { e.preventDefault(); return; }
+        if (e.ctrlKey && e.key === 'x') { e.preventDefault(); return; }
+      });
+    </script>
   </body>
 </html>
