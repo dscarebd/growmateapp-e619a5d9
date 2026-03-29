@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { subDays, startOfDay, endOfDay, isWithinInterval, format } from "date-fns";
+import { subDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { useApp } from "@/contexts/AppContext";
 import { AdminDateRangePicker } from "@/components/AdminDateRangePicker";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  AreaChart, Area, BarChart, Bar, LineChart, Line,
+  AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
 } from "recharts";
 
@@ -31,6 +31,7 @@ const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const Admin = () => {
   const navigate = useNavigate();
   const { campaigns, withdrawals, tasks, transactions } = useApp();
+  const [tab, setTab] = useState<"overview" | "users" | "campaigns" | "withdrawals">("overview");
   const [dateRange, setDateRange] = useState({ from: startOfDay(subDays(new Date(), 6)), to: endOfDay(new Date()) });
 
   // Filter helpers
@@ -128,6 +129,7 @@ const Admin = () => {
       <div className="px-5">
         {tab === "overview" && (
           <div className="space-y-4 animate-fade-in">
+            <AdminDateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
             <div className="grid grid-cols-2 gap-3">
               {stats.map(s => (
                 <Card key={s.label} className="border-border">
