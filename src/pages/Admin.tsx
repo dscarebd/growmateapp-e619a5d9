@@ -394,7 +394,10 @@ const Admin = () => {
                 </Card>
               );
             })}
-            {admin.withdrawals.filter(w => withdrawalFilter === "all" || w.status === withdrawalFilter).length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No {withdrawalFilter === "all" ? "" : withdrawalFilter} withdrawals found</p>}
+            {admin.withdrawals.filter(w => {
+              const ownerName = admin.profiles.find(p => p.id === w.user_id)?.name || "";
+              return (withdrawalFilter === "all" || w.status === withdrawalFilter) && ownerName.toLowerCase().includes(withdrawalSearch.toLowerCase());
+            }).length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No {withdrawalFilter === "all" ? "" : withdrawalFilter} withdrawals found</p>}
           </div>
         )}
 
