@@ -1,23 +1,83 @@
 import { useState } from "react";
 import { useApp, TransactionType } from "@/contexts/AppContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Coins, ArrowUpRight, ArrowDownLeft, ShoppingCart, CreditCard, Banknote } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Coins, ArrowUpRight, ArrowDownLeft, ShoppingCart, Banknote, CreditCard, CheckCircle, Clock, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const txIcon: Record<TransactionType, typeof ArrowUpRight> = { earned: ArrowDownLeft, spent: ArrowUpRight, purchased: ShoppingCart, withdrawn: Banknote };
 const txColor: Record<TransactionType, string> = { earned: "text-success", spent: "text-destructive", purchased: "text-primary", withdrawn: "text-warning" };
 
-const packages = [
-  { credits: 500, price: "$4.99", popular: false },
-  { credits: 1200, price: "$9.99", popular: true },
-  { credits: 3000, price: "$19.99", popular: false },
-  { credits: 8000, price: "$39.99", popular: false },
-];
+const paymentMethods = ["bKash", "Nagad", "Bank Transfer", "Binance"] as const;
 
 const WalletPage = () => {
-  const { credits, transactions, withdrawals } = useApp();
+  const { credits, transactions, withdrawals, refreshData } = useApp();
+  const { user: authUser } = useAuth();
   const [tab, setTab] = useState<"history" | "buy" | "withdraw">("history");
+  const [paymentMethod, setPaymentMethod] = useState<string>("bKash");
+  const [paymentAmount, setPaymentAmount] = useState("");
+  const [transactionRef, setTransactionRef] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [myPayments, setMyPayments] = useState<any[]>([]);
+  const [paymentsLoaded, setPaymentsLoaded] = useState(false);
+
+  const loadMyPayments = async () => {
+    if (!authUser || paymentsLoaded) return;
+    const { data } = await supabase
+      .from("manual_payments")
+      .select("*")
+      .eq("user_id", authUser.id)
+      .order("created_at", { ascending: false });
+    if (data) setMyPayments(data);
+    setPaymentsLoaded(true);
+  };
+
+  const handleSubmitPayment = async () => {
+    if (!authUser) return;
+    const amount = parseInt(paymentAmount);
+    if (!amount || amount < 1) {
+      toast.error("Enter a valid amount");
+      return;
+    }
+    if (!transactionRef.trim()) {
+      toast.error("Enter the transaction reference");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("manual_payments").insert({
+      user_id: authUser.id,
+      amount,
+      method: paymentMethod,
+      transaction_ref: transactionRef.trim(),
+      status: "pending",
+    });
+    if (error) {
+      toast.error("Failed to submit payment request");
+    } else {
+      toast.success("Payment request submitted! Awaiting admin approval.");
+      setPaymentAmount("");
+      setTransactionRef("");
+      setPaymentsLoaded(false);
+      loadMyPayments();
+    }
+    setSubmitting(false);
+  };
+
+  // Load payments when switching to buy tab
+  if (tab === "buy" && !paymentsLoaded) {
+    loadMyPayments();
+  }
+
+  const statusIcon = (status: string) => {
+    if (status === "approved") return <CheckCircle className="h-4 w-4 text-success" />;
+    if (status === "pending") return <Clock className="h-4 w-4 text-warning" />;
+    return <XCircle className="h-4 w-4 text-destructive" />;
+  };
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -72,22 +132,86 @@ const WalletPage = () => {
         )}
 
         {tab === "buy" && (
-          <div className="grid grid-cols-2 gap-3 animate-fade-in">
-            {packages.map(pkg => (
-              <Card key={pkg.credits} className={cn("border-2 hover-scale", pkg.popular ? "border-primary" : "border-border")}>
-                <CardContent className="p-4 text-center relative">
-                  {pkg.popular && <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] gradient-primary text-primary-foreground px-2.5 py-0.5 rounded-full font-bold">POPULAR</span>}
-                  <div className="flex items-center justify-center gap-1 mb-1 mt-1">
-                    <CreditCard className="h-4 w-4 text-primary" />
+          <div className="space-y-4 animate-fade-in">
+            <Card className="border-border">
+              <CardContent className="p-4 space-y-4">
+                <h3 className="text-sm font-semibold text-foreground">Submit Manual Payment</h3>
+                <p className="text-xs text-muted-foreground">Send payment via one of the methods below, then submit the details for admin approval.</p>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Payment Method</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {paymentMethods.map(m => (
+                      <button
+                        key={m}
+                        onClick={() => setPaymentMethod(m)}
+                        className={cn(
+                          "py-2.5 px-3 rounded-xl text-xs font-semibold border-2 transition-all",
+                          paymentMethod === m
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-card text-muted-foreground"
+                        )}
+                      >
+                        {m}
+                      </button>
+                    ))}
                   </div>
-                  <p className="text-2xl font-bold text-foreground">{pkg.credits.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground mb-3">credits</p>
-                  <Button size="sm" className={cn("w-full rounded-xl text-xs font-semibold h-9", pkg.popular ? "gradient-primary text-primary-foreground" : "")}>
-                    {pkg.price}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Amount (credits)</Label>
+                  <Input
+                    type="number"
+                    placeholder="e.g. 500"
+                    value={paymentAmount}
+                    onChange={e => setPaymentAmount(e.target.value)}
+                    className="rounded-xl"
+                    min={1}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Transaction Reference / TxID</Label>
+                  <Input
+                    placeholder="e.g. TRX123ABC..."
+                    value={transactionRef}
+                    onChange={e => setTransactionRef(e.target.value)}
+                    className="rounded-xl"
+                    maxLength={200}
+                  />
+                </div>
+
+                <Button
+                  onClick={handleSubmitPayment}
+                  disabled={submitting}
+                  className="w-full gradient-primary text-primary-foreground rounded-xl h-10 text-sm font-semibold"
+                >
+                  {submitting ? "Submitting..." : "Submit Payment Request"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {myPayments.length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold text-foreground mb-2">Your Payment Requests</h3>
+                {myPayments.map(p => (
+                  <Card key={p.id} className="mb-2 border-border">
+                    <CardContent className="p-3.5 flex items-center gap-3">
+                      {statusIcon(p.status)}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground">{p.amount} credits via {p.method}</p>
+                        <p className="text-[11px] text-muted-foreground">Ref: {p.transaction_ref} • {new Date(p.created_at).toLocaleDateString()}</p>
+                      </div>
+                      <span className={cn("text-[10px] font-bold px-2 py-1 rounded-full capitalize",
+                        p.status === "approved" ? "bg-success/15 text-success" :
+                        p.status === "pending" ? "bg-warning/15 text-warning" :
+                        "bg-destructive/15 text-destructive"
+                      )}>{p.status}</span>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
