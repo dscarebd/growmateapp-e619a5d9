@@ -26,7 +26,7 @@ const BottomNav = () => {
                 onClick={() => navigate(item.path)}
                 className="gradient-primary -mt-5 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform active:scale-95"
               >
-                <Plus className="h-7 w-7 text-primary-foreground" />
+                <item.icon className="h-7 w-7 text-primary-foreground" />
               </button>
             );
           }
