@@ -12,10 +12,7 @@ const SecurityPage = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="gradient-primary px-5 pb-6 pt-12 rounded-b-3xl">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 active:bg-white/25 transition-colors">
-            <ArrowLeft className="h-5 w-5 text-primary-foreground" />
-          </button>
+        <div>
           <h1 className="text-lg font-bold text-primary-foreground">Security</h1>
         </div>
       </div>
