@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import annurLogo from "@/assets/annur-logo.jpeg";
+import annurLogo from "@/assets/annur-logo.png";
 
 const DeveloperPage = () => {
   const navigate = useNavigate();
