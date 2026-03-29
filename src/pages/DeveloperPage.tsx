@@ -47,6 +47,7 @@ const DeveloperPage = () => {
             </button>
             <div>
               <h2 className="text-lg font-bold text-foreground">An-Nur Digital</h2>
+              <p className="text-xs text-muted-foreground">Complete Digital Marketing Solution</p>
             </div>
           </CardContent>
         </Card>
