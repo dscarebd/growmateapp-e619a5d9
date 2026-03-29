@@ -66,7 +66,7 @@ const CreateCampaign = () => {
         <div className="grid grid-cols-2 gap-3">
           {platformOptions.map(p => (
             <button key={p.key} onClick={() => setPlatform(p.key)} className={cn("flex items-center gap-2 rounded-xl p-4 border-2 transition-all", platform === p.key ? "border-primary bg-accent" : "border-border bg-card")}>
-              <span className="text-2xl">{p.icon}</span>
+              {p.icon}
               <span className="text-sm font-semibold">{p.label}</span>
             </button>
           ))}
