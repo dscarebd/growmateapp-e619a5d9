@@ -65,7 +65,7 @@ const CreateCampaign = () => {
     <div key="0" className="space-y-6 animate-fade-in-up">
       <div>
         <label className="text-sm font-semibold text-foreground mb-3 block">Select Platform</label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {platformOptions.map(p => (
             <button key={p.key} onClick={() => setPlatform(p.key)} className={cn("flex items-center gap-2 rounded-xl p-4 border-2 transition-all", platform === p.key ? "border-primary bg-accent" : "border-border bg-card")}>
               {p.icon}
