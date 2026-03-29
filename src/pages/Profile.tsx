@@ -1,25 +1,17 @@
 import { useApp } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNotifications } from "@/contexts/NotificationContext";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { User, Copy, CheckCircle2, Award, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, Moon, Bell } from "lucide-react";
-import { useState, useEffect } from "react";
+import { User, Copy, CheckCircle2, Megaphone, Coins, Shield, Settings, LogOut, ChevronRight, FileText, Code2 } from "lucide-react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const Profile = () => {
   const { user } = useApp();
   const { signOut } = useAuth();
-  const { preferences, updatePreference } = useNotifications();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains("dark"));
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-  }, [darkMode]);
 
   const copyCode = () => {
     if (!user) return;
@@ -37,18 +29,11 @@ const Profile = () => {
   ];
 
   const menuItems = [
-    { icon: Settings, label: "Settings", action: () => {} },
-    { icon: Shield, label: "Security", action: () => {} },
-    { icon: Award, label: "Admin Panel", action: () => navigate("/admin") },
+    { icon: Settings, label: "Settings", action: () => navigate("/settings") },
+    { icon: Shield, label: "Security", action: () => navigate("/security") },
+    { icon: FileText, label: "Policies", action: () => navigate("/policies") },
+    { icon: Code2, label: "Developer", action: () => navigate("/developer") },
   ];
-
-  const darkModeRow = (
-    <div className="flex w-full items-center gap-3 rounded-xl p-3.5">
-      <Moon className="h-5 w-5 text-muted-foreground" />
-      <span className="flex-1 text-left text-sm font-medium text-foreground">Dark Mode</span>
-      <Switch checked={darkMode} onCheckedChange={setDarkMode} />
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -94,32 +79,7 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-border">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Bell className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-semibold text-foreground">Notification Preferences</h3>
-            </div>
-            {([
-              { key: "taskCompleted" as const, label: "Task Completions", desc: "When you earn credits" },
-              { key: "campaignUpdates" as const, label: "Campaign Updates", desc: "Progress and milestones" },
-              { key: "withdrawalStatus" as const, label: "Withdrawals", desc: "Approval and payout status" },
-              { key: "promotions" as const, label: "Promotions", desc: "Special events and offers" },
-              { key: "systemAlerts" as const, label: "System Alerts", desc: "Security and trust score" },
-            ]).map(pref => (
-              <div key={pref.key} className="flex items-center justify-between py-2.5 border-b border-border/50 last:border-0">
-                <div>
-                  <p className="text-sm font-medium text-foreground">{pref.label}</p>
-                  <p className="text-[11px] text-muted-foreground">{pref.desc}</p>
-                </div>
-                <Switch checked={preferences[pref.key]} onCheckedChange={v => updatePreference(pref.key, v)} />
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
         <div className="space-y-1">
-          {darkModeRow}
           {menuItems.map(item => (
             <button key={item.label} onClick={item.action} className="flex w-full items-center gap-3 rounded-xl p-3.5 hover:bg-muted transition-colors">
               <item.icon className="h-5 w-5 text-muted-foreground" />

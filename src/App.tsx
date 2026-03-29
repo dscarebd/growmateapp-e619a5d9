@@ -17,6 +17,10 @@ import CreateCampaign from "@/pages/CreateCampaign";
 import WalletPage from "@/pages/WalletPage";
 import Profile from "@/pages/Profile";
 import Admin from "@/pages/Admin";
+import SettingsPage from "@/pages/SettingsPage";
+import SecurityPage from "@/pages/SecurityPage";
+import PoliciesPage from "@/pages/PoliciesPage";
+import DeveloperPage from "@/pages/DeveloperPage";
 import NotFound from "@/pages/NotFound";
 import { useRef } from "react";
 
@@ -102,6 +106,10 @@ const AnimatedRoutes = () => {
           <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+          <Route path="/security" element={<ProtectedRoute><SecurityPage /></ProtectedRoute>} />
+          <Route path="/policies" element={<ProtectedRoute><PoliciesPage /></ProtectedRoute>} />
+          <Route path="/developer" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
