@@ -34,9 +34,7 @@ const Auth = () => {
         setLoading(false);
         return;
       }
-      toast.success("Check your email to confirm your account!");
-      setLoading(false);
-      return;
+      toast.success("Account created successfully!");
     }
 
     navigate("/home", { replace: true });
