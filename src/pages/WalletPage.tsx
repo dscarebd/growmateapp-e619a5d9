@@ -37,6 +37,7 @@ const WalletPage = () => {
   const [myPayments, setMyPayments] = useState<any[]>([]);
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
 
+  const CREDITS_PER_DOLLAR = 100;
   const COMMISSION_RATE = 0.15;
   const MIN_WITHDRAWAL = 500;
   const withdrawNum = parseInt(withdrawAmount) || 0;
@@ -154,6 +155,10 @@ const WalletPage = () => {
               <CardContent className="p-4 space-y-4">
                 <h3 className="text-sm font-semibold text-foreground">Submit Manual Payment</h3>
                 <p className="text-xs text-muted-foreground">Send payment via one of the methods below, then submit the details for admin approval.</p>
+                <div className="rounded-xl bg-accent/50 border border-border p-3 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-foreground">Exchange Rate</span>
+                  <span className="text-sm font-bold text-primary">$1 = {CREDITS_PER_DOLLAR} Credits</span>
+                </div>
 
                 <div className="space-y-1.5">
                   <Label className="text-xs">Payment Method</Label>
@@ -210,6 +215,11 @@ const WalletPage = () => {
                     className="rounded-xl"
                     min={1}
                   />
+                  {parseInt(paymentAmount) > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      You pay: <span className="font-semibold text-foreground">${(parseInt(paymentAmount) / CREDITS_PER_DOLLAR).toFixed(2)}</span>
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">
