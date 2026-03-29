@@ -124,7 +124,7 @@ const AppLayout = () => {
   return (
     <>
       <AnimatedRoutes />
-      {showNav && <BottomNav />}
+      {!hideNav && <BottomNav />}
     </>
   );
 };
