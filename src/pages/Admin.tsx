@@ -31,25 +31,35 @@ const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const Admin = () => {
   const navigate = useNavigate();
   const { campaigns, withdrawals, tasks, transactions } = useApp();
-  const [tab, setTab] = useState<"overview" | "users" | "campaigns" | "withdrawals">("overview");
+  const [dateRange, setDateRange] = useState({ from: startOfDay(subDays(new Date(), 6)), to: endOfDay(new Date()) });
 
-  // Derive revenue data from transactions (earned = revenue, spent = expenses), grouped by day of week
+  // Filter helpers
+  const inRange = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return isWithinInterval(d, { start: dateRange.from, end: dateRange.to });
+  };
+
+  const filteredTransactions = useMemo(() => transactions.filter(tx => inRange(tx.created_at)), [transactions, dateRange]);
+  const filteredTasks = useMemo(() => tasks.filter(t => inRange(t.created_at)), [tasks, dateRange]);
+  const filteredCampaigns = useMemo(() => campaigns.filter(c => inRange(c.created_at)), [campaigns, dateRange]);
+
+  // Derive revenue data from filtered transactions, grouped by day of week
   const revenueData = useMemo(() => {
     const byDay: Record<string, { revenue: number; expenses: number }> = {};
     DAY_NAMES.forEach(d => { byDay[d] = { revenue: 0, expenses: 0 }; });
-    transactions.forEach(tx => {
+    filteredTransactions.forEach(tx => {
       const day = DAY_NAMES[new Date(tx.created_at).getDay()];
       if (tx.type === "earned" || tx.type === "purchased") byDay[day].revenue += tx.amount;
       else byDay[day].expenses += Math.abs(tx.amount);
     });
     return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => ({ day: d, revenue: byDay[d].revenue, expenses: byDay[d].expenses }));
-  }, [transactions]);
+  }, [filteredTransactions]);
 
   // Derive task completion data by action type, grouped by day
   const taskCompletionData = useMemo(() => {
     const byDay: Record<string, { likes: number; follows: number; subscribes: number; shares: number }> = {};
     DAY_NAMES.forEach(d => { byDay[d] = { likes: 0, follows: 0, subscribes: 0, shares: 0 }; });
-    tasks.forEach(t => {
+    filteredTasks.forEach(t => {
       const day = DAY_NAMES[new Date(t.created_at).getDay()];
       if (t.action === "like") byDay[day].likes += t.completed_count;
       else if (t.action === "follow") byDay[day].follows += t.completed_count;
@@ -57,26 +67,26 @@ const Admin = () => {
       else if (t.action === "share") byDay[day].shares += t.completed_count;
     });
     return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => ({ day: d, ...byDay[d] }));
-  }, [tasks]);
+  }, [filteredTasks]);
 
   // Platform distribution from tasks
   const platformDistribution = useMemo(() => {
     const counts: Record<string, number> = { youtube: 0, instagram: 0, tiktok: 0, facebook: 0 };
-    tasks.forEach(t => { counts[t.platform] = (counts[t.platform] || 0) + t.completed_count; });
+    filteredTasks.forEach(t => { counts[t.platform] = (counts[t.platform] || 0) + t.completed_count; });
     const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
     return Object.entries(counts).map(([key, val]) => ({
       name: PLATFORM_LABELS[key] || key,
       value: Math.round((val / total) * 100),
     }));
-  }, [tasks]);
+  }, [filteredTasks]);
 
   // Stats from real data
-  const totalTaskCompletions = tasks.reduce((sum, t) => sum + t.completed_count, 0);
-  const totalRevenue = transactions.filter(t => t.type === "earned" || t.type === "purchased").reduce((sum, t) => sum + t.amount, 0);
+  const totalTaskCompletions = filteredTasks.reduce((sum, t) => sum + t.completed_count, 0);
+  const totalRevenue = filteredTransactions.filter(t => t.type === "earned" || t.type === "purchased").reduce((sum, t) => sum + t.amount, 0);
 
   const stats = [
-    { icon: Users, label: "Total Tasks", value: tasks.length.toString(), change: "", color: "text-primary" },
-    { icon: Megaphone, label: "Active Campaigns", value: campaigns.filter(c => c.status === "active").length.toString(), change: "", color: "text-secondary" },
+    { icon: Users, label: "Total Tasks", value: filteredTasks.length.toString(), change: "", color: "text-primary" },
+    { icon: Megaphone, label: "Active Campaigns", value: filteredCampaigns.filter(c => c.status === "active").length.toString(), change: "", color: "text-secondary" },
     { icon: Banknote, label: "Credits Earned", value: totalRevenue.toLocaleString(), change: "", color: "text-success" },
     { icon: TrendingUp, label: "Completions", value: totalTaskCompletions.toLocaleString(), change: "", color: "text-warning" },
   ];
