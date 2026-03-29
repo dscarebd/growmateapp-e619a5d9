@@ -66,7 +66,7 @@ const Tasks = () => {
             <Card key={task.id} className={cn("border-border animate-fade-in-up overflow-hidden", isDone && "opacity-60")} style={{ animationDelay: `${i * 50}ms` }}>
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl mt-0.5">{platforms.find(p => p.key === task.platform)?.icon}</span>
+                  <div className="mt-0.5 shrink-0">{platforms.find(p => p.key === task.platform)?.icon}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-0.5">
                       <h3 className="text-sm font-semibold text-foreground truncate">{task.title}</h3>
