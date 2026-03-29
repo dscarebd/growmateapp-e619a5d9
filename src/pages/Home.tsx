@@ -15,6 +15,28 @@ const platformIcons: Record<string, ReactNode> = {
 const Home = () => {
   const { credits, user, tasks, campaigns } = useApp();
   const navigate = useNavigate();
+  const lastBackPress = useRef<number>(0);
+
+  useEffect(() => {
+    // Push an extra history entry so one back press doesn't exit
+    window.history.pushState(null, "", window.location.href);
+
+    const handlePopState = (e: PopStateEvent) => {
+      e.preventDefault();
+      const now = Date.now();
+      if (now - lastBackPress.current < 2000) {
+        // Second press within 2 seconds — allow exit
+        window.history.back();
+        return;
+      }
+      lastBackPress.current = now;
+      window.history.pushState(null, "", window.location.href);
+      toast("Press back again to exit", { duration: 2000 });
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
   const activeCampaigns = campaigns.filter(c => c.status === "active");
   const topTasks = [...tasks].sort((a, b) => b.reward - a.reward).slice(0, 3);
 
