@@ -21,6 +21,7 @@ import SettingsPage from "@/pages/SettingsPage";
 import SecurityPage from "@/pages/SecurityPage";
 import PoliciesPage from "@/pages/PoliciesPage";
 import DeveloperPage from "@/pages/DeveloperPage";
+import BuyCredits from "@/pages/BuyCredits";
 import NotFound from "@/pages/NotFound";
 import { useRef } from "react";
 
@@ -110,6 +111,7 @@ const AnimatedRoutes = () => {
           <Route path="/security" element={<ProtectedRoute><SecurityPage /></ProtectedRoute>} />
           <Route path="/policies" element={<ProtectedRoute><PoliciesPage /></ProtectedRoute>} />
           <Route path="/developer" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
+          <Route path="/buy-credits" element={<ProtectedRoute><BuyCredits /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
