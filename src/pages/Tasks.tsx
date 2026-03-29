@@ -29,10 +29,7 @@ const Tasks = () => {
     setTimer(5);
     const interval = setInterval(() => {
       setTimer(prev => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
+        if (prev <= 1) { clearInterval(interval); return 0; }
         return prev - 1;
       });
     }, 1000);
@@ -50,16 +47,10 @@ const Tasks = () => {
         <h1 className="text-xl font-bold text-primary-foreground mb-4">Task Marketplace</h1>
         <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
           {platforms.map(p => (
-            <button
-              key={p.key}
-              onClick={() => setFilter(p.key)}
-              className={cn(
-                "flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold transition-all",
-                filter === p.key
-                  ? "bg-primary-foreground text-primary shadow-sm"
-                  : "bg-primary-foreground/20 text-primary-foreground"
-              )}
-            >
+            <button key={p.key} onClick={() => setFilter(p.key)}
+              className={cn("flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold transition-all",
+                filter === p.key ? "bg-primary-foreground text-primary shadow-sm" : "bg-primary-foreground/20 text-primary-foreground"
+              )}>
               <span>{p.icon}</span> {p.label}
             </button>
           ))}
@@ -70,7 +61,6 @@ const Tasks = () => {
         {filtered.map((task, i) => {
           const isActive = activeTask === task.id;
           const isDone = completed.has(task.id);
-
           return (
             <Card key={task.id} className={cn("border-border animate-fade-in-up overflow-hidden", isDone && "opacity-60")} style={{ animationDelay: `${i * 50}ms` }}>
               <CardContent className="p-4">
@@ -79,7 +69,7 @@ const Tasks = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-0.5">
                       <h3 className="text-sm font-semibold text-foreground truncate">{task.title}</h3>
-                      {task.isHighReward && (
+                      {task.is_high_reward && (
                         <span className="flex items-center gap-0.5 text-[10px] bg-warning/15 text-warning font-bold px-1.5 py-0.5 rounded-full shrink-0">
                           <Flame className="h-2.5 w-2.5" /> High
                         </span>
@@ -89,7 +79,7 @@ const Tasks = () => {
                     <div className="flex items-center gap-3 mt-2 text-[11px] text-muted-foreground">
                       <span className="capitalize">{task.action}</span>
                       <span>•</span>
-                      <span>{task.completedCount}/{task.totalSlots} done</span>
+                      <span>{task.completed_count}/{task.total_slots} done</span>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
@@ -97,7 +87,6 @@ const Tasks = () => {
                     <p className="text-[10px] text-muted-foreground">credits</p>
                   </div>
                 </div>
-
                 {!isDone && (
                   <div className="mt-3 flex gap-2">
                     {!isActive ? (
@@ -124,6 +113,9 @@ const Tasks = () => {
             </Card>
           );
         })}
+        {filtered.length === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-12">No tasks available yet</p>
+        )}
       </div>
     </div>
   );

@@ -58,7 +58,7 @@ const WalletPage = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{tx.description}</p>
-                      <p className="text-[11px] text-muted-foreground">{tx.date}</p>
+                      <p className="text-[11px] text-muted-foreground">{new Date(tx.created_at).toLocaleDateString()}</p>
                     </div>
                     <span className={cn("text-sm font-bold", tx.type === "earned" || tx.type === "purchased" ? "text-success" : "text-destructive")}>
                       {tx.type === "earned" || tx.type === "purchased" ? "+" : "-"}{Math.abs(tx.amount)}
@@ -67,6 +67,7 @@ const WalletPage = () => {
                 </Card>
               );
             })}
+            {transactions.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No transactions yet</p>}
           </div>
         )}
 
@@ -106,8 +107,8 @@ const WalletPage = () => {
                   <Card key={w.id} className="mb-2 border-border">
                     <CardContent className="p-3.5 flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-foreground">{w.amount} credits → ${w.netAmount.toFixed(2)}</p>
-                        <p className="text-[11px] text-muted-foreground">{w.method} • {w.requestedAt}</p>
+                        <p className="text-sm font-medium text-foreground">{w.amount} credits → ${Number(w.net_amount).toFixed(2)}</p>
+                        <p className="text-[11px] text-muted-foreground">{w.method} • {new Date(w.requested_at).toLocaleDateString()}</p>
                       </div>
                       <span className={cn("text-[10px] font-bold px-2 py-1 rounded-full capitalize",
                         w.status === "approved" ? "bg-success/15 text-success" :

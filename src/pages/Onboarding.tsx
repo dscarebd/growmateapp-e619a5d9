@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useApp } from "@/contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Coins, Megaphone, TrendingUp } from "lucide-react";
 
@@ -13,10 +12,8 @@ const steps = [
 const Onboarding = () => {
   const [step, setStep] = useState(0);
   const navigate = useNavigate();
-  const { setHasOnboarded } = useApp();
 
   const finish = () => {
-    setHasOnboarded(true);
     navigate("/auth", { replace: true });
   };
 
