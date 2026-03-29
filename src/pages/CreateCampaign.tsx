@@ -56,20 +56,17 @@ const platformActions: Record<Platform, { key: TaskAction; label: string; icon: 
     { key: "follow", label: "Follow", icon: actionIcons.follow },
     { key: "comment", label: "Comment", icon: actionIcons.comment },
     { key: "share", label: "Share", icon: actionIcons.share },
-    { key: "view", label: "View", icon: actionIcons.view },
   ],
   twitter: [
     { key: "like", label: "Like", icon: actionIcons.like },
     { key: "follow", label: "Follow", icon: actionIcons.follow },
     { key: "comment", label: "Reply", icon: actionIcons.reply },
     { key: "share", label: "Repost", icon: actionIcons.repost },
-    { key: "view", label: "View", icon: actionIcons.view },
   ],
   telegram: [
     { key: "follow", label: "Join Channel", icon: actionIcons["join channel"] },
     { key: "comment", label: "Comment", icon: actionIcons.comment },
     { key: "share", label: "Share", icon: actionIcons.share },
-    { key: "view", label: "View", icon: actionIcons.view },
   ],
 };
 
