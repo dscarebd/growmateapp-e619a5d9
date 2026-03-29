@@ -14,6 +14,18 @@ export interface AdminProfile {
   trust_score: number;
   joined_date: string;
   avatar_url: string | null;
+  referred_by: string | null;
+  referral_code: string;
+  referral_bonus_awarded: boolean;
+}
+
+export interface ReferralBonus {
+  id: string;
+  referrer_id: string;
+  referred_id: string;
+  bonus_amount: number;
+  trigger_type: string;
+  created_at: string;
 }
 
 export interface AdminCampaign {
@@ -63,6 +75,7 @@ export const useAdmin = () => {
   const [withdrawals, setWithdrawals] = useState<AdminWithdrawal[]>([]);
   const [payments, setPayments] = useState<ManualPayment[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [referralBonuses, setReferralBonuses] = useState<ReferralBonus[]>([]);
 
   const checkAdmin = useCallback(async () => {
     if (!user) { setIsAdmin(false); setLoading(false); return; }
@@ -73,18 +86,20 @@ export const useAdmin = () => {
 
   const fetchAll = useCallback(async () => {
     if (!isAdmin) return;
-    const [pRes, cRes, wRes, pmRes, tRes] = await Promise.all([
+    const [pRes, cRes, wRes, pmRes, tRes, rbRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("campaigns").select("*").order("created_at", { ascending: false }),
       supabase.from("withdrawals").select("*").order("requested_at", { ascending: false }),
       supabase.from("manual_payments").select("*").order("created_at", { ascending: false }) as any,
       supabase.from("transactions").select("*").order("created_at", { ascending: false }),
+      supabase.from("referral_bonuses").select("*").order("created_at", { ascending: false }),
     ]);
     if (pRes.data) setProfiles(pRes.data as AdminProfile[]);
     if (cRes.data) setCampaigns(cRes.data as AdminCampaign[]);
     if (wRes.data) setWithdrawals(wRes.data as AdminWithdrawal[]);
     if (pmRes.data) setPayments(pmRes.data as ManualPayment[]);
     if (tRes.data) setTransactions(tRes.data);
+    if (rbRes.data) setReferralBonuses(rbRes.data as ReferralBonus[]);
   }, [isAdmin]);
 
   useEffect(() => { checkAdmin(); }, [checkAdmin]);
@@ -256,7 +271,7 @@ export const useAdmin = () => {
   };
 
   return {
-    isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions,
+    isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses,
     updateCampaignStatus, updateWithdrawalStatus, updateUserCredits, updateUserTrustScore,
     approvePayment, rejectPayment, addCreditsManually, fetchAll,
   };

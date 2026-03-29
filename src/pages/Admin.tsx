@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   ArrowLeft, Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle,
-  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight,
+  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -35,7 +35,7 @@ const chartTooltipStyle = {
   },
 };
 
-type Tab = "overview" | "users" | "campaigns" | "withdrawals" | "payments";
+type Tab = "overview" | "users" | "campaigns" | "withdrawals" | "payments" | "referrals";
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -55,6 +55,8 @@ const Admin = () => {
   const WD_PER_PAGE = 10;
   const [pmPage, setPmPage] = useState(1);
   const PM_PER_PAGE = 10;
+  const [refPage, setRefPage] = useState(1);
+  const REF_PER_PAGE = 10;
 
   // Charts (hooks must be before conditionals)
   const platformDistribution = useMemo(() => {
@@ -159,7 +161,7 @@ const Admin = () => {
 
       {/* Tabs */}
       <div className="flex gap-1 mx-5 bg-muted rounded-xl p-1 mb-5 overflow-x-auto">
-        {(["overview", "users", "campaigns", "withdrawals", "payments"] as Tab[]).map(t => (
+        {(["overview", "users", "campaigns", "withdrawals", "payments", "referrals"] as Tab[]).map(t => (
           <button key={t} onClick={() => setTab(t)} className={cn(
             "flex-1 py-2 text-[11px] font-semibold rounded-lg transition-all capitalize whitespace-nowrap px-2",
             tab === t ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
@@ -487,6 +489,121 @@ const Admin = () => {
                       </Button>
                       <span className="text-xs text-muted-foreground">Page {safePage} of {totalPages}</span>
                       <Button size="sm" variant="outline" className="h-8 rounded-lg text-xs" disabled={safePage >= totalPages} onClick={() => setPmPage(safePage + 1)}>
+                        Next <ChevronRight className="h-3.5 w-3.5 ml-1" />
+                      </Button>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* REFERRALS TAB */}
+        {tab === "referrals" && (
+          <div className="space-y-4 animate-fade-in">
+            {/* Referral Stats */}
+            {(() => {
+              const bonuses = admin.referralBonuses || [];
+              const totalBonuses = bonuses.length;
+              const totalCreditsAwarded = bonuses.reduce((s, b) => s + (b.bonus_amount || 50), 0);
+              const usersWithReferrals = admin.profiles.filter(p => p.referred_by).length;
+              const uniqueReferrers = new Set(bonuses.map(b => b.referrer_id)).size;
+
+              const totalPages = Math.max(1, Math.ceil(bonuses.length / REF_PER_PAGE));
+              const safePage = Math.min(refPage, totalPages);
+              const paginated = bonuses.slice((safePage - 1) * REF_PER_PAGE, safePage * REF_PER_PAGE);
+
+              return (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { icon: Gift, label: "Total Bonuses", value: totalBonuses, color: "text-primary" },
+                      { icon: Banknote, label: "Credits Awarded", value: totalCreditsAwarded, color: "text-success" },
+                      { icon: Users, label: "Referred Users", value: usersWithReferrals, color: "text-secondary" },
+                      { icon: TrendingUp, label: "Active Referrers", value: uniqueReferrers, color: "text-warning" },
+                    ].map(s => (
+                      <Card key={s.label} className="border-border">
+                        <CardContent className="p-4">
+                          <s.icon className={cn("h-5 w-5 mb-2", s.color)} />
+                          <p className="text-xl font-bold text-foreground">{s.value}</p>
+                          <p className="text-[11px] text-muted-foreground">{s.label}</p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Top Referrers */}
+                  {(() => {
+                    const referrerCounts: Record<string, { count: number; earned: number }> = {};
+                    bonuses.forEach(b => {
+                      if (!referrerCounts[b.referrer_id]) referrerCounts[b.referrer_id] = { count: 0, earned: 0 };
+                      referrerCounts[b.referrer_id].count++;
+                      referrerCounts[b.referrer_id].earned += b.bonus_amount || 50;
+                    });
+                    const topReferrers = Object.entries(referrerCounts)
+                      .sort((a, b) => b[1].count - a[1].count)
+                      .slice(0, 5);
+
+                    if (topReferrers.length === 0) return null;
+                    return (
+                      <Card className="border-border">
+                        <CardContent className="p-4">
+                          <h3 className="text-sm font-semibold text-foreground mb-3">Top Referrers</h3>
+                          <div className="space-y-2">
+                            {topReferrers.map(([userId, data], i) => {
+                              const profile = admin.profiles.find(p => p.id === userId);
+                              return (
+                                <div key={userId} className="flex items-center gap-3">
+                                  <span className="text-xs font-bold text-muted-foreground w-4">#{i + 1}</span>
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
+                                    {profile?.name?.[0]?.toUpperCase() || "?"}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-foreground truncate">{profile?.name || "Unknown"}</p>
+                                    <p className="text-[10px] text-muted-foreground">{data.count} referrals • {data.earned} credits earned</p>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })()}
+
+                  {/* Bonus History */}
+                  <h3 className="text-sm font-semibold text-foreground">Bonus History</h3>
+                  {paginated.map(b => {
+                    const referrer = admin.profiles.find(p => p.id === b.referrer_id);
+                    const referred = admin.profiles.find(p => p.id === b.referred_id);
+                    return (
+                      <Card key={b.id} className="border-border">
+                        <CardContent className="p-3.5">
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">
+                                <Gift className="h-3.5 w-3.5 inline mr-1 text-primary" />
+                                {referrer?.name || "Unknown"} earned {b.bonus_amount || 50} credits
+                              </p>
+                              <p className="text-[11px] text-muted-foreground">
+                                Referred: {referred?.name || "Unknown"} • Trigger: <span className="capitalize font-medium text-foreground">{b.trigger_type?.replace("_", " ")}</span>
+                              </p>
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground">{new Date(b.created_at).toLocaleDateString()}</p>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                  {bonuses.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">No referral bonuses yet</p>}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between pt-2">
+                      <Button size="sm" variant="outline" className="h-8 rounded-lg text-xs" disabled={safePage <= 1} onClick={() => setRefPage(safePage - 1)}>
+                        <ChevronLeft className="h-3.5 w-3.5 mr-1" /> Prev
+                      </Button>
+                      <span className="text-xs text-muted-foreground">Page {safePage} of {totalPages}</span>
+                      <Button size="sm" variant="outline" className="h-8 rounded-lg text-xs" disabled={safePage >= totalPages} onClick={() => setRefPage(safePage + 1)}>
                         Next <ChevronRight className="h-3.5 w-3.5 ml-1" />
                       </Button>
                     </div>
