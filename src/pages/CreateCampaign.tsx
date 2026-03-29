@@ -74,9 +74,9 @@ const CreateCampaign = () => {
       </div>
       <div>
         <label className="text-sm font-semibold text-foreground mb-3 block">Action Type</label>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-2">
           {actionOptions.map(a => (
-            <button key={a.key} onClick={() => setAction(a.key)} className={cn("rounded-full px-4 py-2 text-xs font-semibold border transition-all", action === a.key ? "border-primary bg-accent text-accent-foreground" : "border-border text-muted-foreground")}>
+            <button key={a.key} onClick={() => setAction(a.key)} className={cn("w-full rounded-full px-4 py-3 text-sm font-semibold border-2 transition-all", action === a.key ? "border-primary bg-accent text-accent-foreground" : "border-border text-muted-foreground bg-card")}>
               {a.label}
             </button>
           ))}
