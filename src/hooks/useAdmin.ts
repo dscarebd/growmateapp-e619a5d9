@@ -100,8 +100,41 @@ export const useAdmin = () => {
 
   // Withdrawal actions
   const updateWithdrawalStatus = async (id: string, status: string) => {
+    const withdrawal = withdrawals.find(w => w.id === id);
     const { error } = await supabase.from("withdrawals").update({ status } as any).eq("id", id);
     if (error) { toast.error("Failed to update withdrawal"); return; }
+
+    if (withdrawal) {
+      const profile = profiles.find(p => p.id === withdrawal.user_id);
+
+      // Refund credits on rejection
+      if (status === "rejected" && profile) {
+        await supabase.from("profiles").update({ credits: profile.credits + withdrawal.amount }).eq("id", withdrawal.user_id);
+        // Remove the withdrawn transaction
+        await supabase.from("transactions").insert({
+          user_id: withdrawal.user_id,
+          type: "purchased" as any,
+          amount: withdrawal.amount,
+          description: `Refund: Withdrawal rejected (${withdrawal.method})`,
+        });
+      }
+
+      // Send notification
+      const messages: Record<string, { title: string; message: string; icon: string }> = {
+        approved: { title: "Withdrawal Approved!", message: `Your withdrawal of ${withdrawal.amount} credits via ${withdrawal.method} has been approved.`, icon: "✅" },
+        rejected: { title: "Withdrawal Rejected", message: `Your withdrawal of ${withdrawal.amount} credits was rejected. Credits have been refunded.`, icon: "❌" },
+        processing: { title: "Withdrawal Processing", message: `Your withdrawal of ${withdrawal.amount} credits is being processed.`, icon: "⏳" },
+      };
+      const notif = messages[status];
+      if (notif) {
+        await supabase.from("notifications").insert({
+          user_id: withdrawal.user_id,
+          type: "withdrawal",
+          ...notif,
+        });
+      }
+    }
+
     toast.success(`Withdrawal ${status}`);
     fetchAll();
   };
