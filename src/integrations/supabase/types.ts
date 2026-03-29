@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       campaigns: {
         Row: {
           action: Database["public"]["Enums"]["task_action"]
@@ -58,6 +76,45 @@ export type Database = {
           title?: string
           total_budget?: number
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      manual_payments: {
+        Row: {
+          amount: number
+          approved_by: string | null
+          created_at: string | null
+          id: string
+          method: string
+          notes: string | null
+          status: string
+          transaction_ref: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          method?: string
+          notes?: string | null
+          status?: string
+          transaction_ref?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          method?: string
+          notes?: string | null
+          status?: string
+          transaction_ref?: string | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -265,7 +322,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       campaign_status: "active" | "paused" | "completed" | "pending"
