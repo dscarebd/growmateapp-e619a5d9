@@ -23,7 +23,7 @@ const DeveloperPage = () => {
               <Code2 className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-foreground">App Info</h2>
+              <h2 className="text-lg font-bold text-foreground">An-Nur Digital</h2>
               <p className="text-xs text-muted-foreground mt-1">Version 1.0.0 • Build 2026.03</p>
             </div>
           </CardContent>
@@ -46,14 +46,14 @@ const DeveloperPage = () => {
                 <Mail className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Email Support</p>
-                  <p className="text-[11px] text-muted-foreground">support@example.com</p>
+                  <p className="text-[11px] text-muted-foreground">support@annurdigital.com</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 py-3 border-b border-border/50">
                 <Globe className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Website</p>
-                  <p className="text-[11px] text-muted-foreground">www.example.com</p>
+                  <p className="text-[11px] text-muted-foreground">annurdigital.com</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 py-3">
@@ -69,7 +69,7 @@ const DeveloperPage = () => {
 
         <div className="text-center py-4">
           <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-            Made with <Heart className="h-3 w-3 text-destructive" /> by the team
+            Made with <Heart className="h-3 w-3 text-destructive" /> by An-Nur Digital
           </p>
         </div>
       </div>
