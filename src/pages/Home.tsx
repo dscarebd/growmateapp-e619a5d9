@@ -1,12 +1,14 @@
+import { ReactNode } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { useNavigate } from "react-router-dom";
 import { Coins, Megaphone, ShoppingCart, Flame, ArrowRight } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon } from "@/components/PlatformIcons";
 
-const platformIcons: Record<string, string> = {
-  youtube: "🎬", instagram: "📸", tiktok: "🎵", facebook: "📘",
+const platformIcons: Record<string, ReactNode> = {
+  youtube: <YouTubeIcon className="h-6 w-6" />, instagram: <InstagramIcon className="h-6 w-6" />, tiktok: <TikTokIcon className="h-6 w-6" />, facebook: <FacebookIcon className="h-6 w-6" />,
 };
 
 const Home = () => {
@@ -67,7 +69,7 @@ const Home = () => {
             {activeCampaigns.map(c => (
               <Card key={c.id} className="mb-2 hover-scale border-border">
                 <CardContent className="p-4 flex items-center gap-3">
-                  <span className="text-2xl">{platformIcons[c.platform]}</span>
+                  <div className="shrink-0">{platformIcons[c.platform]}</div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-foreground truncate">{c.title}</p>
                     <div className="mt-1.5 h-1.5 w-full rounded-full bg-muted overflow-hidden">
@@ -94,7 +96,7 @@ const Home = () => {
             {topTasks.map(t => (
               <Card key={t.id} className="hover-scale border-border" onClick={() => navigate("/tasks")}>
                 <CardContent className="p-4 flex items-center gap-3">
-                  <span className="text-xl">{platformIcons[t.platform]}</span>
+                  <div className="shrink-0">{platformIcons[t.platform]}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <p className="text-sm font-semibold text-foreground truncate">{t.title}</p>
