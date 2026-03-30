@@ -1,47 +1,26 @@
 
 
-## Plan: Admin-Managed Payment Methods
+## Plan: Add Payment Method Icons on Buy Credits Page
 
-Currently, payment methods (bKash, Nagad, Bank Transfer, Binance) are hardcoded in `BuyCredits.tsx`. This plan moves them to the database so admins can edit details and add new methods from the admin panel.
+Add recognizable brand-colored icons/logos for each payment method (bKash, Nagad, Bank Transfer, Binance) displayed on the Buy Credits page, matching the project's existing pattern of custom SVG icons in `PlatformIcons.tsx`.
 
-### Database Change
+### Changes
 
-Create a `payment_methods` table:
-- `id` (uuid, PK)
-- `name` (text) — e.g. "bKash"
-- `instructions` (text) — e.g. "Send payment to:"
-- `detail` (text) — the account number/address
-- `note` (text) — extra instructions
-- `is_active` (boolean, default true)
-- `sort_order` (integer, default 0)
-- `created_at`, `updated_at`
+**1. `src/components/PaymentIcons.tsx` (new file)**
+- Create SVG icon components for: bKash (pink), Nagad (orange/red), Bank Transfer (generic bank icon via Lucide), Binance (yellow)
+- Each icon follows the same pattern as `PlatformIcons.tsx` — accepts `className` prop, renders inline SVG with brand colors
 
-RLS: Admins can CRUD, all authenticated users can SELECT active methods.
+**2. `src/pages/BuyCredits.tsx`**
+- Create a `getPaymentIcon(name: string)` helper that maps method names (case-insensitive) to the corresponding icon component, with a fallback Lucide `Wallet` icon for unknown methods
+- Update the payment method selector buttons (line ~259-272) to render the icon alongside the label
+- Update the payment details section to also show the icon next to the method name
 
-Seed with the 4 existing methods (bKash, Nagad, Bank Transfer, Binance).
+### Technical Details
+- Icon mapping uses lowercase name matching: `"bkash"`, `"nagad"`, `"binance"`, `"bank"` (partial match)
+- Unknown/new admin-added methods get a generic wallet icon
+- Icons render at 20x20px inside the selector buttons
 
-### Admin Panel Changes (`src/pages/Admin.tsx`)
-
-Add a "Payment Methods" management section in the Payments tab:
-- List all payment methods with edit/toggle buttons
-- Edit dialog: name, instructions, detail (account number), note, active toggle
-- "Add New Method" button with the same form
-- Delete or deactivate methods
-
-### Buy Credits Page Changes (`src/pages/BuyCredits.tsx`)
-
-- Fetch payment methods from `payment_methods` table (where `is_active = true`, ordered by `sort_order`)
-- Replace the hardcoded `paymentMethods` array with the fetched data
-- Fallback to hardcoded values if fetch fails
-
-### useAdmin Hook (`src/hooks/useAdmin.ts`)
-
-- Fetch `payment_methods` table data
-- Add CRUD functions for payment methods
-
-### Files to modify
-- **New migration**: create `payment_methods` table + seed data
-- `src/pages/Admin.tsx` — add payment methods management UI
-- `src/pages/BuyCredits.tsx` — fetch methods from DB
-- `src/hooks/useAdmin.ts` — add payment methods state and CRUD
+### Files
+- **New**: `src/components/PaymentIcons.tsx`
+- **Modified**: `src/pages/BuyCredits.tsx`
 
