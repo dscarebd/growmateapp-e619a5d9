@@ -264,6 +264,8 @@ const Profile = () => {
           </CardContent>
         </Card>
 
+        <CompletedTasks />
+
         <div className="space-y-1">
           {menuItems.map(item => (
             <button key={item.label} onClick={item.action} className="flex w-full items-center gap-3 rounded-xl p-3.5 hover:bg-muted transition-colors">
