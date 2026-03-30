@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, FileText, Shield, ScrollText } from "lucide-react";
+import { FileText, Shield, ScrollText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const policies = [

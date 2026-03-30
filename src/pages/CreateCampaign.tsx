@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, ArrowRight, CheckCircle2, Heart, UserPlus, Bell, Share2, MessageCircle, Repeat2, DoorOpen, Eye } from "lucide-react";
+import { ArrowRight, CheckCircle2, Heart, UserPlus, Bell, Share2, MessageCircle, Repeat2, DoorOpen, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
 

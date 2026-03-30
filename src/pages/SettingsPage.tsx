@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Globe, Bell, Moon, Eye } from "lucide-react";
+import { Globe, Bell, Moon, Eye } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
