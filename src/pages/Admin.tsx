@@ -534,8 +534,6 @@ const Admin = () => {
               );
             })()}
           </div>
-        )}
-
         {/* REFERRALS TAB */}
         {tab === "referrals" && (
           <div className="space-y-4 animate-fade-in">
