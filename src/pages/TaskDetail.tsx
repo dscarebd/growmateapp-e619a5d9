@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { ExternalLink, Star, Clock, CheckCircle2, XCircle, ImagePlus, Trash2, User } from "lucide-react";
+import { ExternalLink, Star, Clock, CheckCircle2, XCircle, ImagePlus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
 import { toast } from "sonner";
@@ -48,11 +48,26 @@ const TaskDetail = () => {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [advertiserProfile, setAdvertiserProfile] = useState<{ name: string; avatar_url: string | null } | null>(null);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [avgRating, setAvgRating] = useState(0);
 
   const fetchTask = useCallback(async () => {
     if (!id) return;
     const { data } = await supabase.from("tasks").select("*").eq("id", id).single();
-    if (data) setTask(data as any);
+    if (data) {
+      setTask(data as any);
+      // Fetch advertiser profile and reviews
+      const [profileRes, reviewsRes] = await Promise.all([
+        supabase.from("profiles").select("name, avatar_url").eq("id", data.user_id).single(),
+        supabase.from("advertiser_reviews").select("rating").eq("advertiser_id", data.user_id),
+      ]);
+      if (profileRes.data) setAdvertiserProfile(profileRes.data);
+      if (reviewsRes.data && reviewsRes.data.length > 0) {
+        setReviewCount(reviewsRes.data.length);
+        setAvgRating(reviewsRes.data.reduce((s, r) => s + r.rating, 0) / reviewsRes.data.length);
+      }
+    }
 
     if (authUser) {
       const { data: sub } = await supabase
@@ -170,6 +185,38 @@ const TaskDetail = () => {
                 <ExternalLink className="h-3.5 w-3.5" /> Open Content Link
               </a>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Advertiser Card */}
+        <Card className="border-border">
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="shrink-0">
+              {advertiserProfile?.avatar_url ? (
+                <img src={advertiserProfile.avatar_url} alt="" className="h-10 w-10 rounded-full object-cover" />
+              ) : (
+                <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-sm font-bold">
+                  {(advertiserProfile?.name || task.advertiser || "A").charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground">{advertiserProfile?.name || task.advertiser}</p>
+              <div className="flex items-center gap-2 mt-0.5">
+                {reviewCount > 0 ? (
+                  <>
+                    <div className="flex items-center gap-0.5">
+                      <Star className="h-3 w-3 text-warning fill-warning" />
+                      <span className="text-xs font-bold text-foreground">{avgRating.toFixed(1)}</span>
+                    </div>
+                    <span className="text-[11px] text-muted-foreground">{reviewCount} review{reviewCount !== 1 ? "s" : ""}</span>
+                  </>
+                ) : (
+                  <span className="text-[11px] text-muted-foreground">No reviews yet</span>
+                )}
+              </div>
+            </div>
+            <span className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded-full">Advertiser</span>
           </CardContent>
         </Card>
 
