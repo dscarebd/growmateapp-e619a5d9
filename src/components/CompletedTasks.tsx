@@ -94,9 +94,17 @@ const CompletedTasks = () => {
     );
   }
 
+  const platformIconMap: Record<string, any> = {
+    youtube: PlatformIcons.YouTubeIcon,
+    instagram: PlatformIcons.InstagramIcon,
+    tiktok: PlatformIcons.TikTokIcon,
+    facebook: PlatformIcons.FacebookIcon,
+    twitter: PlatformIcons.TwitterIcon,
+    telegram: PlatformIcons.TelegramIcon,
+  };
+
   const PlatformIcon = (platform: string) => {
-    const icons = PlatformIcons as Record<string, any>;
-    const Icon = icons[platform];
+    const Icon = platformIconMap[platform];
     return Icon ? <Icon className="h-4 w-4" /> : null;
   };
 
