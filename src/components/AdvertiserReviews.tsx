@@ -65,8 +65,8 @@ const AdvertiserReviews = ({ advertiserId }: { advertiserId: string }) => {
                 <Star key={s} className={cn("h-3 w-3", s <= r.rating ? "text-warning fill-warning" : "text-muted-foreground/20")} />
               ))}
             </div>
-            {r.review_text && <p className="text-xs text-foreground">{r.review_text}</p>}
-            <p className="text-[10px] text-muted-foreground mt-1">{new Date(r.created_at).toLocaleDateString()}</p>
+            {r.review_text && <p className="text-xs text-foreground mt-1">{r.review_text}</p>}
+            <p className="text-[10px] text-muted-foreground mt-1">{r.reviewer_name || "User"} · {new Date(r.created_at).toLocaleDateString()}</p>
           </CardContent>
         </Card>
       ))}
