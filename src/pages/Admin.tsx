@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,8 +39,20 @@ type Tab = "overview" | "users" | "campaigns" | "withdrawals" | "payments" | "re
 
 const Admin = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const admin = useAdmin();
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<Tab>(() => {
+    const urlTab = searchParams.get("tab");
+    return (urlTab && ["overview", "users", "campaigns", "withdrawals", "payments", "referrals"].includes(urlTab))
+      ? urlTab as Tab : "overview";
+  });
+
+  useEffect(() => {
+    const urlTab = searchParams.get("tab");
+    if (urlTab && ["overview", "users", "campaigns", "withdrawals", "payments", "referrals"].includes(urlTab)) {
+      setTab(urlTab as Tab);
+    }
+  }, [searchParams]);
   const [search, setSearch] = useState("");
   const [withdrawalSearch, setWithdrawalSearch] = useState("");
   const [addCreditsDialog, setAddCreditsDialog] = useState<string | null>(null);
