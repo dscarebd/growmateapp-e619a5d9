@@ -14,6 +14,7 @@ import Auth from "@/pages/Auth";
 import Home from "@/pages/Home";
 import Tasks from "@/pages/Tasks";
 import TaskDetail from "@/pages/TaskDetail";
+import AdvertiserProfile from "@/pages/AdvertiserProfile";
 import CreateCampaign from "@/pages/CreateCampaign";
 import MySubmissions from "@/pages/MySubmissions";
 import ReviewSubmissions from "@/pages/ReviewSubmissions";
