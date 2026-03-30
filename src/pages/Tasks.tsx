@@ -1,8 +1,11 @@
-import { useState, ReactNode } from "react";
+import { useState, useEffect, ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { useApp, Platform } from "@/contexts/AppContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Timer, CheckCircle2, Flame, Globe } from "lucide-react";
+import { ExternalLink, Clock, CheckCircle2, XCircle, Flame, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
 
@@ -17,32 +20,36 @@ const platforms: { key: Platform | "all"; label: string; icon: ReactNode }[] = [
 ];
 
 const Tasks = () => {
-  const { tasks, completeTask } = useApp();
+  const { tasks } = useApp();
+  const { user: authUser } = useAuth();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<Platform | "all">("all");
-  const [activeTask, setActiveTask] = useState<string | null>(null);
-  const [timer, setTimer] = useState(0);
-  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [submissionMap, setSubmissionMap] = useState<Record<string, string>>({});
+
+  // Fetch user's submissions to show status
+  useEffect(() => {
+    if (!authUser) return;
+    supabase
+      .from("task_submissions")
+      .select("task_id, status")
+      .eq("user_id", authUser.id)
+      .then(({ data }) => {
+        if (data) {
+          const map: Record<string, string> = {};
+          data.forEach((s: any) => {
+            // Keep the latest/best status per task
+            if (!map[s.task_id] || s.status === "approved" || (s.status === "pending" && map[s.task_id] !== "approved")) {
+              map[s.task_id] = s.status;
+            }
+          });
+          setSubmissionMap(map);
+        }
+      });
+  }, [authUser]);
 
   const filtered = [...tasks]
     .filter(t => filter === "all" || t.platform === filter)
     .sort((a, b) => b.reward - a.reward);
-
-  const startTask = (taskId: string) => {
-    setActiveTask(taskId);
-    setTimer(5);
-    const interval = setInterval(() => {
-      setTimer(prev => {
-        if (prev <= 1) { clearInterval(interval); return 0; }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const verifyTask = (taskId: string) => {
-    completeTask(taskId);
-    setCompleted(prev => new Set(prev).add(taskId));
-    setActiveTask(null);
-  };
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -62,10 +69,9 @@ const Tasks = () => {
 
       <div className="px-5 mt-5 space-y-3">
         {filtered.map((task, i) => {
-          const isActive = activeTask === task.id;
-          const isDone = completed.has(task.id);
+          const status = submissionMap[task.id];
           return (
-            <Card key={task.id} className={cn("border-border animate-fade-in-up overflow-hidden", isDone && "opacity-60")} style={{ animationDelay: `${i * 50}ms` }}>
+            <Card key={task.id} className={cn("border-border animate-fade-in-up overflow-hidden", status === "approved" && "opacity-60")} style={{ animationDelay: `${i * 50}ms` }}>
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 shrink-0">{platforms.find(p => p.key === task.platform)?.icon}</div>
@@ -90,28 +96,25 @@ const Tasks = () => {
                     <p className="text-[10px] text-muted-foreground">credits</p>
                   </div>
                 </div>
-                {!isDone && (
-                  <div className="mt-3 flex gap-2">
-                    {!isActive ? (
-                      <Button size="sm" className="w-full h-9 rounded-xl gradient-primary text-primary-foreground text-xs font-semibold gap-1.5" onClick={() => startTask(task.id)}>
-                        <ExternalLink className="h-3.5 w-3.5" /> Start Task
-                      </Button>
-                    ) : timer > 0 ? (
-                      <Button size="sm" disabled className="w-full h-9 rounded-xl text-xs font-semibold gap-1.5">
-                        <Timer className="h-3.5 w-3.5 animate-pulse-soft" /> Verifying... {timer}s
-                      </Button>
-                    ) : (
-                      <Button size="sm" className="w-full h-9 rounded-xl bg-success text-success-foreground text-xs font-semibold gap-1.5" onClick={() => verifyTask(task.id)}>
-                        <CheckCircle2 className="h-3.5 w-3.5" /> Claim +{task.reward} Credits
-                      </Button>
-                    )}
-                  </div>
-                )}
-                {isDone && (
-                  <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-success font-semibold">
-                    <CheckCircle2 className="h-4 w-4" /> Completed!
-                  </div>
-                )}
+                <div className="mt-3">
+                  {status === "approved" ? (
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-success font-semibold">
+                      <CheckCircle2 className="h-4 w-4" /> Completed!
+                    </div>
+                  ) : status === "pending" ? (
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-warning font-semibold">
+                      <Clock className="h-4 w-4" /> Pending Review
+                    </div>
+                  ) : status === "rejected" ? (
+                    <Button size="sm" className="w-full h-9 rounded-xl gradient-primary text-primary-foreground text-xs font-semibold gap-1.5" onClick={() => navigate(`/task/${task.id}`)}>
+                      <XCircle className="h-3.5 w-3.5" /> Rejected — Resubmit
+                    </Button>
+                  ) : (
+                    <Button size="sm" className="w-full h-9 rounded-xl gradient-primary text-primary-foreground text-xs font-semibold gap-1.5" onClick={() => navigate(`/task/${task.id}`)}>
+                      <ExternalLink className="h-3.5 w-3.5" /> Start Task
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
           );
