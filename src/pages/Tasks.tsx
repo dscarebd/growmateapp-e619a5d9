@@ -105,15 +105,7 @@ const Tasks = () => {
                   </div>
                 </div>
                 <div className="mt-3">
-                  {status === "approved" ? (
-                    <div className="flex items-center justify-center gap-1.5 text-xs text-success font-semibold">
-                      <CheckCircle2 className="h-4 w-4" /> Completed!
-                    </div>
-                  ) : status === "pending" ? (
-                    <div className="flex items-center justify-center gap-1.5 text-xs text-warning font-semibold">
-                      <Clock className="h-4 w-4" /> Pending Review
-                    </div>
-                  ) : status === "rejected" ? (
+                  {status === "rejected" ? (
                     <Button size="sm" className="w-full h-9 rounded-xl gradient-primary text-primary-foreground text-xs font-semibold gap-1.5" onClick={() => navigate(`/task/${task.id}`)}>
                       <XCircle className="h-3.5 w-3.5" /> Rejected — Resubmit
                     </Button>
