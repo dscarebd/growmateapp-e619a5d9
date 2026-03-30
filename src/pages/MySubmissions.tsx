@@ -67,6 +67,26 @@ const MySubmissions = () => {
 
   useEffect(() => { fetchSubmissions(); }, [fetchSubmissions]);
 
+  // Real-time subscription for status changes
+  useEffect(() => {
+    if (!authUser) return;
+    const channel = supabase
+      .channel("my-submissions")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "task_submissions",
+          filter: `user_id=eq.${authUser.id}`,
+        },
+        () => { fetchSubmissions(); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [authUser, fetchSubmissions]);
+
   const filtered = filter === "all" ? submissions : submissions.filter(s => s.status === filter);
 
   const counts = {
