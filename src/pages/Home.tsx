@@ -38,7 +38,7 @@ const Home = () => {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
   const activeCampaigns = campaigns.filter(c => c.status === "active");
-  const topTasks = [...tasks].sort((a, b) => b.reward - a.reward).slice(0, 3);
+  const topTasks = [...tasks].sort((a, b) => b.reward - a.reward).slice(0, 5);
 
   const quickActions = [
     { icon: Coins, label: "Earn", path: "/tasks", color: "bg-primary/10 text-primary" },
