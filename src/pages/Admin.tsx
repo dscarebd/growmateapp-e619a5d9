@@ -493,15 +493,26 @@ const Admin = () => {
                             {p.notes && <p>Notes: {p.notes}</p>}
                             <p>{new Date(p.created_at).toLocaleDateString()}</p>
                           </div>
-                          {p.status === "pending" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" className="h-7 text-xs flex-1 rounded-lg bg-success text-success-foreground" onClick={() => admin.approvePayment(p)}>
-                                <CheckCircle2 className="h-3 w-3 mr-1" /> Approve & Add Credits
-                              </Button>
-                              <Button size="sm" variant="outline" className="h-7 text-xs flex-1 rounded-lg text-destructive" onClick={() => admin.rejectPayment(p.id)}>
-                                <XCircle className="h-3 w-3 mr-1" /> Reject
-                              </Button>
-                            </div>
+                          <div className="flex gap-2 mt-3">
+                            <Button size="sm" variant="outline" className="h-7 text-xs rounded-lg" onClick={() => {
+                              setEditPaymentDialog(p.id);
+                              setEditPaymentMethod(p.method);
+                              setEditPaymentRef(p.transaction_ref || "");
+                              setEditPaymentNotes(p.notes || "");
+                            }}>
+                              <Pencil className="h-3 w-3 mr-1" /> Edit
+                            </Button>
+                            {p.status === "pending" && (
+                              <>
+                                <Button size="sm" className="h-7 text-xs flex-1 rounded-lg bg-success text-success-foreground" onClick={() => admin.approvePayment(p)}>
+                                  <CheckCircle2 className="h-3 w-3 mr-1" /> Approve
+                                </Button>
+                                <Button size="sm" variant="outline" className="h-7 text-xs rounded-lg text-destructive" onClick={() => admin.rejectPayment(p.id)}>
+                                  <XCircle className="h-3 w-3 mr-1" /> Reject
+                                </Button>
+                              </>
+                            )}
+                          </div>
                           )}
                         </CardContent>
                       </Card>
