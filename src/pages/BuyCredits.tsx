@@ -6,7 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Coins, Copy, Sparkles, CheckCircle, Clock, XCircle, Zap, Crown, Gem, Rocket } from "lucide-react";
+import { Coins, Copy, Sparkles, CheckCircle, Clock, XCircle, Zap, Crown, Gem, Rocket, Wallet } from "lucide-react";
+import { BKashIcon, NagadIcon, BinanceIcon, BankIcon } from "@/components/PaymentIcons";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +22,15 @@ const packs = [
   { id: "premium", label: "Premium", credits: 5000, price: 50, icon: Crown, color: "from-yellow-500 to-orange-400", popular: false },
   { id: "elite", label: "Elite", credits: 10000, price: 100, icon: Gem, color: "from-pink-500 to-rose-400", popular: false },
 ];
+
+const getPaymentIcon = (name: string) => {
+  const n = name.toLowerCase();
+  if (n.includes("bkash")) return <BKashIcon className="h-5 w-5" />;
+  if (n.includes("nagad")) return <NagadIcon className="h-5 w-5" />;
+  if (n.includes("binance")) return <BinanceIcon className="h-5 w-5" />;
+  if (n.includes("bank")) return <BankIcon className="h-5 w-5" />;
+  return <Wallet className="h-5 w-5" />;
+};
 
 const FALLBACK_METHODS = [
   { id: "bKash", label: "bKash", instructions: "Send payment to:", detail: "01XXXXXXXXX", note: "Use 'Send Money' option. Personal number." },
@@ -261,12 +271,13 @@ const BuyCredits = () => {
                     key={m.id}
                     onClick={() => setPaymentMethod(m.id)}
                     className={cn(
-                      "py-2.5 px-3 rounded-xl text-xs font-semibold border-2 transition-all",
+                      "py-2.5 px-3 rounded-xl text-xs font-semibold border-2 transition-all flex items-center gap-2",
                       paymentMethod === m.id
                         ? "border-primary bg-primary/10 text-primary"
                         : "border-border bg-card text-muted-foreground"
                     )}
                   >
+                    {getPaymentIcon(m.label)}
                     {m.label}
                   </button>
                 ))}
