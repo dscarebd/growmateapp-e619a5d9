@@ -13,6 +13,7 @@ import Onboarding from "@/pages/Onboarding";
 import Auth from "@/pages/Auth";
 import Home from "@/pages/Home";
 import Tasks from "@/pages/Tasks";
+import TaskDetail from "@/pages/TaskDetail";
 import CreateCampaign from "@/pages/CreateCampaign";
 import WalletPage from "@/pages/WalletPage";
 import Profile from "@/pages/Profile";
