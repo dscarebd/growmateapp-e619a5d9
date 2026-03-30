@@ -22,6 +22,7 @@ const Profile = () => {
   const [copied, setCopied] = useState(false);
   const [referralCount, setReferralCount] = useState(0);
   const [bonusesEarned, setBonusesEarned] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
 
   // Edit states
   const [editDialog, setEditDialog] = useState(false);
@@ -38,6 +39,15 @@ const Profile = () => {
       .then(({ count }) => setReferralCount(count ?? 0));
     supabase.from("referral_bonuses").select("bonus_amount").eq("referrer_id", authUser.id)
       .then(({ data }) => setBonusesEarned(data?.reduce((s: number, r: any) => s + r.bonus_amount, 0) ?? 0));
+
+    // Fetch pending submission count for advertiser
+    supabase.from("tasks").select("id").eq("user_id", authUser.id).then(({ data: tasks }) => {
+      if (!tasks || tasks.length === 0) return;
+      const taskIds = tasks.map(t => t.id);
+      supabase.from("task_submissions").select("id", { count: "exact", head: true })
+        .in("task_id", taskIds).eq("status", "pending" as any)
+        .then(({ count }) => setPendingCount(count ?? 0));
+    });
   }, [authUser]);
 
   const copyCode = () => {
@@ -144,7 +154,7 @@ const Profile = () => {
 
   const menuItems = [
     { icon: ClipboardList, label: "My Submissions", action: () => navigate("/my-submissions") },
-    { icon: Eye, label: "Review Submissions", action: () => navigate("/review-submissions") },
+    { icon: Eye, label: "Review Submissions", action: () => navigate("/review-submissions"), badge: pendingCount },
     { icon: Settings, label: "Settings", action: () => navigate("/settings") },
     { icon: Shield, label: "Security", action: () => navigate("/security") },
     { icon: FileText, label: "Policies", action: () => navigate("/policies") },
@@ -258,6 +268,11 @@ const Profile = () => {
             <button key={item.label} onClick={item.action} className="flex w-full items-center gap-3 rounded-xl p-3.5 hover:bg-muted transition-colors">
               <item.icon className="h-5 w-5 text-muted-foreground" />
               <span className="flex-1 text-left text-sm font-medium text-foreground">{item.label}</span>
+              {"badge" in item && (item as any).badge > 0 && (
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] font-bold text-destructive-foreground">
+                  {(item as any).badge}
+                </span>
+              )}
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </button>
           ))}
