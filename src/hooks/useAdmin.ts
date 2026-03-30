@@ -300,7 +300,7 @@ export const useAdmin = () => {
   };
 
   // Payment method CRUD
-  const addPaymentMethod = async (method: { name: string; instructions: string; detail: string; note: string }) => {
+  const addPaymentMethod = async (method: { name: string; instructions: string; detail: string; note: string; icon_url?: string }) => {
     const maxOrder = paymentMethods.reduce((m, p) => Math.max(m, p.sort_order || 0), -1);
     const { error } = await supabase.from("payment_methods" as any).insert({ ...method, sort_order: maxOrder + 1 });
     if (error) { toast.error("Failed to add payment method"); return; }
@@ -308,7 +308,7 @@ export const useAdmin = () => {
     fetchAll();
   };
 
-  const updatePaymentMethod = async (id: string, updates: Partial<{ name: string; instructions: string; detail: string; note: string; is_active: boolean; sort_order: number }>) => {
+  const updatePaymentMethod = async (id: string, updates: Partial<{ name: string; instructions: string; detail: string; note: string; is_active: boolean; sort_order: number; icon_url: string | null }>) => {
     const { error } = await supabase.from("payment_methods" as any).update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id);
     if (error) { toast.error("Failed to update payment method"); return; }
     toast.success("Payment method updated");
