@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
-  ArrowLeft, Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle,
+  Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle,
   Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -128,8 +128,7 @@ const Admin = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="gradient-primary px-5 pt-12 pb-6 rounded-b-3xl">
-        <div className="flex items-center gap-3 mb-4">
-          <button onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5 text-primary-foreground" /></button>
+        <div className="mb-4">
           <h1 className="text-lg font-bold text-primary-foreground">Admin Panel</h1>
         </div>
         <div className="grid grid-cols-3 gap-2">
