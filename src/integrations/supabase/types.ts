@@ -32,6 +32,54 @@ export type Database = {
         }
         Relationships: []
       }
+      advertiser_reviews: {
+        Row: {
+          advertiser_id: string
+          created_at: string
+          id: string
+          rating: number
+          review_text: string | null
+          reviewer_id: string
+          submission_id: string
+          task_id: string
+        }
+        Insert: {
+          advertiser_id: string
+          created_at?: string
+          id?: string
+          rating: number
+          review_text?: string | null
+          reviewer_id: string
+          submission_id: string
+          task_id: string
+        }
+        Update: {
+          advertiser_id?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          review_text?: string | null
+          reviewer_id?: string
+          submission_id?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "advertiser_reviews_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "task_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advertiser_reviews_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
           action: Database["public"]["Enums"]["task_action"]
@@ -254,6 +302,53 @@ export type Database = {
         }
         Relationships: []
       }
+      task_submissions: {
+        Row: {
+          advertiser_id: string
+          id: string
+          proof_images: string[] | null
+          proof_text: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          status: Database["public"]["Enums"]["submission_status"]
+          submitted_at: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          advertiser_id: string
+          id?: string
+          proof_images?: string[] | null
+          proof_text?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          submitted_at?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          advertiser_id?: string
+          id?: string
+          proof_images?: string[] | null
+          proof_text?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          submitted_at?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_submissions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           action: Database["public"]["Enums"]["task_action"]
@@ -265,6 +360,7 @@ export type Database = {
           is_high_reward: boolean
           link: string
           platform: Database["public"]["Enums"]["platform_type"]
+          proof_requirements: string | null
           reward: number
           title: string
           total_slots: number
@@ -281,6 +377,7 @@ export type Database = {
           is_high_reward?: boolean
           link: string
           platform: Database["public"]["Enums"]["platform_type"]
+          proof_requirements?: string | null
           reward?: number
           title: string
           total_slots?: number
@@ -297,6 +394,7 @@ export type Database = {
           is_high_reward?: boolean
           link?: string
           platform?: Database["public"]["Enums"]["platform_type"]
+          proof_requirements?: string | null
           reward?: number
           title?: string
           total_slots?: number
@@ -376,6 +474,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_submission: {
+        Args: { _submission_id: string }
+        Returns: undefined
+      }
       award_referral_bonus: {
         Args: { _trigger: string; _user_id: string }
         Returns: undefined
@@ -397,6 +499,7 @@ export type Database = {
         | "facebook"
         | "twitter"
         | "telegram"
+      submission_status: "pending" | "approved" | "rejected"
       task_action:
         | "like"
         | "follow"
@@ -542,6 +645,7 @@ export const Constants = {
         "twitter",
         "telegram",
       ],
+      submission_status: ["pending", "approved", "rejected"],
       task_action: ["like", "follow", "subscribe", "share", "comment", "view"],
       transaction_type: ["earned", "spent", "purchased", "withdrawn"],
       withdrawal_status: ["pending", "approved", "rejected", "processing"],
