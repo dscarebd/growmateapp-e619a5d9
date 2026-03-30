@@ -14,6 +14,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import CompletedTasks from "@/components/CompletedTasks";
 
 const Profile = () => {
   const { user, refreshData } = useApp();
@@ -262,6 +263,8 @@ const Profile = () => {
             </div>
           </CardContent>
         </Card>
+
+        <CompletedTasks />
 
         <div className="space-y-1">
           {menuItems.map(item => (
