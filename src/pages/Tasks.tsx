@@ -79,7 +79,7 @@ const Tasks = () => {
         {filtered.map((task, i) => {
           const status = submissionMap[task.id];
           return (
-            <Card key={task.id} className={cn("border-border animate-fade-in-up overflow-hidden", status === "approved" && "opacity-60")} style={{ animationDelay: `${i * 50}ms` }}>
+            <Card key={task.id} className={cn("border-border animate-fade-in-up overflow-hidden")} style={{ animationDelay: `${i * 50}ms` }}>
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 shrink-0">{platforms.find(p => p.key === task.platform)?.icon}</div>
