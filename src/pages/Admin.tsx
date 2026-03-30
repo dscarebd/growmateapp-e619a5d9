@@ -140,8 +140,17 @@ const Admin = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="gradient-primary px-5 pt-12 pb-6 rounded-b-3xl">
-        <div className="mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <h1 className="text-lg font-bold text-primary-foreground">Admin Panel</h1>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-white/10 gap-1 text-xs"
+            onClick={() => navigate("/home")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to App
+          </Button>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {[
