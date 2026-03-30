@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,12 +22,12 @@ const packs = [
   { id: "elite", label: "Elite", credits: 10000, price: 100, icon: Gem, color: "from-pink-500 to-rose-400", popular: false },
 ];
 
-const paymentMethods = [
+const FALLBACK_METHODS = [
   { id: "bKash", label: "bKash", instructions: "Send payment to:", detail: "01XXXXXXXXX", note: "Use 'Send Money' option. Personal number." },
   { id: "Nagad", label: "Nagad", instructions: "Send payment to:", detail: "01XXXXXXXXX", note: "Use 'Send Money' from Nagad app." },
   { id: "Bank Transfer", label: "Bank Transfer", instructions: "Transfer to:", detail: "AC: 1234567890 • Bank: Example Bank • Branch: Main", note: "Include your username in the reference." },
   { id: "Binance", label: "Binance", instructions: "Send USDT (TRC20) to:", detail: "TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", note: "Only send USDT via TRC20 network. Other tokens will be lost." },
-] as const;
+];
 
 const BuyCredits = () => {
   const { user: authUser } = useAuth();

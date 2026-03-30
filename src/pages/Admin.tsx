@@ -466,16 +466,83 @@ const Admin = () => {
         {/* PAYMENTS TAB */}
         {tab === "payments" && (
           <div className="space-y-3 animate-fade-in">
+            {/* Payment Methods Management */}
             <Card className="border-primary/30 bg-accent/30">
               <CardContent className="p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-1">Manual Payment Methods</h3>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {PAYMENT_METHODS.map(m => (
-                    <span key={m} className="text-[11px] bg-card px-3 py-1.5 rounded-full border border-border font-medium text-foreground">{m}</span>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-foreground">Payment Methods</h3>
+                  <Button size="sm" className="h-7 text-xs rounded-lg gradient-primary text-primary-foreground" onClick={() => {
+                    setPmethodDialog("new");
+                    setPmethodName(""); setPmethodInstructions("Send payment to:"); setPmethodDetail(""); setPmethodNote("");
+                  }}>
+                    <Plus className="h-3 w-3 mr-1" /> Add New
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  {admin.paymentMethods.map(m => (
+                    <div key={m.id} className={cn("flex items-center gap-2 p-2.5 rounded-xl border", m.is_active ? "border-border bg-card" : "border-border/50 bg-muted/30 opacity-60")}>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-foreground">{m.name}</p>
+                        <p className="text-[10px] text-muted-foreground truncate">{m.detail}</p>
+                      </div>
+                      <button onClick={() => admin.updatePaymentMethod(m.id, { is_active: !m.is_active })} className="p-1">
+                        {m.is_active ? <ToggleRight className="h-5 w-5 text-success" /> : <ToggleLeft className="h-5 w-5 text-muted-foreground" />}
+                      </button>
+                      <button onClick={() => {
+                        setPmethodDialog(m.id);
+                        setPmethodName(m.name); setPmethodInstructions(m.instructions); setPmethodDetail(m.detail); setPmethodNote(m.note);
+                      }} className="p-1">
+                        <Pencil className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
+                      </button>
+                      <button onClick={() => { if (confirm("Delete this payment method?")) admin.deletePaymentMethod(m.id); }} className="p-1">
+                        <Trash2 className="h-3.5 w-3.5 text-destructive/60 hover:text-destructive" />
+                      </button>
+                    </div>
                   ))}
+                  {admin.paymentMethods.length === 0 && <p className="text-[11px] text-muted-foreground text-center py-2">No payment methods configured</p>}
                 </div>
               </CardContent>
             </Card>
+
+            {/* Payment Method Add/Edit Dialog */}
+            <Dialog open={!!pmethodDialog} onOpenChange={(open) => !open && setPmethodDialog(null)}>
+              <DialogContent className="rounded-2xl max-w-[350px]">
+                <DialogHeader>
+                  <DialogTitle className="text-sm">{pmethodDialog === "new" ? "Add Payment Method" : "Edit Payment Method"}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Name</label>
+                    <Input value={pmethodName} onChange={e => setPmethodName(e.target.value)} className="h-9 rounded-xl text-xs" placeholder="e.g. bKash, Nagad, Binance" />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Instructions</label>
+                    <Input value={pmethodInstructions} onChange={e => setPmethodInstructions(e.target.value)} className="h-9 rounded-xl text-xs" placeholder="e.g. Send payment to:" />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Account Number / Address</label>
+                    <Input value={pmethodDetail} onChange={e => setPmethodDetail(e.target.value)} className="h-9 rounded-xl text-xs" placeholder="e.g. 01XXXXXXXXX" />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Note</label>
+                    <Input value={pmethodNote} onChange={e => setPmethodNote(e.target.value)} className="h-9 rounded-xl text-xs" placeholder="Extra instructions for users" />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button size="sm" variant="outline" className="rounded-xl text-xs" onClick={() => setPmethodDialog(null)}>Cancel</Button>
+                  <Button size="sm" className="rounded-xl text-xs gradient-primary text-primary-foreground" disabled={!pmethodName.trim() || !pmethodDetail.trim()} onClick={async () => {
+                    if (pmethodDialog === "new") {
+                      await admin.addPaymentMethod({ name: pmethodName, instructions: pmethodInstructions, detail: pmethodDetail, note: pmethodNote });
+                    } else {
+                      await admin.updatePaymentMethod(pmethodDialog!, { name: pmethodName, instructions: pmethodInstructions, detail: pmethodDetail, note: pmethodNote });
+                    }
+                    setPmethodDialog(null);
+                  }}>
+                    {pmethodDialog === "new" ? "Add" : "Save"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             {(() => {
               const totalPages = Math.max(1, Math.ceil(admin.payments.length / PM_PER_PAGE));
@@ -483,6 +550,7 @@ const Admin = () => {
               const paginated = admin.payments.slice((safePage - 1) * PM_PER_PAGE, safePage * PM_PER_PAGE);
               return (
                 <>
+                  <h3 className="text-sm font-semibold text-foreground pt-1">Payment Requests</h3>
                   {paginated.map(p => {
                     const ownerProfile = admin.profiles.find(pr => pr.id === p.user_id);
                     return (
