@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { ExternalLink, Star, Clock, CheckCircle2, XCircle, ImagePlus, Trash2 } from "lucide-react";
+import { ExternalLink, Star, Clock, CheckCircle2, XCircle, ImagePlus, Trash2, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
 import { toast } from "sonner";
@@ -169,7 +169,10 @@ const TaskDetail = () => {
 
       <div className="px-5 mt-5 space-y-4">
         {/* Advertiser Card */}
-        <Card className="border-border">
+        <Card
+          className="border-border cursor-pointer hover:bg-muted/30 transition-colors"
+          onClick={() => navigate(`/advertiser/${task.user_id}`)}
+        >
           <CardContent className="p-4 flex items-center gap-3">
             <div className="shrink-0">
               {advertiserProfile?.avatar_url ? (
@@ -196,7 +199,7 @@ const TaskDetail = () => {
                 )}
               </div>
             </div>
-            <span className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded-full">Advertiser</span>
+            <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
           </CardContent>
         </Card>
 

@@ -14,6 +14,7 @@ import Auth from "@/pages/Auth";
 import Home from "@/pages/Home";
 import Tasks from "@/pages/Tasks";
 import TaskDetail from "@/pages/TaskDetail";
+import AdvertiserProfile from "@/pages/AdvertiserProfile";
 import CreateCampaign from "@/pages/CreateCampaign";
 import MySubmissions from "@/pages/MySubmissions";
 import ReviewSubmissions from "@/pages/ReviewSubmissions";
@@ -107,6 +108,7 @@ const AnimatedRoutes = () => {
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
           <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
           <Route path="/task/:id" element={<ProtectedRoute><TaskDetail /></ProtectedRoute>} />
+          <Route path="/advertiser/:id" element={<ProtectedRoute><AdvertiserProfile /></ProtectedRoute>} />
           <Route path="/create-campaign" element={<ProtectedRoute><CreateCampaign /></ProtectedRoute>} />
           <Route path="/my-submissions" element={<ProtectedRoute><MySubmissions /></ProtectedRoute>} />
           <Route path="/review-submissions" element={<ProtectedRoute><ReviewSubmissions /></ProtectedRoute>} />
