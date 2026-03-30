@@ -168,26 +168,6 @@ const TaskDetail = () => {
       </div>
 
       <div className="px-5 mt-5 space-y-4">
-        {/* Task Info */}
-        <Card className="border-border">
-          <CardContent className="p-4 space-y-3">
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Description</p>
-              <p className="text-sm text-foreground mt-1">{task.description || "Complete the required action on the platform."}</p>
-            </div>
-            <div className="flex gap-4 text-xs text-muted-foreground">
-              <span className="capitalize">Action: <strong className="text-foreground">{task.action}</strong></span>
-              <span>Slots: <strong className="text-foreground">{task.completed_count}/{task.total_slots}</strong></span>
-            </div>
-            {task.link && (
-              <a href={task.link} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary mt-1">
-                <ExternalLink className="h-3.5 w-3.5" /> Open Content Link
-              </a>
-            )}
-          </CardContent>
-        </Card>
-
         {/* Advertiser Card */}
         <Card className="border-border">
           <CardContent className="p-4 flex items-center gap-3">
@@ -217,6 +197,26 @@ const TaskDetail = () => {
               </div>
             </div>
             <span className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded-full">Advertiser</span>
+          </CardContent>
+        </Card>
+
+        {/* Task Info */}
+        <Card className="border-border">
+          <CardContent className="p-4 space-y-3">
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Description</p>
+              <p className="text-sm text-foreground mt-1">{task.description || "Complete the required action on the platform."}</p>
+            </div>
+            <div className="flex gap-4 text-xs text-muted-foreground">
+              <span className="capitalize">Action: <strong className="text-foreground">{task.action}</strong></span>
+              <span>Slots: <strong className="text-foreground">{task.completed_count}/{task.total_slots}</strong></span>
+            </div>
+            {task.link && (
+              <a href={task.link} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary mt-1">
+                <ExternalLink className="h-3.5 w-3.5" /> Open Content Link
+              </a>
+            )}
           </CardContent>
         </Card>
 
