@@ -200,6 +200,42 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_methods: {
+        Row: {
+          created_at: string
+          detail: string
+          id: string
+          instructions: string
+          is_active: boolean
+          name: string
+          note: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string
+          id?: string
+          instructions?: string
+          is_active?: boolean
+          name: string
+          note?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string
+          id?: string
+          instructions?: string
+          is_active?: boolean
+          name?: string
+          note?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
