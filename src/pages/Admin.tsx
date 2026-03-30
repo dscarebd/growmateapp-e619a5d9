@@ -11,6 +11,8 @@ import {
   Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft, Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import {
   AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
@@ -574,7 +576,7 @@ const Admin = () => {
                     if (error) { toast.error("Failed to update payment"); return; }
                     toast.success("Payment updated");
                     setEditPaymentDialog(null);
-                    admin.refetch();
+                    admin.fetchAll();
                   }}>Save</Button>
                 </DialogFooter>
               </DialogContent>
