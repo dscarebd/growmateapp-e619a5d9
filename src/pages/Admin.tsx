@@ -83,6 +83,9 @@ const Admin = () => {
   const [pmethodInstructions, setPmethodInstructions] = useState("");
   const [pmethodDetail, setPmethodDetail] = useState("");
   const [pmethodNote, setPmethodNote] = useState("");
+  const [pmethodIconFile, setPmethodIconFile] = useState<File | null>(null);
+  const [pmethodIconPreview, setPmethodIconPreview] = useState<string | null>(null);
+  const [pmethodIconUploading, setPmethodIconUploading] = useState(false);
 
   const PAYMENT_METHODS = admin.paymentMethods.length > 0
     ? admin.paymentMethods.map(m => m.name)
