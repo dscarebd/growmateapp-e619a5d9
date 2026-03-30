@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle,
-  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft,
+  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft, Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -71,6 +71,10 @@ const Admin = () => {
   const REF_PER_PAGE = 10;
   const [editBonusAmount, setEditBonusAmount] = useState("");
   const [editMinBudget, setEditMinBudget] = useState("");
+  const [editPaymentDialog, setEditPaymentDialog] = useState<string | null>(null);
+  const [editPaymentMethod, setEditPaymentMethod] = useState("");
+  const [editPaymentRef, setEditPaymentRef] = useState("");
+  const [editPaymentNotes, setEditPaymentNotes] = useState("");
 
   // Charts (hooks must be before conditionals)
   const platformDistribution = useMemo(() => {
