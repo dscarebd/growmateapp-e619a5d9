@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
+import * as PlatformIcons from "@/components/PlatformIcons";
 import { format } from "date-fns";
 
 interface CompletedTask {
