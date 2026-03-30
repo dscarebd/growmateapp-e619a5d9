@@ -117,7 +117,7 @@ const Home = () => {
           </div>
           <div className="space-y-2">
             {topTasks.map(t => (
-              <Card key={t.id} className="hover-scale border-border" onClick={() => navigate("/tasks")}>
+              <Card key={t.id} className="hover-scale border-border" onClick={() => navigate(`/task/${t.id}`)}>
                 <CardContent className="p-4 flex items-center gap-3">
                   <div className="shrink-0">{platformIcons[t.platform]}</div>
                   <div className="flex-1 min-w-0">
