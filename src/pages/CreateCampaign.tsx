@@ -1,9 +1,11 @@
 import { useState, ReactNode } from "react";
+
 import { useNavigate } from "react-router-dom";
 import { useApp, Platform, TaskAction } from "@/contexts/AppContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, ArrowRight, CheckCircle2, Heart, UserPlus, Bell, Share2, MessageCircle, Repeat2, DoorOpen, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
@@ -92,6 +94,7 @@ const CreateCampaign = () => {
   const [title, setTitle] = useState("");
   const [budget, setBudget] = useState("");
   const [reward, setReward] = useState("");
+  const [proofRequirements, setProofRequirements] = useState("");
   const [done, setDone] = useState(false);
   const [step1Touched, setStep1Touched] = useState(false);
 
@@ -108,7 +111,7 @@ const CreateCampaign = () => {
   const canAfford = budgetNum > 0 && rewardNum > 0 && budgetNum <= credits && rewardNum <= budgetNum;
 
   const handleCreate = () => {
-    createCampaign({ platform, action, link, title, totalBudget: budgetNum, rewardPerAction: rewardNum });
+    createCampaign({ platform, action, link, title, totalBudget: budgetNum, rewardPerAction: rewardNum, proofRequirements: proofRequirements.trim() });
     setDone(true);
   };
 
@@ -151,7 +154,7 @@ const CreateCampaign = () => {
         </div>
       </div>
     </div>,
-    // Step 1: Details
+    // Step 1: Details & Proof Requirements
     <div key="1" className="space-y-4 animate-fade-in-up">
       <div>
         <label className="text-sm font-semibold text-foreground mb-2 block">Campaign Title</label>
@@ -162,6 +165,17 @@ const CreateCampaign = () => {
         <label className="text-sm font-semibold text-foreground mb-2 block">Content Link</label>
         <Input value={link} onChange={e => setLink(e.target.value)} placeholder="https://..." className={cn("h-12 rounded-xl bg-muted/50 border-0", linkError && "ring-2 ring-destructive")} />
         {linkError && <p className="text-xs text-destructive mt-1">{linkError}</p>}
+      </div>
+      <div>
+        <label className="text-sm font-semibold text-foreground mb-2 block">Proof Requirements</label>
+        <Textarea
+          value={proofRequirements}
+          onChange={e => setProofRequirements(e.target.value)}
+          placeholder="e.g., Take a screenshot showing you subscribed to the channel and include your username"
+          className="min-h-[80px] rounded-xl bg-muted/50 border-0 text-sm"
+          maxLength={500}
+        />
+        <p className="text-xs text-muted-foreground mt-1">Tell users what proof they need to submit for verification</p>
       </div>
     </div>,
     // Step 2: Budget

@@ -27,7 +27,7 @@ interface AppContextType {
   addCredits: (amount: number) => void;
   spendCredits: (amount: number) => boolean;
   completeTask: (taskId: string) => void;
-  createCampaign: (campaign: { platform: Platform; action: TaskAction; link: string; title: string; totalBudget: number; rewardPerAction: number }) => void;
+  createCampaign: (campaign: { platform: Platform; action: TaskAction; link: string; title: string; totalBudget: number; rewardPerAction: number; proofRequirements?: string }) => void;
   refreshData: () => void;
 }
 
@@ -128,7 +128,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (data) setTransactions(data);
   }, [authUser, tasks, credits, profile]);
 
-  const createCampaign = useCallback(async (campaign: { platform: Platform; action: TaskAction; link: string; title: string; totalBudget: number; rewardPerAction: number }) => {
+  const createCampaign = useCallback(async (campaign: { platform: Platform; action: TaskAction; link: string; title: string; totalBudget: number; rewardPerAction: number; proofRequirements?: string }) => {
     if (!authUser) return;
     const estimatedReach = Math.floor(campaign.totalBudget / campaign.rewardPerAction);
 
@@ -145,6 +145,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }).select().single();
 
     if (newCampaign) setCampaigns(prev => [newCampaign, ...prev]);
+
+    // Also create a task so it appears in the marketplace
+    await supabase.from("tasks").insert({
+      user_id: authUser.id,
+      platform: campaign.platform,
+      action: campaign.action,
+      link: campaign.link,
+      title: campaign.title,
+      description: `${campaign.action} on ${campaign.platform}`,
+      reward: campaign.rewardPerAction,
+      total_slots: estimatedReach,
+      is_high_reward: campaign.rewardPerAction >= 15,
+      advertiser: profile?.name || "Advertiser",
+      proof_requirements: campaign.proofRequirements || "",
+    } as any);
 
     spendCredits(campaign.totalBudget);
 
