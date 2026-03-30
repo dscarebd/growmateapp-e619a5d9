@@ -277,7 +277,7 @@ const BuyCredits = () => {
                         : "border-border bg-card text-muted-foreground"
                     )}
                   >
-                    {getPaymentIcon(m.label)}
+                    {m.icon_url ? <img src={m.icon_url} alt={m.label} className="h-5 w-5 rounded object-contain" /> : getPaymentIcon(m.label)}
                     {m.label}
                   </button>
                 ))}
