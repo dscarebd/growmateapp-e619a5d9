@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Clock, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { Clock, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
 
@@ -106,9 +106,6 @@ const MySubmissions = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       <div className="gradient-primary px-5 pb-6 pt-12 rounded-b-3xl">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-primary-foreground/80 text-sm mb-3">
-          <ArrowLeft className="h-4 w-4" /> Back
-        </button>
         <h1 className="text-xl font-bold text-primary-foreground">My Submissions</h1>
         <p className="text-sm text-primary-foreground/70 mt-1">{submissions.length} total submissions</p>
       </div>

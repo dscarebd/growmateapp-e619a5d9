@@ -139,9 +139,6 @@ const TaskDetail = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="gradient-primary px-5 pb-6 pt-12 rounded-b-3xl">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-primary-foreground/80 text-sm mb-3">
-          <ArrowLeft className="h-4 w-4" /> Back
-        </button>
         <div className="flex items-start gap-3">
           <div className="shrink-0 mt-0.5">{platformIcons[task.platform]}</div>
           <div className="flex-1 min-w-0">
