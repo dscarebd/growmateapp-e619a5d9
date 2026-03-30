@@ -120,7 +120,18 @@ const Tasks = () => {
           );
         })}
         {filtered.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-12">No tasks available yet</p>
+          <div className="text-center py-12 space-y-2">
+            <p className="text-sm text-muted-foreground">
+              {tasks.length === 0
+                ? "No tasks available yet"
+                : tasks.every(t => authUser && t.user_id === authUser.id)
+                  ? "All tasks here are your own campaigns — they won't appear in your feed"
+                  : "You've completed or submitted all available tasks 🎉"}
+            </p>
+            {tasks.length > 0 && tasks.every(t => authUser && t.user_id === authUser.id) && (
+              <p className="text-xs text-muted-foreground/70">Other users will see your tasks in their marketplace</p>
+            )}
+          </div>
         )}
       </div>
     </div>
