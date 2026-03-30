@@ -32,11 +32,11 @@ const getPaymentIcon = (name: string) => {
   return <Wallet className="h-5 w-5" />;
 };
 
-const FALLBACK_METHODS = [
-  { id: "bKash", label: "bKash", instructions: "Send payment to:", detail: "01XXXXXXXXX", note: "Use 'Send Money' option. Personal number." },
-  { id: "Nagad", label: "Nagad", instructions: "Send payment to:", detail: "01XXXXXXXXX", note: "Use 'Send Money' from Nagad app." },
-  { id: "Bank Transfer", label: "Bank Transfer", instructions: "Transfer to:", detail: "AC: 1234567890 • Bank: Example Bank • Branch: Main", note: "Include your username in the reference." },
-  { id: "Binance", label: "Binance", instructions: "Send USDT (TRC20) to:", detail: "TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", note: "Only send USDT via TRC20 network. Other tokens will be lost." },
+const FALLBACK_METHODS: { id: string; label: string; instructions: string; detail: string; note: string; icon_url: string | null }[] = [
+  { id: "bKash", label: "bKash", instructions: "Send payment to:", detail: "01XXXXXXXXX", note: "Use 'Send Money' option. Personal number.", icon_url: null },
+  { id: "Nagad", label: "Nagad", instructions: "Send payment to:", detail: "01XXXXXXXXX", note: "Use 'Send Money' from Nagad app.", icon_url: null },
+  { id: "Bank Transfer", label: "Bank Transfer", instructions: "Transfer to:", detail: "AC: 1234567890 • Bank: Example Bank • Branch: Main", note: "Include your username in the reference.", icon_url: null },
+  { id: "Binance", label: "Binance", instructions: "Send USDT (TRC20) to:", detail: "TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", note: "Only send USDT via TRC20 network. Other tokens will be lost.", icon_url: null },
 ];
 
 const BuyCredits = () => {
@@ -58,7 +58,7 @@ const BuyCredits = () => {
     const fetchMethods = async () => {
       const { data } = await supabase.from("payment_methods" as any).select("*").eq("is_active", true).order("sort_order", { ascending: true });
       if (data && data.length > 0) {
-        const methods = data.map((m: any) => ({ id: m.name, label: m.name, instructions: m.instructions, detail: m.detail, note: m.note }));
+        const methods = data.map((m: any) => ({ id: m.name, label: m.name, instructions: m.instructions, detail: m.detail, note: m.note, icon_url: m.icon_url || null }));
         setPaymentMethods(methods);
         if (!paymentMethod) setPaymentMethod(methods[0].id);
       } else {
@@ -277,7 +277,7 @@ const BuyCredits = () => {
                         : "border-border bg-card text-muted-foreground"
                     )}
                   >
-                    {getPaymentIcon(m.label)}
+                    {m.icon_url ? <img src={m.icon_url} alt={m.label} className="h-5 w-5 rounded object-contain" /> : getPaymentIcon(m.label)}
                     {m.label}
                   </button>
                 ))}

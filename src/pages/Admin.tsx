@@ -83,6 +83,9 @@ const Admin = () => {
   const [pmethodInstructions, setPmethodInstructions] = useState("");
   const [pmethodDetail, setPmethodDetail] = useState("");
   const [pmethodNote, setPmethodNote] = useState("");
+  const [pmethodIconFile, setPmethodIconFile] = useState<File | null>(null);
+  const [pmethodIconPreview, setPmethodIconPreview] = useState<string | null>(null);
+  const [pmethodIconUploading, setPmethodIconUploading] = useState(false);
 
   const PAYMENT_METHODS = admin.paymentMethods.length > 0
     ? admin.paymentMethods.map(m => m.name)
@@ -473,7 +476,7 @@ const Admin = () => {
                   <h3 className="text-sm font-semibold text-foreground">Payment Methods</h3>
                   <Button size="sm" className="h-7 text-xs rounded-lg gradient-primary text-primary-foreground" onClick={() => {
                     setPmethodDialog("new");
-                    setPmethodName(""); setPmethodInstructions("Send payment to:"); setPmethodDetail(""); setPmethodNote("");
+                    setPmethodName(""); setPmethodInstructions("Send payment to:"); setPmethodDetail(""); setPmethodNote(""); setPmethodIconFile(null); setPmethodIconPreview(null);
                   }}>
                     <Plus className="h-3 w-3 mr-1" /> Add New
                   </Button>
@@ -481,6 +484,7 @@ const Admin = () => {
                 <div className="space-y-2">
                   {admin.paymentMethods.map(m => (
                     <div key={m.id} className={cn("flex items-center gap-2 p-2.5 rounded-xl border", m.is_active ? "border-border bg-card" : "border-border/50 bg-muted/30 opacity-60")}>
+                      {m.icon_url && <img src={m.icon_url} alt={m.name} className="h-6 w-6 rounded-md object-contain flex-shrink-0" />}
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-foreground">{m.name}</p>
                         <p className="text-[10px] text-muted-foreground truncate">{m.detail}</p>
@@ -490,7 +494,7 @@ const Admin = () => {
                       </button>
                       <button onClick={() => {
                         setPmethodDialog(m.id);
-                        setPmethodName(m.name); setPmethodInstructions(m.instructions); setPmethodDetail(m.detail); setPmethodNote(m.note);
+                        setPmethodName(m.name); setPmethodInstructions(m.instructions); setPmethodDetail(m.detail); setPmethodNote(m.note); setPmethodIconFile(null); setPmethodIconPreview(m.icon_url || null);
                       }} className="p-1">
                         <Pencil className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
                       </button>
@@ -527,18 +531,63 @@ const Admin = () => {
                     <label className="text-[11px] text-muted-foreground mb-1 block">Note</label>
                     <Input value={pmethodNote} onChange={e => setPmethodNote(e.target.value)} className="h-9 rounded-xl text-xs" placeholder="Extra instructions for users" />
                   </div>
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Icon (optional)</label>
+                    <div className="flex items-center gap-3">
+                      {pmethodIconPreview && (
+                        <img src={pmethodIconPreview} alt="icon" className="h-10 w-10 rounded-lg object-contain border border-border" />
+                      )}
+                      <label className="cursor-pointer text-xs text-primary font-semibold bg-primary/10 px-3 py-1.5 rounded-lg hover:bg-primary/20 transition-colors">
+                        {pmethodIconPreview ? "Change" : "Upload"}
+                        <input type="file" accept="image/*" className="hidden" onChange={e => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setPmethodIconFile(file);
+                            setPmethodIconPreview(URL.createObjectURL(file));
+                          }
+                        }} />
+                      </label>
+                      {pmethodIconPreview && (
+                        <button onClick={() => { setPmethodIconFile(null); setPmethodIconPreview(null); }} className="text-[10px] text-destructive hover:underline">Remove</button>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <DialogFooter>
                   <Button size="sm" variant="outline" className="rounded-xl text-xs" onClick={() => setPmethodDialog(null)}>Cancel</Button>
-                  <Button size="sm" className="rounded-xl text-xs gradient-primary text-primary-foreground" disabled={!pmethodName.trim() || !pmethodDetail.trim()} onClick={async () => {
+                  <Button size="sm" className="rounded-xl text-xs gradient-primary text-primary-foreground" disabled={!pmethodName.trim() || !pmethodDetail.trim() || pmethodIconUploading} onClick={async () => {
+                    let iconUrl: string | undefined = undefined;
+
+                    // Upload icon if a new file was selected
+                    if (pmethodIconFile) {
+                      setPmethodIconUploading(true);
+                      const ext = pmethodIconFile.name.split(".").pop() || "png";
+                      const path = `${Date.now()}-${pmethodName.replace(/\s+/g, "-").toLowerCase()}.${ext}`;
+                      const { error: upErr } = await supabase.storage.from("payment-icons").upload(path, pmethodIconFile, { upsert: true });
+                      if (upErr) {
+                        toast.error("Failed to upload icon");
+                        setPmethodIconUploading(false);
+                        return;
+                      }
+                      const { data: urlData } = supabase.storage.from("payment-icons").getPublicUrl(path);
+                      iconUrl = urlData.publicUrl;
+                      setPmethodIconUploading(false);
+                    } else if (!pmethodIconPreview) {
+                      // Icon was removed
+                      iconUrl = null as any;
+                    }
+
+                    const payload: any = { name: pmethodName, instructions: pmethodInstructions, detail: pmethodDetail, note: pmethodNote };
+                    if (iconUrl !== undefined) payload.icon_url = iconUrl;
+
                     if (pmethodDialog === "new") {
-                      await admin.addPaymentMethod({ name: pmethodName, instructions: pmethodInstructions, detail: pmethodDetail, note: pmethodNote });
+                      await admin.addPaymentMethod(payload);
                     } else {
-                      await admin.updatePaymentMethod(pmethodDialog!, { name: pmethodName, instructions: pmethodInstructions, detail: pmethodDetail, note: pmethodNote });
+                      await admin.updatePaymentMethod(pmethodDialog!, payload);
                     }
                     setPmethodDialog(null);
                   }}>
-                    {pmethodDialog === "new" ? "Add" : "Save"}
+                    {pmethodIconUploading ? "Uploading..." : pmethodDialog === "new" ? "Add" : "Save"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
