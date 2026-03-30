@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle,
-  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft, Pencil,
+  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft, Pencil, Trash2, ToggleLeft, ToggleRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,7 +28,7 @@ const PLATFORM_LABELS: Record<string, string> = {
   facebook: "Facebook", twitter: "X (Twitter)", telegram: "Telegram",
 };
 
-const PAYMENT_METHODS = ["bKash", "Nagad", "Bank Transfer", "Binance"];
+const PAYMENT_METHODS_FALLBACK = ["bKash", "Nagad", "Bank Transfer", "Binance"];
 
 const chartTooltipStyle = {
   contentStyle: {
@@ -77,6 +77,16 @@ const Admin = () => {
   const [editPaymentMethod, setEditPaymentMethod] = useState("");
   const [editPaymentRef, setEditPaymentRef] = useState("");
   const [editPaymentNotes, setEditPaymentNotes] = useState("");
+  // Payment method management
+  const [pmethodDialog, setPmethodDialog] = useState<string | null>(null); // "new" or id
+  const [pmethodName, setPmethodName] = useState("");
+  const [pmethodInstructions, setPmethodInstructions] = useState("");
+  const [pmethodDetail, setPmethodDetail] = useState("");
+  const [pmethodNote, setPmethodNote] = useState("");
+
+  const PAYMENT_METHODS = admin.paymentMethods.length > 0
+    ? admin.paymentMethods.map(m => m.name)
+    : PAYMENT_METHODS_FALLBACK;
 
   // Charts (hooks must be before conditionals)
   const platformDistribution = useMemo(() => {
