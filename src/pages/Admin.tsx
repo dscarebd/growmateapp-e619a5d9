@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle,
-  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft,
+  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft, Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
   AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
@@ -71,6 +73,10 @@ const Admin = () => {
   const REF_PER_PAGE = 10;
   const [editBonusAmount, setEditBonusAmount] = useState("");
   const [editMinBudget, setEditMinBudget] = useState("");
+  const [editPaymentDialog, setEditPaymentDialog] = useState<string | null>(null);
+  const [editPaymentMethod, setEditPaymentMethod] = useState("");
+  const [editPaymentRef, setEditPaymentRef] = useState("");
+  const [editPaymentNotes, setEditPaymentNotes] = useState("");
 
   // Charts (hooks must be before conditionals)
   const platformDistribution = useMemo(() => {
@@ -489,16 +495,26 @@ const Admin = () => {
                             {p.notes && <p>Notes: {p.notes}</p>}
                             <p>{new Date(p.created_at).toLocaleDateString()}</p>
                           </div>
-                          {p.status === "pending" && (
-                            <div className="flex gap-2 mt-3">
-                              <Button size="sm" className="h-7 text-xs flex-1 rounded-lg bg-success text-success-foreground" onClick={() => admin.approvePayment(p)}>
-                                <CheckCircle2 className="h-3 w-3 mr-1" /> Approve & Add Credits
-                              </Button>
-                              <Button size="sm" variant="outline" className="h-7 text-xs flex-1 rounded-lg text-destructive" onClick={() => admin.rejectPayment(p.id)}>
-                                <XCircle className="h-3 w-3 mr-1" /> Reject
-                              </Button>
-                            </div>
-                          )}
+                          <div className="flex gap-2 mt-3">
+                            <Button size="sm" variant="outline" className="h-7 text-xs rounded-lg" onClick={() => {
+                              setEditPaymentDialog(p.id);
+                              setEditPaymentMethod(p.method);
+                              setEditPaymentRef(p.transaction_ref || "");
+                              setEditPaymentNotes(p.notes || "");
+                            }}>
+                              <Pencil className="h-3 w-3 mr-1" /> Edit
+                            </Button>
+                            {p.status === "pending" && (
+                              <>
+                                <Button size="sm" className="h-7 text-xs flex-1 rounded-lg bg-success text-success-foreground" onClick={() => admin.approvePayment(p)}>
+                                  <CheckCircle2 className="h-3 w-3 mr-1" /> Approve
+                                </Button>
+                                <Button size="sm" variant="outline" className="h-7 text-xs rounded-lg text-destructive" onClick={() => admin.rejectPayment(p.id)}>
+                                  <XCircle className="h-3 w-3 mr-1" /> Reject
+                                </Button>
+                              </>
+                            )}
+                          </div>
                         </CardContent>
                       </Card>
                     );
@@ -518,6 +534,53 @@ const Admin = () => {
                 </>
               );
             })()}
+
+            {/* Edit Payment Dialog */}
+            <Dialog open={!!editPaymentDialog} onOpenChange={(open) => !open && setEditPaymentDialog(null)}>
+              <DialogContent className="rounded-2xl max-w-[350px]">
+                <DialogHeader>
+                  <DialogTitle className="text-sm">Edit Payment Details</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Payment Method</label>
+                    <Select value={editPaymentMethod} onValueChange={setEditPaymentMethod}>
+                      <SelectTrigger className="h-9 rounded-xl text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PAYMENT_METHODS.map(m => (
+                          <SelectItem key={m} value={m}>{m}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Transaction Ref</label>
+                    <Input value={editPaymentRef} onChange={e => setEditPaymentRef(e.target.value)} className="h-9 rounded-xl text-xs" placeholder="Transaction reference" />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Notes</label>
+                    <Input value={editPaymentNotes} onChange={e => setEditPaymentNotes(e.target.value)} className="h-9 rounded-xl text-xs" placeholder="Admin notes" />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button size="sm" variant="outline" className="rounded-xl text-xs" onClick={() => setEditPaymentDialog(null)}>Cancel</Button>
+                  <Button size="sm" className="rounded-xl text-xs gradient-primary text-primary-foreground" onClick={async () => {
+                    if (!editPaymentDialog) return;
+                    const { error } = await supabase.from("manual_payments" as any).update({
+                      method: editPaymentMethod,
+                      transaction_ref: editPaymentRef,
+                      notes: editPaymentNotes,
+                    }).eq("id", editPaymentDialog);
+                    if (error) { toast.error("Failed to update payment"); return; }
+                    toast.success("Payment updated");
+                    setEditPaymentDialog(null);
+                    admin.fetchAll();
+                  }}>Save</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         )}
 
