@@ -513,7 +513,6 @@ const Admin = () => {
                               </>
                             )}
                           </div>
-                          )}
                         </CardContent>
                       </Card>
                     );
@@ -533,7 +532,56 @@ const Admin = () => {
                 </>
               );
             })()}
+
+            {/* Edit Payment Dialog */}
+            <Dialog open={!!editPaymentDialog} onOpenChange={(open) => !open && setEditPaymentDialog(null)}>
+              <DialogContent className="rounded-2xl max-w-[350px]">
+                <DialogHeader>
+                  <DialogTitle className="text-sm">Edit Payment Details</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Payment Method</label>
+                    <Select value={editPaymentMethod} onValueChange={setEditPaymentMethod}>
+                      <SelectTrigger className="h-9 rounded-xl text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PAYMENT_METHODS.map(m => (
+                          <SelectItem key={m} value={m}>{m}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Transaction Ref</label>
+                    <Input value={editPaymentRef} onChange={e => setEditPaymentRef(e.target.value)} className="h-9 rounded-xl text-xs" placeholder="Transaction reference" />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-muted-foreground mb-1 block">Notes</label>
+                    <Input value={editPaymentNotes} onChange={e => setEditPaymentNotes(e.target.value)} className="h-9 rounded-xl text-xs" placeholder="Admin notes" />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button size="sm" variant="outline" className="rounded-xl text-xs" onClick={() => setEditPaymentDialog(null)}>Cancel</Button>
+                  <Button size="sm" className="rounded-xl text-xs gradient-primary text-primary-foreground" onClick={async () => {
+                    if (!editPaymentDialog) return;
+                    const { error } = await supabase.from("manual_payments" as any).update({
+                      method: editPaymentMethod,
+                      transaction_ref: editPaymentRef,
+                      notes: editPaymentNotes,
+                    }).eq("id", editPaymentDialog);
+                    if (error) { toast.error("Failed to update payment"); return; }
+                    toast.success("Payment updated");
+                    setEditPaymentDialog(null);
+                    admin.refetch();
+                  }}>Save</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
+        )}
+
         {/* REFERRALS TAB */}
         {tab === "referrals" && (
           <div className="space-y-4 animate-fade-in">
