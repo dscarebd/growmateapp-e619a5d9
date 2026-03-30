@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { ExternalLink, Star, Clock, CheckCircle2, XCircle, ImagePlus, Trash2 } from "lucide-react";
+import { ExternalLink, Star, Clock, CheckCircle2, XCircle, ImagePlus, Trash2, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
 import { toast } from "sonner";
