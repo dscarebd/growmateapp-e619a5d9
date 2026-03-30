@@ -49,6 +49,14 @@ const Tasks = () => {
 
   const filtered = [...tasks]
     .filter(t => filter === "all" || t.platform === filter)
+    .filter(t => {
+      const status = submissionMap[t.id];
+      // Hide tasks that are pending or approved (already done)
+      if (status === "pending" || status === "approved") return false;
+      // Hide own tasks
+      if (authUser && t.user_id === authUser.id) return false;
+      return true;
+    })
     .sort((a, b) => b.reward - a.reward);
 
   return (
