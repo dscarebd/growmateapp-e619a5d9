@@ -37,11 +37,26 @@ const BuyCredits = () => {
   const [selectedPack, setSelectedPack] = useState<string | null>(null);
   const [customAmount, setCustomAmount] = useState("");
   const [step, setStep] = useState<"packs" | "payment">("packs");
-  const [paymentMethod, setPaymentMethod] = useState("bKash");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [transactionRef, setTransactionRef] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [myPayments, setMyPayments] = useState<any[]>([]);
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState(FALLBACK_METHODS);
+
+  useEffect(() => {
+    const fetchMethods = async () => {
+      const { data } = await supabase.from("payment_methods" as any).select("*").eq("is_active", true).order("sort_order", { ascending: true });
+      if (data && data.length > 0) {
+        const methods = data.map((m: any) => ({ id: m.name, label: m.name, instructions: m.instructions, detail: m.detail, note: m.note }));
+        setPaymentMethods(methods);
+        if (!paymentMethod) setPaymentMethod(methods[0].id);
+      } else {
+        setPaymentMethod(FALLBACK_METHODS[0].id);
+      }
+    };
+    fetchMethods();
+  }, []);
 
   const getSelectedCredits = () => {
     if (selectedPack === "custom") return parseInt(customAmount) || 0;
