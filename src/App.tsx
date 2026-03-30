@@ -16,6 +16,7 @@ import Tasks from "@/pages/Tasks";
 import TaskDetail from "@/pages/TaskDetail";
 import CreateCampaign from "@/pages/CreateCampaign";
 import MySubmissions from "@/pages/MySubmissions";
+import ReviewSubmissions from "@/pages/ReviewSubmissions";
 import WalletPage from "@/pages/WalletPage";
 import Profile from "@/pages/Profile";
 import Admin from "@/pages/Admin";
@@ -108,6 +109,7 @@ const AnimatedRoutes = () => {
           <Route path="/task/:id" element={<ProtectedRoute><TaskDetail /></ProtectedRoute>} />
           <Route path="/create-campaign" element={<ProtectedRoute><CreateCampaign /></ProtectedRoute>} />
           <Route path="/my-submissions" element={<ProtectedRoute><MySubmissions /></ProtectedRoute>} />
+          <Route path="/review-submissions" element={<ProtectedRoute><ReviewSubmissions /></ProtectedRoute>} />
           <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />

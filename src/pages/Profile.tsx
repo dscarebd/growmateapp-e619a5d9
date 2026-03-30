@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import {
   User, Copy, CheckCircle2, Megaphone, Coins, Shield, Settings, LogOut,
   ChevronRight, FileText, Code2, Users, Gift, Share2, MessageCircle, Send,
-  Pencil, Camera, Mail, ClipboardList,
+  Pencil, Camera, Mail, ClipboardList, Eye,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -144,6 +144,7 @@ const Profile = () => {
 
   const menuItems = [
     { icon: ClipboardList, label: "My Submissions", action: () => navigate("/my-submissions") },
+    { icon: Eye, label: "Review Submissions", action: () => navigate("/review-submissions") },
     { icon: Settings, label: "Settings", action: () => navigate("/settings") },
     { icon: Shield, label: "Security", action: () => navigate("/security") },
     { icon: FileText, label: "Policies", action: () => navigate("/policies") },
