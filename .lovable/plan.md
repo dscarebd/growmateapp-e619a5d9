@@ -1,30 +1,47 @@
 
 
-## Plan: Admin-specific Bottom Navigation
+## Plan: Admin-Managed Payment Methods
 
-When the user is on `/admin`, replace the standard bottom nav (Home, Campaign, Tasks, Wallet, Profile) with admin-relevant navigation buttons matching the admin panel tabs.
+Currently, payment methods (bKash, Nagad, Bank Transfer, Binance) are hardcoded in `BuyCredits.tsx`. This plan moves them to the database so admins can edit details and add new methods from the admin panel.
 
-### Changes
+### Database Change
 
-**1. `src/components/BottomNav.tsx`**
-- Detect if current route is `/admin`
-- When on admin, render a different set of nav items with admin-relevant icons and labels:
-  - **Overview** (TrendingUp icon) — sets tab to "overview"
-  - **Users** (Users icon) — sets tab to "users"  
-  - **Campaigns** (Megaphone icon) — center button, sets tab to "campaigns"
-  - **Withdrawals** (Banknote icon) — sets tab to "withdrawals"
-  - **Payments** (CreditCard icon) — sets tab to "payments"
-- Instead of navigating to different routes, tapping these buttons will update a URL search param (e.g. `?tab=users`) or use a shared state/callback approach
+Create a `payment_methods` table:
+- `id` (uuid, PK)
+- `name` (text) — e.g. "bKash"
+- `instructions` (text) — e.g. "Send payment to:"
+- `detail` (text) — the account number/address
+- `note` (text) — extra instructions
+- `is_active` (boolean, default true)
+- `sort_order` (integer, default 0)
+- `created_at`, `updated_at`
 
-**2. Approach for tab switching**
-- Use URL search params (`?tab=overview`) so BottomNav can set the tab without tight coupling
-- Update `Admin.tsx` to read the initial tab from `searchParams` and sync when it changes
-- BottomNav admin buttons use `navigate("/admin?tab=users")` etc.
+RLS: Admins can CRUD, all authenticated users can SELECT active methods.
 
-**3. Add a "Back to App" option**
-- Include a small back/exit button in the admin header or as a long-press on the center button to return to `/home`
+Seed with the 4 existing methods (bKash, Nagad, Bank Transfer, Binance).
+
+### Admin Panel Changes (`src/pages/Admin.tsx`)
+
+Add a "Payment Methods" management section in the Payments tab:
+- List all payment methods with edit/toggle buttons
+- Edit dialog: name, instructions, detail (account number), note, active toggle
+- "Add New Method" button with the same form
+- Delete or deactivate methods
+
+### Buy Credits Page Changes (`src/pages/BuyCredits.tsx`)
+
+- Fetch payment methods from `payment_methods` table (where `is_active = true`, ordered by `sort_order`)
+- Replace the hardcoded `paymentMethods` array with the fetched data
+- Fallback to hardcoded values if fetch fails
+
+### useAdmin Hook (`src/hooks/useAdmin.ts`)
+
+- Fetch `payment_methods` table data
+- Add CRUD functions for payment methods
 
 ### Files to modify
-- `src/components/BottomNav.tsx` — add admin nav items when on `/admin`
-- `src/pages/Admin.tsx` — read tab from URL search params
+- **New migration**: create `payment_methods` table + seed data
+- `src/pages/Admin.tsx` — add payment methods management UI
+- `src/pages/BuyCredits.tsx` — fetch methods from DB
+- `src/hooks/useAdmin.ts` — add payment methods state and CRUD
 
