@@ -10,6 +10,7 @@ type Review = {
   review_text: string;
   created_at: string;
   reviewer_id: string;
+  reviewer_name?: string;
 };
 
 const AdvertiserReviews = ({ advertiserId }: { advertiserId: string }) => {
@@ -17,16 +18,29 @@ const AdvertiserReviews = ({ advertiserId }: { advertiserId: string }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
-      .from("advertiser_reviews")
-      .select("*")
-      .eq("advertiser_id", advertiserId)
-      .order("created_at", { ascending: false })
-      .limit(10)
-      .then(({ data }) => {
-        if (data) setReviews(data as any);
-        setLoading(false);
-      });
+    const fetchReviews = async () => {
+      const { data } = await supabase
+        .from("advertiser_reviews")
+        .select("*")
+        .eq("advertiser_id", advertiserId)
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      if (data && data.length > 0) {
+        const reviewerIds = [...new Set(data.map((r: any) => r.reviewer_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, name")
+          .in("id", reviewerIds);
+
+        const nameMap: Record<string, string> = {};
+        profiles?.forEach((p: any) => { nameMap[p.id] = p.name; });
+
+        setReviews(data.map((r: any) => ({ ...r, reviewer_name: nameMap[r.reviewer_id] || "User" })));
+      }
+      setLoading(false);
+    };
+    fetchReviews();
   }, [advertiserId]);
 
   if (loading || reviews.length === 0) return null;
