@@ -58,7 +58,7 @@ const BuyCredits = () => {
     const fetchMethods = async () => {
       const { data } = await supabase.from("payment_methods" as any).select("*").eq("is_active", true).order("sort_order", { ascending: true });
       if (data && data.length > 0) {
-        const methods = data.map((m: any) => ({ id: m.name, label: m.name, instructions: m.instructions, detail: m.detail, note: m.note }));
+        const methods = data.map((m: any) => ({ id: m.name, label: m.name, instructions: m.instructions, detail: m.detail, note: m.note, icon_url: m.icon_url || null }));
         setPaymentMethods(methods);
         if (!paymentMethod) setPaymentMethod(methods[0].id);
       } else {
