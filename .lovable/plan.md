@@ -1,43 +1,30 @@
 
 
-## Advertiser Profile Page
+## Plan: Admin-specific Bottom Navigation
 
-### What We're Building
-A dedicated advertiser profile page (`/advertiser/:id`) showing their details, reviews, and past tasks. The advertiser card on TaskDetail becomes clickable, linking to this new page.
+When the user is on `/admin`, replace the standard bottom nav (Home, Campaign, Tasks, Wallet, Profile) with admin-relevant navigation buttons matching the admin panel tabs.
 
 ### Changes
 
-**1. Create `src/pages/AdvertiserProfile.tsx`**
-- Fetch advertiser profile from `profiles` table (name, avatar, joined date, tasks completed, campaigns run)
-- Fetch all reviews from `advertiser_reviews` table for this advertiser
-- Fetch all tasks from `tasks` table created by this advertiser (past and active)
-- Layout sections:
-  - Header with avatar, name, join date, trust score
-  - Stats row (tasks created, total reviews, average rating)
-  - Reviews list (reuse/adapt AdvertiserReviews component)
-  - Past tasks list showing title, platform, reward, completed count
+**1. `src/components/BottomNav.tsx`**
+- Detect if current route is `/admin`
+- When on admin, render a different set of nav items with admin-relevant icons and labels:
+  - **Overview** (TrendingUp icon) — sets tab to "overview"
+  - **Users** (Users icon) — sets tab to "users"  
+  - **Campaigns** (Megaphone icon) — center button, sets tab to "campaigns"
+  - **Withdrawals** (Banknote icon) — sets tab to "withdrawals"
+  - **Payments** (CreditCard icon) — sets tab to "payments"
+- Instead of navigating to different routes, tapping these buttons will update a URL search param (e.g. `?tab=users`) or use a shared state/callback approach
 
-**2. Update `src/pages/TaskDetail.tsx`**
-- Wrap the advertiser card in a clickable link using `useNavigate` to `/advertiser/${task.user_id}`
-- Add a chevron-right icon to hint it's tappable
+**2. Approach for tab switching**
+- Use URL search params (`?tab=overview`) so BottomNav can set the tab without tight coupling
+- Update `Admin.tsx` to read the initial tab from `searchParams` and sync when it changes
+- BottomNav admin buttons use `navigate("/admin?tab=users")` etc.
 
-**3. Update `src/App.tsx`**
-- Add route: `/advertiser/:id` → `<AdvertiserProfile />`
-- Wrap in `ProtectedRoute`
+**3. Add a "Back to App" option**
+- Include a small back/exit button in the admin header or as a long-press on the center button to return to `/home`
 
-### RLS Note
-No database changes needed. The `profiles` table has a self-select policy, but advertisers' profiles won't be visible to other users. We need to add an RLS policy allowing authenticated users to read any profile's public info (name, avatar_url, joined_date).
-
-Actually, reviewing the existing policies — `profiles` only allows users to view their own profile. We'll need a new SELECT policy or a security-definer function to fetch public advertiser info. A migration will add:
-```sql
-CREATE POLICY "Users can view any profile basic info"
-ON public.profiles FOR SELECT TO authenticated
-USING (true);
-```
-This is acceptable since profiles only contain public-facing data (name, avatar, stats).
-
-### Technical Details
-- New file: `src/pages/AdvertiserProfile.tsx`
-- Modified: `src/pages/TaskDetail.tsx` (clickable card), `src/App.tsx` (new route)
-- Migration: Add public SELECT policy on profiles table
+### Files to modify
+- `src/components/BottomNav.tsx` — add admin nav items when on `/admin`
+- `src/pages/Admin.tsx` — read tab from URL search params
 
