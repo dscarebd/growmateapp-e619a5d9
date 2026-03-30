@@ -1,81 +1,79 @@
 
 
-## Complete Referral System
+## Plan: Task Submission & Advertiser Verification System
 
-### Overview
-Build a full referral system with unique 8-digit referral codes, optional referral input at signup, referral bonus triggers, and device fingerprint restrictions to prevent abuse.
+This is a major feature that replaces the current "5-second countdown" task flow with a proper proof-based verification system where advertisers review submissions.
 
-### Database Changes (3 migrations)
+### Current Flow (to be replaced)
+Click "Start Task" → 5s countdown → Click "Claim Credits" → Done
 
-**1. Add referral tracking columns to `profiles` table:**
-- `referred_by` (uuid, nullable) - references the referrer's profile id
-- `device_fingerprint` (text, nullable) - stored at signup to prevent multi-account abuse
-- `referral_bonus_awarded` (boolean, default false) - tracks if the referrer already received the bonus for this user
+### New Flow
+1. Click "Start Task" → Opens **Task Detail Page** showing advertiser requirements
+2. User completes the task externally, then **submits proof** (screenshot upload + text notes)
+3. Submission goes to **advertiser's review queue** (pending status)
+4. Advertiser **approves or rejects** the submission
+5. If approved → credits auto-added to user balance
+6. If rejected → no credits, user notified
+7. After completion, user can **rate & review the advertiser** (1-5 stars + text)
 
-**2. Create `referral_bonuses` table:**
-- `id` (uuid, PK)
-- `referrer_id` (uuid, not null) - who gets the bonus
-- `referred_id` (uuid, not null) - who triggered it
-- `bonus_amount` (integer, default 50) - credits awarded
-- `trigger_type` (text) - 'first_withdrawal' or 'campaign_500'
-- `created_at` (timestamptz)
-- RLS: users can view their own bonuses; admins can view all
+### Database Changes (3 new tables + columns)
 
-**3. Create a database function `award_referral_bonus`:**
-- Security definer function that checks if the referred user has a referrer, if the bonus hasn't been awarded yet, credits the referrer, inserts into `referral_bonuses`, creates a transaction record, sends a notification, and marks `referral_bonus_awarded = true`
+**1. `task_submissions` table** — tracks user proof submissions
+- `id`, `task_id`, `user_id`, `advertiser_id`, `status` (pending/approved/rejected), `proof_text`, `proof_images` (text array of storage URLs), `submitted_at`, `reviewed_at`, `rejection_reason`
 
-**4. Add unique constraint on `device_fingerprint`** (where not null) to block duplicate signups from same device.
+**2. `advertiser_reviews` table** — user reviews of advertisers after task completion
+- `id`, `task_id`, `submission_id`, `reviewer_id`, `advertiser_id`, `rating` (1-5), `review_text`, `created_at`
 
-### Referral Code Format
-The existing `referral_code` on profiles is already generated (e.g. `BOOST-A1B2C`). Change the generation to produce an **8-character alphanumeric code** (e.g. `BOOST-A1B2C3D4` or just `A1B2C3D4`). Update the `handle_new_user` trigger to use `upper(substr(md5(NEW.id::text), 1, 8))`.
+**3. Add `proof_requirements` column to `tasks` table**
+- JSON text field where advertiser specifies what proof is needed (e.g., "screenshot of subscription", "comment text")
+
+**4. Storage bucket**: `task-proofs` for screenshot uploads
+
+**5. RLS policies** for all new tables:
+- Users can insert their own submissions and view their own
+- Advertisers (task owners) can view and update submissions for their tasks
+- Users can insert reviews for completed tasks and view all reviews
 
 ### Frontend Changes
 
-**1. Auth.tsx (Signup form):**
-- Add optional "Referral Code" input field, shown only in signup mode
-- Pass referral code to `signUp` function via user metadata
-- Generate a device fingerprint (using canvas + screen + navigator info hash) and pass it to signup metadata
-- Before signup, check if device fingerprint already exists in profiles table via an RPC call; block signup if it does
+**1. New page: `TaskDetail.tsx`** (route: `/task/:id`)
+- Shows task info: platform, action, reward, advertiser name, link to content
+- Shows advertiser's proof requirements
+- Shows advertiser rating/reviews from other users
+- "Submit Proof" section: file upload (screenshots) + text input
+- Submit button sends proof to `task_submissions` table
 
-**2. AuthContext.tsx:**
-- Update `signUp` to accept optional `referralCode` and `deviceFingerprint` parameters
-- Pass both in `options.data` metadata
+**2. New page: `MySubmissions.tsx`** or section in existing page
+- Shows user's submitted tasks with status (pending/approved/rejected)
 
-**3. Update `handle_new_user` database trigger:**
-- Read `referral_code` from metadata, look up the referrer profile, and set `referred_by`
-- Store `device_fingerprint` from metadata
+**3. Update `Tasks.tsx`**
+- "Start Task" navigates to `/task/:id` instead of starting a countdown
+- Show submission status if user already submitted for a task
 
-**4. Device Fingerprint utility (`src/lib/deviceFingerprint.ts`):**
-- Generate a hash from: `navigator.userAgent + screen.width + screen.height + screen.colorDepth + navigator.language + navigator.hardwareConcurrency + timezone`
-- Use a simple string hash function (no crypto library needed)
+**4. Advertiser review section on campaign page or separate view**
+- Advertisers see pending submissions for their campaigns/tasks
+- Approve/reject buttons with optional rejection reason
+- On approval: trigger credit addition + notification to user
 
-**5. Bonus trigger points:**
-- **WalletPage.tsx** (withdrawal): After successful withdrawal submission, call `supabase.rpc('award_referral_bonus', { _user_id, _trigger: 'first_withdrawal' })`
-- **AppContext.tsx** (campaign creation): After creating a campaign with `totalBudget >= 500`, call `supabase.rpc('award_referral_bonus', { _user_id, _trigger: 'campaign_500' })`
+**5. Review component after task approval**
+- Star rating (1-5) + optional text review
+- Displayed on task detail page for future users
 
-**6. Profile.tsx:**
-- Show referral stats (how many people referred, bonuses earned) in the referral card section
+**6. Update `AppContext.tsx`**
+- Remove the old `completeTask` countdown logic
+- Add `submitTaskProof` and `reviewSubmission` methods
 
-### Security
-- Device fingerprint uniqueness enforced at DB level (unique constraint)
-- Bonus awarding done via security definer function to prevent manipulation
-- RLS on `referral_bonuses` table: users see only their own records
+### Files to Create/Modify
 
-### Technical Details
-
-```text
-Signup Flow:
-  User enters email, password, name, [optional referral code]
-  -> Generate device fingerprint
-  -> Check fingerprint uniqueness via RPC
-  -> If duplicate: block with error "This device already has an account"
-  -> If OK: signUp with metadata { name, referral_code, device_fingerprint }
-  -> handle_new_user trigger creates profile with referred_by + fingerprint
-
-Bonus Trigger Flow:
-  User withdraws OR runs 500+ credit campaign
-  -> Call award_referral_bonus RPC
-  -> Function checks: has referrer? bonus not yet awarded?
-  -> If eligible: credit referrer 50 credits, insert bonus record, notify
-```
+| File | Action |
+|------|--------|
+| DB migration | Create `task_submissions`, `advertiser_reviews` tables; add `proof_requirements` to `tasks`; create storage bucket |
+| `src/pages/TaskDetail.tsx` | New — task details + proof submission + reviews display |
+| `src/pages/Tasks.tsx` | Modify — navigate to detail page instead of countdown |
+| `src/pages/CreateCampaign.tsx` | Modify — add proof requirements step |
+| `src/components/AdvertiserReviews.tsx` | New — star rating display + review list |
+| `src/components/SubmissionReview.tsx` | New — advertiser's approval/rejection UI |
+| `src/contexts/AppContext.tsx` | Modify — replace completeTask, add submission logic |
+| `src/App.tsx` | Modify — add new routes |
+| `src/pages/Home.tsx` | Modify — update top tasks to navigate to detail page |
 
