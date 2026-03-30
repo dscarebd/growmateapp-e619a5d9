@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Clock, CheckCircle2, XCircle, Flame, Globe } from "lucide-react";
+import { ExternalLink, XCircle, Flame, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
 
@@ -49,6 +49,14 @@ const Tasks = () => {
 
   const filtered = [...tasks]
     .filter(t => filter === "all" || t.platform === filter)
+    .filter(t => {
+      const status = submissionMap[t.id];
+      // Hide tasks that are pending or approved (already done)
+      if (status === "pending" || status === "approved") return false;
+      // Hide own tasks
+      if (authUser && t.user_id === authUser.id) return false;
+      return true;
+    })
     .sort((a, b) => b.reward - a.reward);
 
   return (
@@ -71,7 +79,7 @@ const Tasks = () => {
         {filtered.map((task, i) => {
           const status = submissionMap[task.id];
           return (
-            <Card key={task.id} className={cn("border-border animate-fade-in-up overflow-hidden", status === "approved" && "opacity-60")} style={{ animationDelay: `${i * 50}ms` }}>
+            <Card key={task.id} className={cn("border-border animate-fade-in-up overflow-hidden")} style={{ animationDelay: `${i * 50}ms` }}>
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 shrink-0">{platforms.find(p => p.key === task.platform)?.icon}</div>
@@ -97,15 +105,7 @@ const Tasks = () => {
                   </div>
                 </div>
                 <div className="mt-3">
-                  {status === "approved" ? (
-                    <div className="flex items-center justify-center gap-1.5 text-xs text-success font-semibold">
-                      <CheckCircle2 className="h-4 w-4" /> Completed!
-                    </div>
-                  ) : status === "pending" ? (
-                    <div className="flex items-center justify-center gap-1.5 text-xs text-warning font-semibold">
-                      <Clock className="h-4 w-4" /> Pending Review
-                    </div>
-                  ) : status === "rejected" ? (
+                  {status === "rejected" ? (
                     <Button size="sm" className="w-full h-9 rounded-xl gradient-primary text-primary-foreground text-xs font-semibold gap-1.5" onClick={() => navigate(`/task/${task.id}`)}>
                       <XCircle className="h-3.5 w-3.5" /> Rejected — Resubmit
                     </Button>
