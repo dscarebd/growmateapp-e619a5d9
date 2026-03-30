@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useApp } from "@/contexts/AppContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,12 +22,12 @@ const packs = [
   { id: "elite", label: "Elite", credits: 10000, price: 100, icon: Gem, color: "from-pink-500 to-rose-400", popular: false },
 ];
 
-const paymentMethods = [
+const FALLBACK_METHODS = [
   { id: "bKash", label: "bKash", instructions: "Send payment to:", detail: "01XXXXXXXXX", note: "Use 'Send Money' option. Personal number." },
   { id: "Nagad", label: "Nagad", instructions: "Send payment to:", detail: "01XXXXXXXXX", note: "Use 'Send Money' from Nagad app." },
   { id: "Bank Transfer", label: "Bank Transfer", instructions: "Transfer to:", detail: "AC: 1234567890 • Bank: Example Bank • Branch: Main", note: "Include your username in the reference." },
   { id: "Binance", label: "Binance", instructions: "Send USDT (TRC20) to:", detail: "TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", note: "Only send USDT via TRC20 network. Other tokens will be lost." },
-] as const;
+];
 
 const BuyCredits = () => {
   const { user: authUser } = useAuth();
@@ -37,11 +37,26 @@ const BuyCredits = () => {
   const [selectedPack, setSelectedPack] = useState<string | null>(null);
   const [customAmount, setCustomAmount] = useState("");
   const [step, setStep] = useState<"packs" | "payment">("packs");
-  const [paymentMethod, setPaymentMethod] = useState("bKash");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [transactionRef, setTransactionRef] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [myPayments, setMyPayments] = useState<any[]>([]);
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState(FALLBACK_METHODS);
+
+  useEffect(() => {
+    const fetchMethods = async () => {
+      const { data } = await supabase.from("payment_methods" as any).select("*").eq("is_active", true).order("sort_order", { ascending: true });
+      if (data && data.length > 0) {
+        const methods = data.map((m: any) => ({ id: m.name, label: m.name, instructions: m.instructions, detail: m.detail, note: m.note }));
+        setPaymentMethods(methods);
+        if (!paymentMethod) setPaymentMethod(methods[0].id);
+      } else {
+        setPaymentMethod(FALLBACK_METHODS[0].id);
+      }
+    };
+    fetchMethods();
+  }, []);
 
   const getSelectedCredits = () => {
     if (selectedPack === "custom") return parseInt(customAmount) || 0;

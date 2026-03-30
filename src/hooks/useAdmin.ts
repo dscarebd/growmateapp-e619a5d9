@@ -78,6 +78,7 @@ export const useAdmin = () => {
   const [referralBonuses, setReferralBonuses] = useState<ReferralBonus[]>([]);
   const [referralBonusAmount, setReferralBonusAmount] = useState(50);
   const [minCampaignBudgetReferral, setMinCampaignBudgetReferral] = useState(500);
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
 
   const checkAdmin = useCallback(async () => {
     if (!user) { setIsAdmin(false); setLoading(false); return; }
@@ -88,7 +89,7 @@ export const useAdmin = () => {
 
   const fetchAll = useCallback(async () => {
     if (!isAdmin) return;
-    const [pRes, cRes, wRes, pmRes, tRes, rbRes, settingsRes] = await Promise.all([
+    const [pRes, cRes, wRes, pmRes, tRes, rbRes, settingsRes, pmethodsRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("campaigns").select("*").order("created_at", { ascending: false }),
       supabase.from("withdrawals").select("*").order("requested_at", { ascending: false }),
@@ -96,6 +97,7 @@ export const useAdmin = () => {
       supabase.from("transactions").select("*").order("created_at", { ascending: false }),
       supabase.from("referral_bonuses").select("*").order("created_at", { ascending: false }),
       supabase.from("site_settings" as any).select("*"),
+      supabase.from("payment_methods" as any).select("*").order("sort_order", { ascending: true }),
     ]);
     if (pRes.data) setProfiles(pRes.data as AdminProfile[]);
     if (cRes.data) setCampaigns(cRes.data as AdminCampaign[]);
@@ -103,6 +105,7 @@ export const useAdmin = () => {
     if (pmRes.data) setPayments(pmRes.data as ManualPayment[]);
     if (tRes.data) setTransactions(tRes.data);
     if (rbRes.data) setReferralBonuses(rbRes.data as ReferralBonus[]);
+    if (pmethodsRes.data) setPaymentMethods(pmethodsRes.data);
     if (settingsRes.data) {
       const settings = settingsRes.data as any[];
       const bonusVal = settings.find((s: any) => s.key === "referral_bonus_amount");
@@ -296,10 +299,34 @@ export const useAdmin = () => {
     toast.success(`Min campaign budget updated to ${amount} credits`);
   };
 
+  // Payment method CRUD
+  const addPaymentMethod = async (method: { name: string; instructions: string; detail: string; note: string }) => {
+    const maxOrder = paymentMethods.reduce((m, p) => Math.max(m, p.sort_order || 0), -1);
+    const { error } = await supabase.from("payment_methods" as any).insert({ ...method, sort_order: maxOrder + 1 });
+    if (error) { toast.error("Failed to add payment method"); return; }
+    toast.success("Payment method added");
+    fetchAll();
+  };
+
+  const updatePaymentMethod = async (id: string, updates: Partial<{ name: string; instructions: string; detail: string; note: string; is_active: boolean; sort_order: number }>) => {
+    const { error } = await supabase.from("payment_methods" as any).update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id);
+    if (error) { toast.error("Failed to update payment method"); return; }
+    toast.success("Payment method updated");
+    fetchAll();
+  };
+
+  const deletePaymentMethod = async (id: string) => {
+    const { error } = await supabase.from("payment_methods" as any).delete().eq("id", id);
+    if (error) { toast.error("Failed to delete payment method"); return; }
+    toast.success("Payment method deleted");
+    fetchAll();
+  };
+
   return {
     isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses,
-    referralBonusAmount, minCampaignBudgetReferral,
+    referralBonusAmount, minCampaignBudgetReferral, paymentMethods,
     updateCampaignStatus, updateWithdrawalStatus, updateUserCredits, updateUserTrustScore,
-    approvePayment, rejectPayment, addCreditsManually, updateReferralBonusAmount, updateMinCampaignBudgetReferral, fetchAll,
+    approvePayment, rejectPayment, addCreditsManually, updateReferralBonusAmount, updateMinCampaignBudgetReferral,
+    addPaymentMethod, updatePaymentMethod, deletePaymentMethod, fetchAll,
   };
 };

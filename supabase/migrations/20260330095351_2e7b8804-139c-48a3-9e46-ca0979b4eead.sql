@@ -1,0 +1,1 @@
+CREATE POLICY "Admins can delete payment methods" ON public.payment_methods FOR DELETE TO authenticated USING (is_admin(auth.uid()));
