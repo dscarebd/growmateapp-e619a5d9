@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle,
-  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift,
+  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -39,8 +39,20 @@ type Tab = "overview" | "users" | "campaigns" | "withdrawals" | "payments" | "re
 
 const Admin = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const admin = useAdmin();
-  const [tab, setTab] = useState<Tab>("overview");
+  const [tab, setTab] = useState<Tab>(() => {
+    const urlTab = searchParams.get("tab");
+    return (urlTab && ["overview", "users", "campaigns", "withdrawals", "payments", "referrals"].includes(urlTab))
+      ? urlTab as Tab : "overview";
+  });
+
+  useEffect(() => {
+    const urlTab = searchParams.get("tab");
+    if (urlTab && ["overview", "users", "campaigns", "withdrawals", "payments", "referrals"].includes(urlTab)) {
+      setTab(urlTab as Tab);
+    }
+  }, [searchParams]);
   const [search, setSearch] = useState("");
   const [withdrawalSearch, setWithdrawalSearch] = useState("");
   const [addCreditsDialog, setAddCreditsDialog] = useState<string | null>(null);
@@ -128,8 +140,17 @@ const Admin = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
       <div className="gradient-primary px-5 pt-12 pb-6 rounded-b-3xl">
-        <div className="mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <h1 className="text-lg font-bold text-primary-foreground">Admin Panel</h1>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-white/10 gap-1 text-xs"
+            onClick={() => navigate("/home")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to App
+          </Button>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {[
