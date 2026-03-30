@@ -27,7 +27,7 @@ interface AppContextType {
   addCredits: (amount: number) => void;
   spendCredits: (amount: number) => boolean;
   completeTask: (taskId: string) => void;
-  createCampaign: (campaign: { platform: Platform; action: TaskAction; link: string; title: string; totalBudget: number; rewardPerAction: number }) => void;
+  createCampaign: (campaign: { platform: Platform; action: TaskAction; link: string; title: string; totalBudget: number; rewardPerAction: number; proofRequirements?: string }) => void;
   refreshData: () => void;
 }
 
