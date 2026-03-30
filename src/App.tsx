@@ -108,6 +108,7 @@ const AnimatedRoutes = () => {
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
           <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
           <Route path="/task/:id" element={<ProtectedRoute><TaskDetail /></ProtectedRoute>} />
+          <Route path="/advertiser/:id" element={<ProtectedRoute><AdvertiserProfile /></ProtectedRoute>} />
           <Route path="/create-campaign" element={<ProtectedRoute><CreateCampaign /></ProtectedRoute>} />
           <Route path="/my-submissions" element={<ProtectedRoute><MySubmissions /></ProtectedRoute>} />
           <Route path="/review-submissions" element={<ProtectedRoute><ReviewSubmissions /></ProtectedRoute>} />
