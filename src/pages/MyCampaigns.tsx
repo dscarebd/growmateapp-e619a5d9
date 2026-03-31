@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Megaphone, Coins, Users } from "lucide-react";
+import { Megaphone, Coins, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import * as PlatformIcons from "@/components/PlatformIcons";
