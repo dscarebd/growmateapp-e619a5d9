@@ -1,42 +1,60 @@
 
 
-## Plan: Admin Campaign Removal, Credit Reduction & User Ban System
+## Plan: Telegram Admin Notifications
 
 ### What will be built
+An edge function that sends formatted Telegram messages to your chat whenever key events occur: new user signups, new campaigns, credit purchases, and withdrawal requests. Database triggers will call this function automatically.
 
-1. **Remove demo tasks from database** -- Delete any existing demo/test tasks from the tasks table.
+### How it works
 
-2. **Admin can delete/remove running campaigns** -- Add a "Remove" button on campaigns in the admin Campaigns tab. This will delete the campaign and its associated tasks, refund remaining budget to the campaign owner, and notify them.
+```text
+DB Event (insert) → Database Trigger → Edge Function → Telegram Bot API → Your Chat
+```
 
-3. **Admin can reduce user credits** -- Add a "Reduce Credits" button alongside the existing "Add Credits" button in the Users tab, with a dialog to enter the amount and reason.
+### Steps
 
-4. **Admin can ban/unban users** -- Add a `is_banned` column to the profiles table. Banned users will be blocked from logging in. Admin gets a "Ban/Unban" toggle in the User Details dialog.
+1. **Connect Telegram connector** to the project (provides gateway credentials automatically)
 
----
+2. **Store your chat ID** as a secret (`TELEGRAM_ADMIN_CHAT_ID` = `5190186520`)
 
-### Technical Details
+3. **Create edge function `telegram-notify`**
+   - Accepts event type + payload via POST
+   - Formats a readable message based on event type:
+     - **New User**: name, email, referral code, device info
+     - **New Campaign**: title, platform, action, budget, reward, link
+     - **Credit Purchase**: user email, amount, method, transaction ref
+     - **Withdrawal Request**: user email, amount, method, net amount, commission
+   - Sends via Telegram gateway (`sendMessage` with HTML parse mode)
 
-#### Database Migration
-- Add `is_banned boolean NOT NULL DEFAULT false` to `profiles` table
-- Create a `delete_campaign` function (SECURITY DEFINER) that:
-  - Deletes associated tasks and task_submissions
-  - Refunds unspent budget to the campaign owner
-  - Deletes the campaign record
-  - Creates a refund transaction and notification
+4. **Create 4 database trigger functions** (SECURITY DEFINER, using `pg_net` to call the edge function):
+   - `notify_telegram_new_user()` — on INSERT to `profiles`
+   - `notify_telegram_new_campaign()` — on INSERT to `campaigns`
+   - `notify_telegram_credit_purchase()` — on INSERT to `manual_payments`
+   - `notify_telegram_withdrawal()` — on INSERT to `withdrawals`
 
-#### Hook Changes (`src/hooks/useAdmin.ts`)
-- Add `deleteCampaign(id)` -- calls the delete campaign function or does inline deletion + refund
-- Add `reduceUserCredits(userId, amount, reason)` -- reduces credits, creates transaction, sends notification
-- Add `toggleUserBan(userId, banned)` -- updates `is_banned` on profile, sends notification
+5. **Create 4 database triggers** that fire AFTER INSERT on each respective table
 
-#### Admin UI (`src/pages/Admin.tsx`)
-- **Campaigns tab**: Add a red "Remove" button on all campaign cards (with confirmation)
-- **Users tab**: Add "Reduce Credits" button next to "Add Credits"; add ban/unban status badge and toggle in User Details dialog
-- Add a "Reduce Credits" dialog similar to the existing "Add Credits" dialog
+### Message Format Examples
 
-#### Auth Guard (`src/contexts/AuthContext.tsx`)
-- After session load, check `profiles.is_banned` -- if true, sign the user out and show an error toast
+```text
+🆕 New User Signed Up!
+━━━━━━━━━━━━━━
+Name: John Doe
+Email: john@example.com
+Referral Code: AB12CD34
+Time: 2026-03-31 11:35 UTC
 
-#### Demo Tasks Cleanup
-- Run a migration or data delete to remove any leftover demo/test task rows (via SQL `DELETE` on tasks where appropriate, if any exist in DB)
+💰 New Credit Purchase!
+━━━━━━━━━━━━━━
+User: john@example.com
+Amount: 500 credits
+Method: bKash
+Ref: TXN123456
+Status: pending
+```
+
+### Files to create/modify
+- `supabase/functions/telegram-notify/index.ts` — new edge function
+- Database migration — trigger functions + triggers
+- Secrets — `TELEGRAM_ADMIN_CHAT_ID`
 
