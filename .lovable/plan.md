@@ -1,28 +1,36 @@
 
 
-## Plan: Add APP Download & Website Visit Platforms + Inline Continue Button
+## Plan: Admin-Controlled Withdraw Toggle
 
-### 1. Update Platform Type (`src/contexts/AppContext.tsx`)
-- Extend `Platform` type to include `"app_download" | "website_visit"`
+### How It Works
+- Add a `withdrawal_enabled` key to the `site_settings` table (default: `"false"`)
+- Admin panel gets a toggle switch in the Referrals/Settings tab to enable/disable withdrawals
+- WalletPage checks this setting on load; if disabled, the withdraw tab shows a "Coming Soon" message instead of the form
 
-### 2. Add Platform Icons (`src/components/PlatformIcons.tsx`)
-- Add `AppDownloadIcon` (smartphone/download icon with green background)
-- Add `WebsiteVisitIcon` (globe/link icon with blue background)
+### Changes
 
-### 3. Update Create Campaign (`src/pages/CreateCampaign.tsx`)
-- Add `app_download` and `website_visit` to `platformOptions` array with their icons
-- Add action sets in `platformActions` for each:
-  - **APP Download**: `view` (Download App)
-  - **Website Visit**: `view` (Visit Website)
-- Import the two new icons and add `Download`, `Globe` from lucide-react for action icons
-- **Move Continue button from fixed position to inline** — remove the `fixed bottom-24` wrapper and place the button inside the scrollable `px-5` content area, below the step content (with top margin)
+**1. Database: Insert new site setting**
+- Insert `withdrawal_enabled = "false"` into `site_settings`
 
-### 4. Update Home Page (`src/pages/Home.tsx`)
-- Add the two new platform icons to the `platformIcons` record so tasks/campaigns display correctly
+**2. `src/hooks/useAdmin.ts`**
+- Add `withdrawalEnabled` state (boolean), parse from `site_settings` fetch
+- Add `toggleWithdrawal` function to update the setting
+
+**3. `src/pages/Admin.tsx`**
+- Add a Switch toggle in the Referrals tab settings section: "Withdrawal System" on/off
+- Uses `admin.withdrawalEnabled` and `admin.toggleWithdrawal`
+
+**4. `src/pages/WalletPage.tsx`**
+- On mount, fetch `withdrawal_enabled` from `site_settings` via an RPC or direct query
+- Since `site_settings` RLS only allows admin reads, we need a small RPC function `get_withdrawal_enabled()` (similar to existing `get_usd_to_bdt_rate`)
+- If disabled, render a "Coming Soon" card with a rocket icon when the withdraw tab is selected, hiding the form
+
+**5. Database Migration**
+- Create `get_withdrawal_enabled()` SQL function (SECURITY DEFINER, returns boolean)
 
 ### Files Modified
-- `src/contexts/AppContext.tsx` — Platform type union
-- `src/components/PlatformIcons.tsx` — 2 new icon components
-- `src/pages/CreateCampaign.tsx` — new platforms, actions, inline button
-- `src/pages/Home.tsx` — platformIcons record
+- New migration (insert setting + create RPC function)
+- `src/hooks/useAdmin.ts` — add state + toggle
+- `src/pages/Admin.tsx` — add Switch UI
+- `src/pages/WalletPage.tsx` — conditional "Coming Soon" view
 
