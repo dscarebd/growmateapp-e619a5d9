@@ -299,12 +299,15 @@ const Admin = () => {
               <Input placeholder="Search users..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-10 rounded-xl bg-muted/50 border-0" />
             </div>
             {filteredUsers.map(u => (
-              <Card key={u.id} className="border-border">
+              <Card key={u.id} className={cn("border-border", (u as any).is_banned && "opacity-60 border-destructive/30")}>
                 <CardContent className="p-3.5">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-foreground">{u.name[0]?.toUpperCase()}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{u.name}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-medium text-foreground truncate">{u.name}</p>
+                        {(u as any).is_banned && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-destructive/15 text-destructive shrink-0">BANNED</span>}
+                      </div>
                       <p className="text-[11px] text-muted-foreground truncate">{u.email}</p>
                     </div>
                     <div className="text-right">
@@ -322,7 +325,10 @@ const Admin = () => {
                       <Eye className="h-3 w-3 mr-1" /> Details
                     </Button>
                     <Button size="sm" className="h-7 text-xs flex-1 rounded-lg bg-success text-success-foreground" onClick={() => setAddCreditsDialog(u.id)}>
-                      <Plus className="h-3 w-3 mr-1" /> Add Credits
+                      <Plus className="h-3 w-3 mr-1" /> Add
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-7 text-xs flex-1 rounded-lg text-destructive" onClick={() => setReduceCreditsDialog(u.id)}>
+                      <Minus className="h-3 w-3 mr-1" /> Reduce
                     </Button>
                   </div>
                 </CardContent>
