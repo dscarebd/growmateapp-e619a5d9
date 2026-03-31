@@ -335,9 +335,9 @@ export const useAdmin = () => {
 
   return {
     isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses,
-    referralBonusAmount, minCampaignBudgetReferral, paymentMethods,
+    referralBonusAmount, minCampaignBudgetReferral, usdToBdtRate, paymentMethods,
     updateCampaignStatus, updateWithdrawalStatus, updateUserCredits, updateUserTrustScore,
     approvePayment, rejectPayment, addCreditsManually, updateReferralBonusAmount, updateMinCampaignBudgetReferral,
-    addPaymentMethod, updatePaymentMethod, deletePaymentMethod, fetchAll,
+    updateUsdToBdtRate, addPaymentMethod, updatePaymentMethod, deletePaymentMethod, fetchAll,
   };
 };
