@@ -390,6 +390,11 @@ const Admin = () => {
                           <Play className="h-3 w-3 mr-1" /> Resume
                         </Button>
                       )}
+                      <Button size="sm" variant="outline" className="h-7 text-xs rounded-lg text-destructive border-destructive/30" onClick={() => {
+                        if (confirm(`Remove campaign "${c.title}"? Unspent budget will be refunded.`)) admin.deleteCampaign(c.id);
+                      }}>
+                        <Trash2 className="h-3 w-3 mr-1" /> Remove
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
