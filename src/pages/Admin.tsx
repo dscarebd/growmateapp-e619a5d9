@@ -739,6 +739,18 @@ const Admin = () => {
                     </Button>
                   </div>
                 </div>
+
+                <div className="border-t border-border pt-4 mt-4">
+                  <h4 className="text-xs font-semibold text-foreground mb-2">Currency Settings</h4>
+                  <p className="text-[11px] text-muted-foreground mb-1.5">USD to BDT rate: <span className="font-bold text-foreground">৳{admin.usdToBdtRate}</span></p>
+                  <div className="flex gap-2">
+                    <Input type="number" placeholder={admin.usdToBdtRate.toString()} value={editBdtRate} onChange={e => setEditBdtRate(e.target.value)} className="h-9 rounded-xl flex-1" min={1} step="0.01" />
+                    <Button size="sm" className="h-9 rounded-xl gradient-primary text-primary-foreground" disabled={!editBdtRate || parseFloat(editBdtRate) < 1} onClick={() => { admin.updateUsdToBdtRate(parseFloat(editBdtRate)); setEditBdtRate(""); }}>
+                      Update
+                    </Button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1">Users will see BDT equivalents on Buy Credits and Withdraw pages.</p>
+                </div>
               </CardContent>
             </Card>
 
