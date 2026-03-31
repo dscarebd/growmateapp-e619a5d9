@@ -27,6 +27,9 @@ import SecurityPage from "@/pages/SecurityPage";
 import PoliciesPage from "@/pages/PoliciesPage";
 import DeveloperPage from "@/pages/DeveloperPage";
 import BuyCredits from "@/pages/BuyCredits";
+import TasksCompleted from "@/pages/TasksCompleted";
+import MyCampaigns from "@/pages/MyCampaigns";
+import Earnings from "@/pages/Earnings";
 import NotFound from "@/pages/NotFound";
 import { useRef } from "react";
 
