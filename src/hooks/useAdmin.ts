@@ -113,6 +113,8 @@ export const useAdmin = () => {
       const budgetVal = settings.find((s: any) => s.key === "min_campaign_budget_referral");
       if (bonusVal) setReferralBonusAmount(parseInt(bonusVal.value) || 50);
       if (budgetVal) setMinCampaignBudgetReferral(parseInt(budgetVal.value) || 500);
+      const bdtVal = settings.find((s: any) => s.key === "usd_to_bdt_rate");
+      if (bdtVal) setUsdToBdtRate(parseFloat(bdtVal.value) || 120);
     }
   }, [isAdmin]);
 
