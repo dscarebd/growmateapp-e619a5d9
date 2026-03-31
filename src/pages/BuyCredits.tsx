@@ -66,7 +66,12 @@ const BuyCredits = () => {
         setPaymentMethod(FALLBACK_METHODS[0].id);
       }
     };
+    const fetchBdtRate = async () => {
+      const { data } = await supabase.rpc("get_usd_to_bdt_rate");
+      if (data) setBdtRate(Number(data));
+    };
     fetchMethods();
+    fetchBdtRate();
   }, []);
 
   const getSelectedCredits = () => {
