@@ -148,9 +148,9 @@ const Profile = () => {
   const avatarUrl = user.avatar_url && user.avatar_url !== "" ? user.avatar_url : null;
 
   const stats = [
-    { icon: CheckCircle2, label: "Tasks Done", value: user.tasks_completed, color: "text-success" },
-    { icon: Megaphone, label: "Campaigns", value: user.campaigns_run, color: "text-primary" },
-    { icon: Coins, label: "Total Earned", value: user.total_earned, color: "text-warning" },
+    { icon: CheckCircle2, label: "Tasks Done", value: user.tasks_completed, color: "text-success", route: "/tasks-completed" },
+    { icon: Megaphone, label: "Campaigns", value: user.campaigns_run, color: "text-primary", route: "/my-campaigns" },
+    { icon: Coins, label: "Total Earned", value: user.total_earned, color: "text-warning", route: "/earnings" },
   ];
 
   const menuItems = [
