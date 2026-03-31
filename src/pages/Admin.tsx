@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle,
-  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft, Pencil, Trash2, ToggleLeft, ToggleRight,
+  Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft, Pencil, Trash2, ToggleLeft, ToggleRight, Minus, Ban,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
@@ -63,6 +63,9 @@ const Admin = () => {
   const [creditMethod, setCreditMethod] = useState("bKash");
   const [creditRef, setCreditRef] = useState("");
   const [creditNotes, setCreditNotes] = useState("");
+  const [reduceCreditsDialog, setReduceCreditsDialog] = useState<string | null>(null);
+  const [reduceAmount, setReduceAmount] = useState("");
+  const [reduceReason, setReduceReason] = useState("");
   const [userDetailDialog, setUserDetailDialog] = useState<string | null>(null);
   const [editTrust, setEditTrust] = useState("");
   const [withdrawalFilter, setWithdrawalFilter] = useState<"all" | "pending" | "approved" | "rejected" | "processing">("all");
@@ -296,12 +299,15 @@ const Admin = () => {
               <Input placeholder="Search users..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-10 rounded-xl bg-muted/50 border-0" />
             </div>
             {filteredUsers.map(u => (
-              <Card key={u.id} className="border-border">
+              <Card key={u.id} className={cn("border-border", (u as any).is_banned && "opacity-60 border-destructive/30")}>
                 <CardContent className="p-3.5">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-foreground">{u.name[0]?.toUpperCase()}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{u.name}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-medium text-foreground truncate">{u.name}</p>
+                        {(u as any).is_banned && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-destructive/15 text-destructive shrink-0">BANNED</span>}
+                      </div>
                       <p className="text-[11px] text-muted-foreground truncate">{u.email}</p>
                     </div>
                     <div className="text-right">
@@ -319,7 +325,10 @@ const Admin = () => {
                       <Eye className="h-3 w-3 mr-1" /> Details
                     </Button>
                     <Button size="sm" className="h-7 text-xs flex-1 rounded-lg bg-success text-success-foreground" onClick={() => setAddCreditsDialog(u.id)}>
-                      <Plus className="h-3 w-3 mr-1" /> Add Credits
+                      <Plus className="h-3 w-3 mr-1" /> Add
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-7 text-xs flex-1 rounded-lg text-destructive" onClick={() => setReduceCreditsDialog(u.id)}>
+                      <Minus className="h-3 w-3 mr-1" /> Reduce
                     </Button>
                   </div>
                 </CardContent>
@@ -381,6 +390,11 @@ const Admin = () => {
                           <Play className="h-3 w-3 mr-1" /> Resume
                         </Button>
                       )}
+                      <Button size="sm" variant="outline" className="h-7 text-xs rounded-lg text-destructive border-destructive/30" onClick={() => {
+                        if (confirm(`Remove campaign "${c.title}"? Unspent budget will be refunded.`)) admin.deleteCampaign(c.id);
+                      }}>
+                        <Trash2 className="h-3 w-3 mr-1" /> Remove
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -921,7 +935,34 @@ const Admin = () => {
         </DialogContent>
       </Dialog>
 
-      {/* USER DETAIL DIALOG */}
+      {/* REDUCE CREDITS DIALOG */}
+      <Dialog open={!!reduceCreditsDialog} onOpenChange={() => setReduceCreditsDialog(null)}>
+        <DialogContent className="rounded-2xl mx-4">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Reduce Credits</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              From: <span className="font-medium text-foreground">{admin.profiles.find(p => p.id === reduceCreditsDialog)?.name}</span>
+              {" "}(Balance: <span className="font-bold text-primary">{admin.profiles.find(p => p.id === reduceCreditsDialog)?.credits}</span>)
+            </p>
+            <Input type="number" placeholder="Amount to deduct" value={reduceAmount} onChange={e => setReduceAmount(e.target.value)} className="h-10 rounded-xl" />
+            <Input placeholder="Reason for deduction" value={reduceReason} onChange={e => setReduceReason(e.target.value)} className="h-10 rounded-xl" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReduceCreditsDialog(null)} className="rounded-xl">Cancel</Button>
+            <Button className="rounded-xl bg-destructive text-destructive-foreground" disabled={!reduceAmount || parseInt(reduceAmount) <= 0 || !reduceReason.trim()} onClick={async () => {
+              if (!reduceCreditsDialog) return;
+              await admin.reduceUserCredits(reduceCreditsDialog, parseInt(reduceAmount), reduceReason);
+              setReduceCreditsDialog(null);
+              setReduceAmount(""); setReduceReason("");
+            }}>
+              Deduct {reduceAmount || 0} Credits
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={!!userDetailDialog} onOpenChange={() => setUserDetailDialog(null)}>
         <DialogContent className="rounded-2xl mx-4">
           <DialogHeader>
@@ -957,6 +998,23 @@ const Admin = () => {
                     Save
                   </Button>
                 </div>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-muted/50 p-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                    <Ban className="h-4 w-4" /> Ban User
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">Prevent user from logging in</p>
+                </div>
+                <Switch
+                  checked={(selectedUser as any).is_banned || false}
+                  onCheckedChange={(checked) => {
+                    if (confirm(checked ? `Ban ${selectedUser.name}? They will be signed out.` : `Unban ${selectedUser.name}?`)) {
+                      admin.toggleUserBan(selectedUser.id, checked);
+                      setUserDetailDialog(null);
+                    }
+                  }}
+                />
               </div>
               <p className="text-[10px] text-muted-foreground">Joined: {new Date(selectedUser.joined_date).toLocaleDateString()}</p>
             </div>

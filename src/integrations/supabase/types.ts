@@ -248,6 +248,7 @@ export type Database = {
           device_fingerprint: string | null
           email: string
           id: string
+          is_banned: boolean
           joined_date: string
           name: string
           referral_bonus_awarded: boolean
@@ -266,6 +267,7 @@ export type Database = {
           device_fingerprint?: string | null
           email?: string
           id: string
+          is_banned?: boolean
           joined_date?: string
           name?: string
           referral_bonus_awarded?: boolean
@@ -284,6 +286,7 @@ export type Database = {
           device_fingerprint?: string | null
           email?: string
           id?: string
+          is_banned?: boolean
           joined_date?: string
           name?: string
           referral_bonus_awarded?: boolean
