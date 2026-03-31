@@ -205,7 +205,7 @@ const Profile = () => {
             </div>
             <div className="flex items-center gap-1 mt-1">
               <Shield className="h-3 w-3 text-primary-foreground/70" />
-              <span className="text-xs text-primary-foreground/70">Trust Score: {user.trust_score}%</span>
+              <span className="text-xs text-primary-foreground/70 selectable">Trust Score: {user.trust_score}%</span>
             </div>
           </div>
         </div>
