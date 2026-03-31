@@ -2,7 +2,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, CheckCircle2, Coins } from "lucide-react";
+import { CheckCircle2, Coins } from "lucide-react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import * as PlatformIcons from "@/components/PlatformIcons";
