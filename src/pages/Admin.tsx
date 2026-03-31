@@ -75,6 +75,7 @@ const Admin = () => {
   const [editBonusAmount, setEditBonusAmount] = useState("");
   const [editMinBudget, setEditMinBudget] = useState("");
   const [editBdtRate, setEditBdtRate] = useState("");
+  const [editWelcomeBonus, setEditWelcomeBonus] = useState("");
   const [editPaymentDialog, setEditPaymentDialog] = useState<string | null>(null);
   const [editPaymentMethod, setEditPaymentMethod] = useState("");
   const [editPaymentRef, setEditPaymentRef] = useState("");
