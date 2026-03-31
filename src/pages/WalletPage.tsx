@@ -39,13 +39,18 @@ const WalletPage = () => {
   const [myPayments, setMyPayments] = useState<any[]>([]);
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
   const [bdtRate, setBdtRate] = useState<number>(120);
+  const [withdrawalEnabled, setWithdrawalEnabled] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const fetchBdtRate = async () => {
-      const { data } = await supabase.rpc("get_usd_to_bdt_rate");
-      if (data) setBdtRate(Number(data));
+    const fetchSettings = async () => {
+      const [bdtRes, wdRes] = await Promise.all([
+        supabase.rpc("get_usd_to_bdt_rate"),
+        supabase.rpc("get_withdrawal_enabled" as any),
+      ]);
+      if (bdtRes.data) setBdtRate(Number(bdtRes.data));
+      setWithdrawalEnabled(!!wdRes.data);
     };
-    fetchBdtRate();
+    fetchSettings();
   }, []);
 
   const CREDITS_PER_DOLLAR = 100;
