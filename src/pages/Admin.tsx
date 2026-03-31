@@ -972,6 +972,23 @@ const Admin = () => {
                   </Button>
                 </div>
               </div>
+              <div className="flex items-center justify-between rounded-xl bg-muted/50 p-3">
+                <div>
+                  <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                    <Ban className="h-4 w-4" /> Ban User
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">Prevent user from logging in</p>
+                </div>
+                <Switch
+                  checked={(selectedUser as any).is_banned || false}
+                  onCheckedChange={(checked) => {
+                    if (confirm(checked ? `Ban ${selectedUser.name}? They will be signed out.` : `Unban ${selectedUser.name}?`)) {
+                      admin.toggleUserBan(selectedUser.id, checked);
+                      setUserDetailDialog(null);
+                    }
+                  }}
+                />
+              </div>
               <p className="text-[10px] text-muted-foreground">Joined: {new Date(selectedUser.joined_date).toLocaleDateString()}</p>
             </div>
           )}
