@@ -80,6 +80,7 @@ export const useAdmin = () => {
   const [minCampaignBudgetReferral, setMinCampaignBudgetReferral] = useState(500);
   const [usdToBdtRate, setUsdToBdtRate] = useState(120);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [withdrawalEnabled, setWithdrawalEnabled] = useState(false);
 
   const checkAdmin = useCallback(async () => {
     if (!user) { setIsAdmin(false); setLoading(false); return; }
