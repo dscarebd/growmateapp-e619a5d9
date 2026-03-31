@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import type { Tables } from "@/integrations/supabase/types";
 
-export type Platform = "youtube" | "instagram" | "tiktok" | "facebook" | "twitter" | "telegram";
+export type Platform = "youtube" | "instagram" | "tiktok" | "facebook" | "twitter" | "telegram" | "app_download" | "website_visit";
 export type TaskAction = "like" | "follow" | "subscribe" | "share" | "comment" | "view";
 export type CampaignStatus = "active" | "paused" | "completed" | "pending";
 export type TransactionType = "earned" | "spent" | "purchased" | "withdrawn";
@@ -142,7 +142,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       reward_per_action: campaign.rewardPerAction,
       estimated_reach: estimatedReach,
       status: "active" as const,
-    }).select().single();
+    } as any).select().single();
 
     if (newCampaign) setCampaigns(prev => [newCampaign, ...prev]);
 
