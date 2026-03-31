@@ -395,7 +395,7 @@ const WalletPage = () => {
                           <div className="rounded-lg bg-accent/50 border border-border p-3 space-y-1 text-xs">
                             <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><span className="font-medium text-foreground">{withdrawNum} credits</span></div>
                             <div className="flex justify-between"><span className="text-muted-foreground">Commission ({COMMISSION_RATE * 100}%)</span><span className="text-destructive font-medium">-{commission} credits</span></div>
-                            <div className="border-t border-border pt-1 flex justify-between"><span className="font-semibold text-foreground">You receive</span><span className="text-success font-bold">{netAmount} credits</span></div>
+                            <div className="border-t border-border pt-1 flex justify-between"><span className="font-semibold text-foreground">You receive</span><span className="text-success font-bold">{netAmount} credits ≈ ৳{((netAmount / CREDITS_PER_DOLLAR) * bdtRate).toLocaleString()}</span></div>
                             <div className="flex justify-between"><span className="text-muted-foreground">Method</span><span className="font-medium text-foreground">{withdrawMethod}</span></div>
                           </div>
                         </div>
