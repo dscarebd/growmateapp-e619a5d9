@@ -158,7 +158,10 @@ const BuyCredits = () => {
             {/* Exchange rate */}
             <div className="rounded-xl bg-accent/50 border border-border p-3 flex items-center justify-between">
               <span className="text-xs font-semibold text-foreground">Exchange Rate</span>
-              <span className="text-sm font-bold text-primary">$1 = {CREDITS_PER_DOLLAR} Credits</span>
+              <div className="text-right">
+                <span className="text-sm font-bold text-primary">$1 = {CREDITS_PER_DOLLAR} Credits</span>
+                <p className="text-[10px] text-muted-foreground">$1 ≈ ৳{bdtRate}</p>
+              </div>
             </div>
 
             {/* Packs grid */}
