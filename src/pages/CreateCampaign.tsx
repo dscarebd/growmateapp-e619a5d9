@@ -225,7 +225,7 @@ const CreateCampaign = () => {
       <div className="px-5">
         {steps[step]}
       </div>
-      <div className="fixed bottom-24 left-0 right-0 px-5 max-w-lg mx-auto">
+      <div className="px-5 mt-6">
         {step < 2 ? (
           <Button className="w-full h-12 rounded-xl gradient-primary text-primary-foreground font-semibold gap-1.5" disabled={step === 1 && !step1Valid} onClick={() => { if (step === 1) setStep1Touched(true); if (step === 0 || step1Valid) setStep(step + 1); }}>
             Continue <ArrowRight className="h-4 w-4" />

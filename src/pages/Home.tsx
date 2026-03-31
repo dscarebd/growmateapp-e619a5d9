@@ -6,10 +6,10 @@ import { Coins, Megaphone, ShoppingCart, Flame, ArrowRight } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon, AppDownloadIcon, WebsiteVisitIcon } from "@/components/PlatformIcons";
 
 const platformIcons: Record<string, ReactNode> = {
-  youtube: <YouTubeIcon className="h-6 w-6" />, instagram: <InstagramIcon className="h-6 w-6" />, tiktok: <TikTokIcon className="h-6 w-6" />, facebook: <FacebookIcon className="h-6 w-6" />, twitter: <TwitterIcon className="h-6 w-6" />, telegram: <TelegramIcon className="h-6 w-6" />,
+  youtube: <YouTubeIcon className="h-6 w-6" />, instagram: <InstagramIcon className="h-6 w-6" />, tiktok: <TikTokIcon className="h-6 w-6" />, facebook: <FacebookIcon className="h-6 w-6" />, twitter: <TwitterIcon className="h-6 w-6" />, telegram: <TelegramIcon className="h-6 w-6" />, app_download: <AppDownloadIcon className="h-6 w-6" />, website_visit: <WebsiteVisitIcon className="h-6 w-6" />,
 };
 
 const Home = () => {

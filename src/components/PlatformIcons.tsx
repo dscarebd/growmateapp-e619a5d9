@@ -51,3 +51,21 @@ export const TelegramIcon = ({ className = "h-6 w-6" }: { className?: string }) 
     <path d="M5.5 11.8l11.6-4.5c.5-.2 1 .1.8.9l-2 9.3c-.1.7-.5.8-1.1.5l-3-2.2-1.4 1.4c-.2.2-.3.3-.6.3l.2-3.1 5.6-5c.2-.2-.1-.3-.4-.1L9.4 13l-3-.9c-.6-.2-.7-.6.1-1z" fill="#fff"/>
   </svg>
 );
+
+export const AppDownloadIcon = ({ className = "h-6 w-6" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ minWidth: '1em', minHeight: '1em' }}>
+    <rect width="24" height="24" rx="5" fill="#22C55E"/>
+    <rect x="8" y="4" width="8" height="16" rx="2" stroke="#fff" strokeWidth="1.5" fill="none"/>
+    <line x1="12" y1="9" x2="12" y2="15" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/>
+    <polyline points="9.5,13 12,15.5 14.5,13" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+  </svg>
+);
+
+export const WebsiteVisitIcon = ({ className = "h-6 w-6" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ minWidth: '1em', minHeight: '1em' }}>
+    <rect width="24" height="24" rx="5" fill="#3B82F6"/>
+    <circle cx="12" cy="12" r="6.5" stroke="#fff" strokeWidth="1.5" fill="none"/>
+    <ellipse cx="12" cy="12" rx="3" ry="6.5" stroke="#fff" strokeWidth="1.2" fill="none"/>
+    <line x1="5.5" y1="12" x2="18.5" y2="12" stroke="#fff" strokeWidth="1.2"/>
+  </svg>
+);
