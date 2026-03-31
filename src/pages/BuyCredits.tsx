@@ -196,6 +196,34 @@ const BuyCredits = () => {
               </div>
             </div>
 
+            {/* BDT Converter */}
+            <div className="rounded-xl border border-border bg-card p-3.5 space-y-2">
+              <Label className="text-xs font-semibold text-foreground">৳ BDT Converter</Label>
+              <div className="flex gap-2 items-center">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">৳</span>
+                  <Input
+                    type="number"
+                    placeholder="Enter BDT amount"
+                    className="rounded-xl pl-7"
+                    min={1}
+                    onChange={e => {
+                      const bdt = parseFloat(e.target.value) || 0;
+                      const usd = bdt / bdtRate;
+                      const creds = Math.floor(usd * CREDITS_PER_DOLLAR);
+                      setCustomAmount(creds > 0 ? creds.toString() : "");
+                      setSelectedPack(creds > 0 ? "custom" : null);
+                    }}
+                  />
+                </div>
+                <span className="text-xs text-muted-foreground">=</span>
+                <div className="px-3 py-2.5 rounded-xl bg-accent/50 border border-border min-w-[80px] text-center">
+                  <span className="text-sm font-bold text-primary">{customAmount && selectedPack === "custom" ? parseInt(customAmount).toLocaleString() : "0"}</span>
+                  <p className="text-[9px] text-muted-foreground">credits</p>
+                </div>
+              </div>
+            </div>
+
             {/* Custom amount */}
             <div className="space-y-1.5">
               <Label className="text-xs font-semibold text-foreground">Or enter custom amount</Label>
