@@ -78,6 +78,7 @@ export const useAdmin = () => {
   const [referralBonuses, setReferralBonuses] = useState<ReferralBonus[]>([]);
   const [referralBonusAmount, setReferralBonusAmount] = useState(50);
   const [minCampaignBudgetReferral, setMinCampaignBudgetReferral] = useState(500);
+  const [usdToBdtRate, setUsdToBdtRate] = useState(120);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
 
   const checkAdmin = useCallback(async () => {
