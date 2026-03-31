@@ -289,7 +289,7 @@ const WalletPage = () => {
             <Card className="border-border">
               <CardContent className="p-4 space-y-4">
                 <h3 className="text-sm font-semibold text-foreground">Request Withdrawal</h3>
-                <p className="text-xs text-muted-foreground">Minimum: {MIN_WITHDRAWAL} credits • Commission: {COMMISSION_RATE * 100}%</p>
+                <p className="text-xs text-muted-foreground">Minimum: {MIN_WITHDRAWAL} credits • Charge: {COMMISSION_RATE * 100}%</p>
                 <div className="rounded-xl bg-accent/50 border border-border p-3 flex items-center justify-between">
                   <span className="text-xs font-semibold text-foreground">Exchange Rate</span>
                   <div className="text-right">
@@ -349,7 +349,7 @@ const WalletPage = () => {
                       <span className="text-foreground font-medium">{withdrawNum} credits (${(withdrawNum / CREDITS_PER_DOLLAR).toFixed(2)})</span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Commission ({COMMISSION_RATE * 100}%)</span>
+                      <span className="text-muted-foreground">Charge ({COMMISSION_RATE * 100}%)</span>
                       <span className="text-destructive font-medium">-{commission} credits (${(commission / CREDITS_PER_DOLLAR).toFixed(2)})</span>
                     </div>
                     <div className="border-t border-border pt-1.5 flex justify-between text-sm">
@@ -394,7 +394,7 @@ const WalletPage = () => {
                           <p>Are you sure you want to withdraw?</p>
                           <div className="rounded-lg bg-accent/50 border border-border p-3 space-y-1 text-xs">
                             <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><span className="font-medium text-foreground">{withdrawNum} credits</span></div>
-                            <div className="flex justify-between"><span className="text-muted-foreground">Commission ({COMMISSION_RATE * 100}%)</span><span className="text-destructive font-medium">-{commission} credits</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Charge ({COMMISSION_RATE * 100}%)</span><span className="text-destructive font-medium">-{commission} credits</span></div>
                             <div className="border-t border-border pt-1 flex justify-between"><span className="font-semibold text-foreground">You receive</span><span className="text-success font-bold">{netAmount} credits ≈ ৳{((netAmount / CREDITS_PER_DOLLAR) * bdtRate).toLocaleString()}</span></div>
                             <div className="flex justify-between"><span className="text-muted-foreground">Method</span><span className="font-medium text-foreground">{withdrawMethod}</span></div>
                           </div>
