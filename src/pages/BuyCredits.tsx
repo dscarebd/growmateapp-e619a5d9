@@ -53,6 +53,7 @@ const BuyCredits = () => {
   const [myPayments, setMyPayments] = useState<any[]>([]);
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState(FALLBACK_METHODS);
+  const [bdtRate, setBdtRate] = useState<number>(120);
 
   useEffect(() => {
     const fetchMethods = async () => {
