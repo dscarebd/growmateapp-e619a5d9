@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowRight, CheckCircle2, Heart, UserPlus, Bell, Share2, MessageCircle, Repeat2, DoorOpen, Eye } from "lucide-react";
+import { ArrowRight, CheckCircle2, Heart, UserPlus, Bell, Share2, MessageCircle, Repeat2, DoorOpen, Eye, Download, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon, AppDownloadIcon, WebsiteVisitIcon } from "@/components/PlatformIcons";
 
 const platformOptions: { key: Platform; label: string; icon: ReactNode }[] = [
   { key: "youtube", label: "YouTube", icon: <YouTubeIcon className="h-7 w-7" /> },
@@ -17,6 +17,8 @@ const platformOptions: { key: Platform; label: string; icon: ReactNode }[] = [
   { key: "facebook", label: "Facebook", icon: <FacebookIcon className="h-7 w-7" /> },
   { key: "twitter", label: "X (Twitter)", icon: <TwitterIcon className="h-7 w-7" /> },
   { key: "telegram", label: "Telegram", icon: <TelegramIcon className="h-7 w-7" /> },
+  { key: "app_download", label: "APP Download", icon: <AppDownloadIcon className="h-7 w-7" /> },
+  { key: "website_visit", label: "Website Visit", icon: <WebsiteVisitIcon className="h-7 w-7" /> },
 ];
 
 const actionIcons: Record<string, ReactNode> = {
@@ -29,6 +31,8 @@ const actionIcons: Record<string, ReactNode> = {
   repost: <Repeat2 className="h-4 w-4" />,
   "join channel": <DoorOpen className="h-4 w-4" />,
   view: <Eye className="h-4 w-4" />,
+  download: <Download className="h-4 w-4" />,
+  visit: <Globe className="h-4 w-4" />,
 };
 
 const platformActions: Record<Platform, { key: TaskAction; label: string; icon: ReactNode }[]> = {
@@ -71,6 +75,12 @@ const platformActions: Record<Platform, { key: TaskAction; label: string; icon: 
     { key: "follow", label: "Join Channel", icon: actionIcons["join channel"] },
     { key: "comment", label: "Comment", icon: actionIcons.comment },
     { key: "share", label: "Share", icon: actionIcons.share },
+  ],
+  app_download: [
+    { key: "view", label: "Download App", icon: actionIcons.download },
+  ],
+  website_visit: [
+    { key: "view", label: "Visit Website", icon: actionIcons.visit },
   ],
 };
 
