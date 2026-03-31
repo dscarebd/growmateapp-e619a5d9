@@ -14,7 +14,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import CompletedTasks from "@/components/CompletedTasks";
+
 
 const Profile = () => {
   const { user, refreshData } = useApp();
@@ -148,9 +148,9 @@ const Profile = () => {
   const avatarUrl = user.avatar_url && user.avatar_url !== "" ? user.avatar_url : null;
 
   const stats = [
-    { icon: CheckCircle2, label: "Tasks Done", value: user.tasks_completed, color: "text-success" },
-    { icon: Megaphone, label: "Campaigns", value: user.campaigns_run, color: "text-primary" },
-    { icon: Coins, label: "Total Earned", value: user.total_earned, color: "text-warning" },
+    { icon: CheckCircle2, label: "Tasks Done", value: user.tasks_completed, color: "text-success", route: "/tasks-completed" },
+    { icon: Megaphone, label: "Campaigns", value: user.campaigns_run, color: "text-primary", route: "/my-campaigns" },
+    { icon: Coins, label: "Total Earned", value: user.total_earned, color: "text-warning", route: "/earnings" },
   ];
 
   const menuItems = [
@@ -214,7 +214,7 @@ const Profile = () => {
       <div className="px-5 -mt-4 space-y-4">
         <div className="grid grid-cols-3 gap-2 animate-fade-in-up">
           {stats.map(s => (
-            <Card key={s.label} className="border-border">
+            <Card key={s.label} className="border-border cursor-pointer hover:bg-muted/50 transition-colors active:scale-95" onClick={() => navigate(s.route)}>
               <CardContent className="p-3 text-center">
                 <s.icon className={cn("h-5 w-5 mx-auto mb-1", s.color)} />
                 <p className="text-lg font-bold text-foreground">{s.value}</p>
@@ -264,7 +264,7 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <CompletedTasks />
+        
 
         <div className="space-y-1">
           {menuItems.map(item => (
