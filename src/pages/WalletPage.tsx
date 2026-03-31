@@ -38,6 +38,15 @@ const WalletPage = () => {
   const [withdrawAccount, setWithdrawAccount] = useState("");
   const [myPayments, setMyPayments] = useState<any[]>([]);
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
+  const [bdtRate, setBdtRate] = useState<number>(120);
+
+  useEffect(() => {
+    const fetchBdtRate = async () => {
+      const { data } = await supabase.rpc("get_usd_to_bdt_rate");
+      if (data) setBdtRate(Number(data));
+    };
+    fetchBdtRate();
+  }, []);
 
   const CREDITS_PER_DOLLAR = 100;
   const COMMISSION_RATE = 0.15;
