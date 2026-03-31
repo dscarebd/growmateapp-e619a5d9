@@ -73,6 +73,7 @@ const Admin = () => {
   const REF_PER_PAGE = 10;
   const [editBonusAmount, setEditBonusAmount] = useState("");
   const [editMinBudget, setEditMinBudget] = useState("");
+  const [editBdtRate, setEditBdtRate] = useState("");
   const [editPaymentDialog, setEditPaymentDialog] = useState<string | null>(null);
   const [editPaymentMethod, setEditPaymentMethod] = useState("");
   const [editPaymentRef, setEditPaymentRef] = useState("");
