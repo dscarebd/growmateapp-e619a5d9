@@ -270,7 +270,7 @@ const BuyCredits = () => {
                         {statusIcon(p.status)}
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-medium text-foreground">{p.amount} credits via {p.method}</p>
-                          <p className="text-[10px] text-muted-foreground truncate">Ref: {p.transaction_ref}</p>
+                          <p className="text-[10px] text-muted-foreground truncate selectable">Ref: {p.transaction_ref}</p>
                         </div>
                         <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full capitalize",
                           p.status === "approved" ? "bg-success/15 text-success" :
@@ -329,7 +329,7 @@ const BuyCredits = () => {
                 <div className="rounded-xl bg-accent/50 border border-border p-3.5 space-y-2">
                   <p className="text-xs font-semibold text-foreground">{selected.instructions}</p>
                   <div className="flex items-center gap-2">
-                    <code className="text-sm font-bold text-primary bg-primary/10 px-2.5 py-1.5 rounded-lg flex-1 break-all">
+                    <code className="text-sm font-bold text-primary bg-primary/10 px-2.5 py-1.5 rounded-lg flex-1 break-all selectable">
                       {selected.detail}
                     </code>
                     <button
@@ -342,7 +342,7 @@ const BuyCredits = () => {
                       <Copy className="h-3.5 w-3.5 text-muted-foreground" />
                     </button>
                   </div>
-                  <p className="text-[11px] text-muted-foreground">{selected.note}</p>
+                  <p className="text-[11px] text-muted-foreground selectable">{selected.note}</p>
                 </div>
               );
             })()}

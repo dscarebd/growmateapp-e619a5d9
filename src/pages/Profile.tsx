@@ -192,20 +192,20 @@ const Profile = () => {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-primary-foreground truncate">{user.name}</h1>
+              <h1 className="text-lg font-bold text-primary-foreground truncate selectable">{user.name}</h1>
               <button onClick={() => { setEditName(user.name); setEditDialog(true); }} className="shrink-0">
                 <Pencil className="h-3.5 w-3.5 text-primary-foreground/70 hover:text-primary-foreground transition-colors" />
               </button>
             </div>
             <div className="flex items-center gap-1.5">
-              <p className="text-sm text-primary-foreground/70 truncate">{user.email}</p>
+              <p className="text-sm text-primary-foreground/70 truncate selectable">{user.email}</p>
               <button onClick={() => { setNewEmail(""); setEmailDialog(true); }} className="shrink-0">
                 <Mail className="h-3 w-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors" />
               </button>
             </div>
             <div className="flex items-center gap-1 mt-1">
               <Shield className="h-3 w-3 text-primary-foreground/70" />
-              <span className="text-xs text-primary-foreground/70">Trust Score: {user.trust_score}%</span>
+              <span className="text-xs text-primary-foreground/70 selectable">Trust Score: {user.trust_score}%</span>
             </div>
           </div>
         </div>
@@ -229,7 +229,7 @@ const Profile = () => {
             <h3 className="text-sm font-semibold text-foreground mb-1">Invite Friends, Earn Credits</h3>
             <p className="text-xs text-muted-foreground mb-3">Share your code and earn 50 credits when they withdraw or run a 500+ credit campaign</p>
             <div className="flex items-center gap-2">
-              <div className="flex-1 rounded-xl bg-muted px-4 py-2.5 text-sm font-mono font-bold text-foreground">{user.referral_code}</div>
+              <div className="flex-1 rounded-xl bg-muted px-4 py-2.5 text-sm font-mono font-bold text-foreground selectable">{user.referral_code}</div>
               <Button size="sm" variant="outline" className="rounded-xl h-10 px-3" onClick={copyCode}>
                 {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>

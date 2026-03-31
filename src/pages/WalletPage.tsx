@@ -269,7 +269,7 @@ const WalletPage = () => {
                       {statusIcon(p.status)}
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground">{p.amount} credits via {p.method}</p>
-                        <p className="text-[11px] text-muted-foreground">Ref: {p.transaction_ref} • {new Date(p.created_at).toLocaleDateString()}</p>
+                        <p className="text-[11px] text-muted-foreground selectable">Ref: {p.transaction_ref} • {new Date(p.created_at).toLocaleDateString()}</p>
                       </div>
                       <span className={cn("text-[10px] font-bold px-2 py-1 rounded-full capitalize",
                         p.status === "approved" ? "bg-success/15 text-success" :
@@ -355,8 +355,8 @@ const WalletPage = () => {
                     <div className="border-t border-border pt-1.5 flex justify-between text-sm">
                       <span className="text-foreground font-semibold">You receive</span>
                       <div className="text-right">
-                        <span className="text-success font-bold">{netAmount} credits (${(netAmount / CREDITS_PER_DOLLAR).toFixed(2)})</span>
-                        <p className="text-[10px] text-muted-foreground">≈ ৳{((netAmount / CREDITS_PER_DOLLAR) * bdtRate).toLocaleString()}</p>
+                       <span className="text-success font-bold selectable">{netAmount} credits (${(netAmount / CREDITS_PER_DOLLAR).toFixed(2)})</span>
+                        <p className="text-[10px] text-muted-foreground selectable">≈ ৳{((netAmount / CREDITS_PER_DOLLAR) * bdtRate).toLocaleString()}</p>
                       </div>
                     </div>
                   </div>
