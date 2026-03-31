@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp, TransactionType } from "@/contexts/AppContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -38,6 +38,15 @@ const WalletPage = () => {
   const [withdrawAccount, setWithdrawAccount] = useState("");
   const [myPayments, setMyPayments] = useState<any[]>([]);
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
+  const [bdtRate, setBdtRate] = useState<number>(120);
+
+  useEffect(() => {
+    const fetchBdtRate = async () => {
+      const { data } = await supabase.rpc("get_usd_to_bdt_rate");
+      if (data) setBdtRate(Number(data));
+    };
+    fetchBdtRate();
+  }, []);
 
   const CREDITS_PER_DOLLAR = 100;
   const COMMISSION_RATE = 0.15;
@@ -283,7 +292,10 @@ const WalletPage = () => {
                 <p className="text-xs text-muted-foreground">Minimum: {MIN_WITHDRAWAL} credits • Commission: {COMMISSION_RATE * 100}%</p>
                 <div className="rounded-xl bg-accent/50 border border-border p-3 flex items-center justify-between">
                   <span className="text-xs font-semibold text-foreground">Exchange Rate</span>
-                  <span className="text-sm font-bold text-primary">$1 = {CREDITS_PER_DOLLAR} Credits</span>
+                  <div className="text-right">
+                    <span className="text-sm font-bold text-primary">$1 = {CREDITS_PER_DOLLAR} Credits</span>
+                    <p className="text-[10px] text-muted-foreground">$1 ≈ ৳{bdtRate}</p>
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
@@ -342,7 +354,10 @@ const WalletPage = () => {
                     </div>
                     <div className="border-t border-border pt-1.5 flex justify-between text-sm">
                       <span className="text-foreground font-semibold">You receive</span>
-                      <span className="text-success font-bold">{netAmount} credits (${(netAmount / CREDITS_PER_DOLLAR).toFixed(2)})</span>
+                      <div className="text-right">
+                        <span className="text-success font-bold">{netAmount} credits (${(netAmount / CREDITS_PER_DOLLAR).toFixed(2)})</span>
+                        <p className="text-[10px] text-muted-foreground">≈ ৳{((netAmount / CREDITS_PER_DOLLAR) * bdtRate).toLocaleString()}</p>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -380,7 +395,7 @@ const WalletPage = () => {
                           <div className="rounded-lg bg-accent/50 border border-border p-3 space-y-1 text-xs">
                             <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><span className="font-medium text-foreground">{withdrawNum} credits</span></div>
                             <div className="flex justify-between"><span className="text-muted-foreground">Commission ({COMMISSION_RATE * 100}%)</span><span className="text-destructive font-medium">-{commission} credits</span></div>
-                            <div className="border-t border-border pt-1 flex justify-between"><span className="font-semibold text-foreground">You receive</span><span className="text-success font-bold">{netAmount} credits</span></div>
+                            <div className="border-t border-border pt-1 flex justify-between"><span className="font-semibold text-foreground">You receive</span><span className="text-success font-bold">{netAmount} credits ≈ ৳{((netAmount / CREDITS_PER_DOLLAR) * bdtRate).toLocaleString()}</span></div>
                             <div className="flex justify-between"><span className="text-muted-foreground">Method</span><span className="font-medium text-foreground">{withdrawMethod}</span></div>
                           </div>
                         </div>

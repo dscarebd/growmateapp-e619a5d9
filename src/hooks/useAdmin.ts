@@ -78,6 +78,7 @@ export const useAdmin = () => {
   const [referralBonuses, setReferralBonuses] = useState<ReferralBonus[]>([]);
   const [referralBonusAmount, setReferralBonusAmount] = useState(50);
   const [minCampaignBudgetReferral, setMinCampaignBudgetReferral] = useState(500);
+  const [usdToBdtRate, setUsdToBdtRate] = useState(120);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
 
   const checkAdmin = useCallback(async () => {
@@ -112,6 +113,8 @@ export const useAdmin = () => {
       const budgetVal = settings.find((s: any) => s.key === "min_campaign_budget_referral");
       if (bonusVal) setReferralBonusAmount(parseInt(bonusVal.value) || 50);
       if (budgetVal) setMinCampaignBudgetReferral(parseInt(budgetVal.value) || 500);
+      const bdtVal = settings.find((s: any) => s.key === "usd_to_bdt_rate");
+      if (bdtVal) setUsdToBdtRate(parseFloat(bdtVal.value) || 120);
     }
   }, [isAdmin]);
 
@@ -299,6 +302,14 @@ export const useAdmin = () => {
     toast.success(`Min campaign budget updated to ${amount} credits`);
   };
 
+  const updateUsdToBdtRate = async (rate: number) => {
+    if (rate < 1 || rate > 1000000) { toast.error("Rate must be between 1 and 1,000,000"); return; }
+    const { error } = await supabase.from("site_settings" as any).update({ value: rate.toString(), updated_at: new Date().toISOString() }).eq("key", "usd_to_bdt_rate");
+    if (error) { toast.error("Failed to update rate"); return; }
+    setUsdToBdtRate(rate);
+    toast.success(`USD to BDT rate updated to ৳${rate}`);
+  };
+
   // Payment method CRUD
   const addPaymentMethod = async (method: { name: string; instructions: string; detail: string; note: string; icon_url?: string }) => {
     const maxOrder = paymentMethods.reduce((m, p) => Math.max(m, p.sort_order || 0), -1);
@@ -324,9 +335,9 @@ export const useAdmin = () => {
 
   return {
     isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses,
-    referralBonusAmount, minCampaignBudgetReferral, paymentMethods,
+    referralBonusAmount, minCampaignBudgetReferral, usdToBdtRate, paymentMethods,
     updateCampaignStatus, updateWithdrawalStatus, updateUserCredits, updateUserTrustScore,
     approvePayment, rejectPayment, addCreditsManually, updateReferralBonusAmount, updateMinCampaignBudgetReferral,
-    addPaymentMethod, updatePaymentMethod, deletePaymentMethod, fetchAll,
+    updateUsdToBdtRate, addPaymentMethod, updatePaymentMethod, deletePaymentMethod, fetchAll,
   };
 };

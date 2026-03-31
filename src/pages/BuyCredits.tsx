@@ -53,6 +53,7 @@ const BuyCredits = () => {
   const [myPayments, setMyPayments] = useState<any[]>([]);
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState(FALLBACK_METHODS);
+  const [bdtRate, setBdtRate] = useState<number>(120);
 
   useEffect(() => {
     const fetchMethods = async () => {
@@ -65,7 +66,12 @@ const BuyCredits = () => {
         setPaymentMethod(FALLBACK_METHODS[0].id);
       }
     };
+    const fetchBdtRate = async () => {
+      const { data } = await supabase.rpc("get_usd_to_bdt_rate");
+      if (data) setBdtRate(Number(data));
+    };
     fetchMethods();
+    fetchBdtRate();
   }, []);
 
   const getSelectedCredits = () => {
@@ -152,7 +158,10 @@ const BuyCredits = () => {
             {/* Exchange rate */}
             <div className="rounded-xl bg-accent/50 border border-border p-3 flex items-center justify-between">
               <span className="text-xs font-semibold text-foreground">Exchange Rate</span>
-              <span className="text-sm font-bold text-primary">$1 = {CREDITS_PER_DOLLAR} Credits</span>
+              <div className="text-right">
+                <span className="text-sm font-bold text-primary">$1 = {CREDITS_PER_DOLLAR} Credits</span>
+                <p className="text-[10px] text-muted-foreground">$1 ≈ ৳{bdtRate}</p>
+              </div>
             </div>
 
             {/* Packs grid */}
@@ -180,7 +189,7 @@ const BuyCredits = () => {
                       </div>
                       <p className="text-sm font-bold text-foreground">{pack.credits.toLocaleString()}</p>
                       <p className="text-[11px] text-muted-foreground">credits</p>
-                      <p className="text-base font-bold text-primary mt-1">${pack.price}</p>
+                      <p className="text-base font-bold text-primary mt-1">${pack.price} <span className="text-[10px] font-normal text-muted-foreground">≈ ৳{(pack.price * bdtRate).toLocaleString()}</span></p>
                     </button>
                   );
                 })}
@@ -258,7 +267,7 @@ const BuyCredits = () => {
                   <p className="text-xs text-muted-foreground">You're buying</p>
                   <p className="text-xl font-bold text-foreground">{getSelectedCredits().toLocaleString()} credits</p>
                 </div>
-                <p className="text-2xl font-bold text-primary">${getSelectedPrice()}</p>
+                <p className="text-2xl font-bold text-primary">${getSelectedPrice()} <span className="text-xs font-normal text-muted-foreground">≈ ৳{(parseFloat(getSelectedPrice()) * bdtRate).toLocaleString()}</span></p>
               </CardContent>
             </Card>
 
