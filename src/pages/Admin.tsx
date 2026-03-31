@@ -10,6 +10,7 @@ import {
   Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle,
   Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft, Pencil, Trash2, ToggleLeft, ToggleRight,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
