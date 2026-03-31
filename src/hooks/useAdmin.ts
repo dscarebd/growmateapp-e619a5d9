@@ -81,6 +81,7 @@ export const useAdmin = () => {
   const [usdToBdtRate, setUsdToBdtRate] = useState(120);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [withdrawalEnabled, setWithdrawalEnabled] = useState(false);
+  const [welcomeBonusAmount, setWelcomeBonusAmount] = useState(0);
 
   const checkAdmin = useCallback(async () => {
     if (!user) { setIsAdmin(false); setLoading(false); return; }
