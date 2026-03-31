@@ -539,6 +539,8 @@ export type Database = {
         | "facebook"
         | "twitter"
         | "telegram"
+        | "app_download"
+        | "website_visit"
       submission_status: "pending" | "approved" | "rejected"
       task_action:
         | "like"
@@ -684,6 +686,8 @@ export const Constants = {
         "facebook",
         "twitter",
         "telegram",
+        "app_download",
+        "website_visit",
       ],
       submission_status: ["pending", "approved", "rejected"],
       task_action: ["like", "follow", "subscribe", "share", "comment", "view"],
