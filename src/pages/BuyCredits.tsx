@@ -267,7 +267,7 @@ const BuyCredits = () => {
                   <p className="text-xs text-muted-foreground">You're buying</p>
                   <p className="text-xl font-bold text-foreground">{getSelectedCredits().toLocaleString()} credits</p>
                 </div>
-                <p className="text-2xl font-bold text-primary">${getSelectedPrice()}</p>
+                <p className="text-2xl font-bold text-primary">${getSelectedPrice()} <span className="text-xs font-normal text-muted-foreground">≈ ৳{(parseFloat(getSelectedPrice()) * bdtRate).toLocaleString()}</span></p>
               </CardContent>
             </Card>
 
