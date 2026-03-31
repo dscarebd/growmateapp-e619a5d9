@@ -270,7 +270,7 @@ const BuyCredits = () => {
                         {statusIcon(p.status)}
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-medium text-foreground">{p.amount} credits via {p.method}</p>
-                          <p className="text-[10px] text-muted-foreground truncate">Ref: {p.transaction_ref}</p>
+                          <p className="text-[10px] text-muted-foreground truncate selectable">Ref: {p.transaction_ref}</p>
                         </div>
                         <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full capitalize",
                           p.status === "approved" ? "bg-success/15 text-success" :
