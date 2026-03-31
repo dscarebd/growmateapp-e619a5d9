@@ -229,7 +229,7 @@ const Profile = () => {
             <h3 className="text-sm font-semibold text-foreground mb-1">Invite Friends, Earn Credits</h3>
             <p className="text-xs text-muted-foreground mb-3">Share your code and earn 50 credits when they withdraw or run a 500+ credit campaign</p>
             <div className="flex items-center gap-2">
-              <div className="flex-1 rounded-xl bg-muted px-4 py-2.5 text-sm font-mono font-bold text-foreground">{user.referral_code}</div>
+              <div className="flex-1 rounded-xl bg-muted px-4 py-2.5 text-sm font-mono font-bold text-foreground selectable">{user.referral_code}</div>
               <Button size="sm" variant="outline" className="rounded-xl h-10 px-3" onClick={copyCode}>
                 {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </Button>

@@ -342,7 +342,7 @@ const BuyCredits = () => {
                       <Copy className="h-3.5 w-3.5 text-muted-foreground" />
                     </button>
                   </div>
-                  <p className="text-[11px] text-muted-foreground">{selected.note}</p>
+                  <p className="text-[11px] text-muted-foreground selectable">{selected.note}</p>
                 </div>
               );
             })()}

@@ -355,8 +355,8 @@ const WalletPage = () => {
                     <div className="border-t border-border pt-1.5 flex justify-between text-sm">
                       <span className="text-foreground font-semibold">You receive</span>
                       <div className="text-right">
-                        <span className="text-success font-bold">{netAmount} credits (${(netAmount / CREDITS_PER_DOLLAR).toFixed(2)})</span>
-                        <p className="text-[10px] text-muted-foreground">≈ ৳{((netAmount / CREDITS_PER_DOLLAR) * bdtRate).toLocaleString()}</p>
+                       <span className="text-success font-bold selectable">{netAmount} credits (${(netAmount / CREDITS_PER_DOLLAR).toFixed(2)})</span>
+                        <p className="text-[10px] text-muted-foreground selectable">≈ ৳{((netAmount / CREDITS_PER_DOLLAR) * bdtRate).toLocaleString()}</p>
                       </div>
                     </div>
                   </div>

@@ -26,7 +26,7 @@ const SecurityPage = () => {
                 <Lock className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium text-foreground">Email</p>
-                  <p className="text-[11px] text-muted-foreground">{user?.email || "Not set"}</p>
+                  <p className="text-[11px] text-muted-foreground selectable">{user?.email || "Not set"}</p>
                 </div>
               </div>
             </div>
