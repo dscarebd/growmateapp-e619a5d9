@@ -935,7 +935,34 @@ const Admin = () => {
         </DialogContent>
       </Dialog>
 
-      {/* USER DETAIL DIALOG */}
+      {/* REDUCE CREDITS DIALOG */}
+      <Dialog open={!!reduceCreditsDialog} onOpenChange={() => setReduceCreditsDialog(null)}>
+        <DialogContent className="rounded-2xl mx-4">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Reduce Credits</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              From: <span className="font-medium text-foreground">{admin.profiles.find(p => p.id === reduceCreditsDialog)?.name}</span>
+              {" "}(Balance: <span className="font-bold text-primary">{admin.profiles.find(p => p.id === reduceCreditsDialog)?.credits}</span>)
+            </p>
+            <Input type="number" placeholder="Amount to deduct" value={reduceAmount} onChange={e => setReduceAmount(e.target.value)} className="h-10 rounded-xl" />
+            <Input placeholder="Reason for deduction" value={reduceReason} onChange={e => setReduceReason(e.target.value)} className="h-10 rounded-xl" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReduceCreditsDialog(null)} className="rounded-xl">Cancel</Button>
+            <Button className="rounded-xl bg-destructive text-destructive-foreground" disabled={!reduceAmount || parseInt(reduceAmount) <= 0 || !reduceReason.trim()} onClick={async () => {
+              if (!reduceCreditsDialog) return;
+              await admin.reduceUserCredits(reduceCreditsDialog, parseInt(reduceAmount), reduceReason);
+              setReduceCreditsDialog(null);
+              setReduceAmount(""); setReduceReason("");
+            }}>
+              Deduct {reduceAmount || 0} Credits
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={!!userDetailDialog} onOpenChange={() => setUserDetailDialog(null)}>
         <DialogContent className="rounded-2xl mx-4">
           <DialogHeader>
