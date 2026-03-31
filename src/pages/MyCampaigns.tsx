@@ -6,8 +6,17 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Megaphone, Coins, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { PlatformIcons } from "@/components/PlatformIcons";
+import * as PlatformIcons from "@/components/PlatformIcons";
 import type { Tables } from "@/integrations/supabase/types";
+
+const platformIconMap: Record<string, any> = {
+  youtube: PlatformIcons.YouTubeIcon,
+  instagram: PlatformIcons.InstagramIcon,
+  tiktok: PlatformIcons.TikTokIcon,
+  facebook: PlatformIcons.FacebookIcon,
+  twitter: PlatformIcons.TwitterIcon,
+  telegram: PlatformIcons.TelegramIcon,
+};
 
 const statusColors: Record<string, string> = {
   active: "bg-success/10 text-success border-success/20",

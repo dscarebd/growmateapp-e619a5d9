@@ -4,9 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, CheckCircle2, Coins } from "lucide-react";
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { PlatformIcons } from "@/components/PlatformIcons";
+import * as PlatformIcons from "@/components/PlatformIcons";
+
+const platformIconMap: Record<string, any> = {
+  youtube: PlatformIcons.YouTubeIcon,
+  instagram: PlatformIcons.InstagramIcon,
+  tiktok: PlatformIcons.TikTokIcon,
+  facebook: PlatformIcons.FacebookIcon,
+  twitter: PlatformIcons.TwitterIcon,
+  telegram: PlatformIcons.TelegramIcon,
+};
 
 interface CompletedSubmission {
   id: string;
