@@ -214,7 +214,7 @@ const Profile = () => {
       <div className="px-5 -mt-4 space-y-4">
         <div className="grid grid-cols-3 gap-2 animate-fade-in-up">
           {stats.map(s => (
-            <Card key={s.label} className="border-border">
+            <Card key={s.label} className="border-border cursor-pointer hover:bg-muted/50 transition-colors active:scale-95" onClick={() => navigate(s.route)}>
               <CardContent className="p-3 text-center">
                 <s.icon className={cn("h-5 w-5 mx-auto mb-1", s.color)} />
                 <p className="text-lg font-bold text-foreground">{s.value}</p>
