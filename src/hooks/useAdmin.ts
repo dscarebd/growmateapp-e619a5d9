@@ -354,11 +354,102 @@ export const useAdmin = () => {
     toast.success(amount > 0 ? `Welcome bonus set to ${amount} credits` : "Welcome bonus disabled");
   };
 
+  // Delete campaign with refund
+  const deleteCampaign = async (campaignId: string) => {
+    const campaign = campaigns.find(c => c.id === campaignId);
+    if (!campaign) return;
+
+    const spentBudget = campaign.completed_actions * campaign.reward_per_action;
+    const refundAmount = campaign.total_budget - spentBudget;
+
+    // Delete associated submissions and tasks
+    const { data: tasks } = await supabase.from("tasks").select("id").eq("user_id", campaign.user_id);
+    if (tasks) {
+      for (const t of tasks) {
+        await supabase.from("task_submissions").delete().eq("task_id", t.id);
+      }
+      for (const t of tasks) {
+        await supabase.from("tasks").delete().eq("id", t.id);
+      }
+    }
+
+    // Delete campaign
+    await supabase.from("campaigns").delete().eq("id", campaignId);
+
+    // Refund remaining budget
+    if (refundAmount > 0) {
+      const profile = profiles.find(p => p.id === campaign.user_id);
+      if (profile) {
+        await supabase.from("profiles").update({ credits: profile.credits + refundAmount }).eq("id", campaign.user_id);
+      }
+      await supabase.from("transactions").insert({
+        user_id: campaign.user_id,
+        type: "purchased" as any,
+        amount: refundAmount,
+        description: `Refund: Campaign "${campaign.title}" removed by admin`,
+      });
+    }
+
+    await supabase.from("notifications").insert({
+      user_id: campaign.user_id,
+      type: "campaign",
+      title: "Campaign Removed",
+      message: `Your campaign "${campaign.title}" was removed by admin.${refundAmount > 0 ? ` ${refundAmount} credits refunded.` : ""}`,
+      icon: "🚫",
+    });
+
+    toast.success("Campaign removed" + (refundAmount > 0 ? ` & ${refundAmount} credits refunded` : ""));
+    fetchAll();
+  };
+
+  // Reduce user credits
+  const reduceUserCredits = async (userId: string, amount: number, reason: string) => {
+    const profile = profiles.find(p => p.id === userId);
+    if (!profile) return;
+    if (amount > profile.credits) { toast.error("Amount exceeds user's credits"); return; }
+
+    await supabase.from("profiles").update({ credits: profile.credits - amount }).eq("id", userId);
+    await supabase.from("transactions").insert({
+      user_id: userId,
+      type: "spent" as any,
+      amount,
+      description: `Admin deduction: ${reason}`,
+    });
+    await supabase.from("notifications").insert({
+      user_id: userId,
+      type: "system",
+      title: "Credits Deducted",
+      message: `${amount} credits were deducted from your account. Reason: ${reason}`,
+      icon: "⚠️",
+    });
+
+    toast.success(`${amount} credits deducted`);
+    fetchAll();
+  };
+
+  // Ban/unban user
+  const toggleUserBan = async (userId: string, banned: boolean) => {
+    const { error } = await supabase.from("profiles").update({ is_banned: banned } as any).eq("id", userId);
+    if (error) { toast.error("Failed to update ban status"); return; }
+
+    await supabase.from("notifications").insert({
+      user_id: userId,
+      type: "system",
+      title: banned ? "Account Suspended" : "Account Restored",
+      message: banned ? "Your account has been suspended. Contact support for assistance." : "Your account has been restored. You can now use the platform again.",
+      icon: banned ? "🚫" : "✅",
+    });
+
+    toast.success(banned ? "User banned" : "User unbanned");
+    fetchAll();
+  };
+
   return {
     isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses,
     referralBonusAmount, minCampaignBudgetReferral, usdToBdtRate, paymentMethods, withdrawalEnabled, welcomeBonusAmount,
     updateCampaignStatus, updateWithdrawalStatus, updateUserCredits, updateUserTrustScore,
     approvePayment, rejectPayment, addCreditsManually, updateReferralBonusAmount, updateMinCampaignBudgetReferral,
-    updateUsdToBdtRate, addPaymentMethod, updatePaymentMethod, deletePaymentMethod, toggleWithdrawal, updateWelcomeBonusAmount, fetchAll,
+    updateUsdToBdtRate, addPaymentMethod, updatePaymentMethod, deletePaymentMethod, toggleWithdrawal, updateWelcomeBonusAmount,
+    deleteCampaign, reduceUserCredits, toggleUserBan, fetchAll,
   };
 };
