@@ -289,7 +289,19 @@ const WalletPage = () => {
           </div>
         )}
 
-        {tab === "withdraw" && (
+        {tab === "withdraw" && !withdrawalEnabled && (
+          <div className="animate-fade-in flex flex-col items-center justify-center py-16 text-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-accent mb-5">
+              <Rocket className="h-10 w-10 text-primary" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground mb-2">Coming Soon</h3>
+            <p className="text-sm text-muted-foreground max-w-[260px]">
+              The withdrawal feature is currently being prepared. Stay tuned — it will be available soon!
+            </p>
+          </div>
+        )}
+
+        {tab === "withdraw" && withdrawalEnabled && (
           <div className="space-y-4 animate-fade-in">
             <Card className="border-border">
               <CardContent className="p-4 space-y-4">

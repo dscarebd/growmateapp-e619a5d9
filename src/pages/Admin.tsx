@@ -742,6 +742,17 @@ const Admin = () => {
                 </div>
 
                 <div className="border-t border-border pt-4 mt-4">
+                  <h4 className="text-xs font-semibold text-foreground mb-2">System Toggles</h4>
+                  <div className="flex items-center justify-between rounded-xl bg-muted/50 p-3 mb-4">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Withdrawal System</p>
+                      <p className="text-[10px] text-muted-foreground">Users can request credit withdrawals</p>
+                    </div>
+                    <Switch checked={admin.withdrawalEnabled} onCheckedChange={(checked) => admin.toggleWithdrawal(checked)} />
+                  </div>
+                </div>
+
+                <div className="border-t border-border pt-4 mt-4">
                   <h4 className="text-xs font-semibold text-foreground mb-2">Currency Settings</h4>
                   <p className="text-[11px] text-muted-foreground mb-1.5">USD to BDT rate: <span className="font-bold text-foreground">৳{admin.usdToBdtRate}</span></p>
                   <div className="flex gap-2">

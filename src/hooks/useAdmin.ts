@@ -336,11 +336,18 @@ export const useAdmin = () => {
     fetchAll();
   };
 
+  const toggleWithdrawal = async (enabled: boolean) => {
+    const { error } = await supabase.from("site_settings" as any).update({ value: enabled.toString(), updated_at: new Date().toISOString() }).eq("key", "withdrawal_enabled");
+    if (error) { toast.error("Failed to update withdrawal setting"); return; }
+    setWithdrawalEnabled(enabled);
+    toast.success(`Withdrawal system ${enabled ? "enabled" : "disabled"}`);
+  };
+
   return {
     isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses,
-    referralBonusAmount, minCampaignBudgetReferral, usdToBdtRate, paymentMethods,
+    referralBonusAmount, minCampaignBudgetReferral, usdToBdtRate, paymentMethods, withdrawalEnabled,
     updateCampaignStatus, updateWithdrawalStatus, updateUserCredits, updateUserTrustScore,
     approvePayment, rejectPayment, addCreditsManually, updateReferralBonusAmount, updateMinCampaignBudgetReferral,
-    updateUsdToBdtRate, addPaymentMethod, updatePaymentMethod, deletePaymentMethod, fetchAll,
+    updateUsdToBdtRate, addPaymentMethod, updatePaymentMethod, deletePaymentMethod, toggleWithdrawal, fetchAll,
   };
 };
