@@ -349,7 +349,7 @@ const WalletPage = () => {
                       <span className="text-foreground font-medium">{withdrawNum} credits (${(withdrawNum / CREDITS_PER_DOLLAR).toFixed(2)})</span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Commission ({COMMISSION_RATE * 100}%)</span>
+                      <span className="text-muted-foreground">Charge ({COMMISSION_RATE * 100}%)</span>
                       <span className="text-destructive font-medium">-{commission} credits (${(commission / CREDITS_PER_DOLLAR).toFixed(2)})</span>
                     </div>
                     <div className="border-t border-border pt-1.5 flex justify-between text-sm">
