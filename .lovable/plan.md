@@ -1,41 +1,28 @@
 
 
-## Plan: Make User Details Selectable/Copyable
+## Plan: Add APP Download & Website Visit Platforms + Inline Continue Button
 
-The global CSS protection in `src/index.css` blocks all text selection. Inputs/textareas are already exempted. We need to add a `.selectable` utility class and apply it to user-facing data elements across the app.
+### 1. Update Platform Type (`src/contexts/AppContext.tsx`)
+- Extend `Platform` type to include `"app_download" | "website_visit"`
 
-### Changes
+### 2. Add Platform Icons (`src/components/PlatformIcons.tsx`)
+- Add `AppDownloadIcon` (smartphone/download icon with green background)
+- Add `WebsiteVisitIcon` (globe/link icon with blue background)
 
-**1. `src/index.css`**
-- Add a `.selectable` class that overrides user-select to `text`
+### 3. Update Create Campaign (`src/pages/CreateCampaign.tsx`)
+- Add `app_download` and `website_visit` to `platformOptions` array with their icons
+- Add action sets in `platformActions` for each:
+  - **APP Download**: `view` (Download App)
+  - **Website Visit**: `view` (Visit Website)
+- Import the two new icons and add `Download`, `Globe` from lucide-react for action icons
+- **Move Continue button from fixed position to inline** — remove the `fixed bottom-24` wrapper and place the button inside the scrollable `px-5` content area, below the step content (with top margin)
 
-**2. `src/pages/Profile.tsx`**
-- Apply `.selectable` to: user name, email, referral code, trust score value
-
-**3. `src/pages/SecurityPage.tsx`**
-- Apply `.selectable` to: email display
-
-**4. `src/pages/WalletPage.tsx`**
-- Apply `.selectable` to: wallet address/account details, withdrawal amounts, transaction references
-
-**5. `src/pages/BuyCredits.tsx`**
-- Apply `.selectable` to: payment method details (account numbers, instructions), transaction references
-
-**6. `src/pages/SettingsPage.tsx`** (if it has user details)
-- Apply `.selectable` to any displayed user info
-
-This ensures users can long-press/select their own details (name, email, referral codes, payment info, amounts) while keeping the rest of the UI protected.
-
-### Technical Details
-- Single CSS class: `.selectable { -webkit-user-select: text !important; user-select: text !important; -webkit-touch-callout: default !important; }`
-- Applied via `className="selectable"` on relevant `<span>`, `<p>`, `<div>` elements
-- No database or backend changes needed
+### 4. Update Home Page (`src/pages/Home.tsx`)
+- Add the two new platform icons to the `platformIcons` record so tasks/campaigns display correctly
 
 ### Files Modified
-- `src/index.css`
-- `src/pages/Profile.tsx`
-- `src/pages/SecurityPage.tsx`
-- `src/pages/WalletPage.tsx`
-- `src/pages/BuyCredits.tsx`
-- `src/pages/SettingsPage.tsx` (if applicable)
+- `src/contexts/AppContext.tsx` — Platform type union
+- `src/components/PlatformIcons.tsx` — 2 new icon components
+- `src/pages/CreateCampaign.tsx` — new platforms, actions, inline button
+- `src/pages/Home.tsx` — platformIcons record
 
