@@ -192,7 +192,7 @@ const Profile = () => {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-primary-foreground truncate">{user.name}</h1>
+              <h1 className="text-lg font-bold text-primary-foreground truncate selectable">{user.name}</h1>
               <button onClick={() => { setEditName(user.name); setEditDialog(true); }} className="shrink-0">
                 <Pencil className="h-3.5 w-3.5 text-primary-foreground/70 hover:text-primary-foreground transition-colors" />
               </button>
