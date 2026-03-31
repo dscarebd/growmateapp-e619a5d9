@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Coins, ArrowUpRight, ArrowDownLeft, ShoppingCart, Banknote, CheckCircle, Clock, XCircle, Copy } from "lucide-react";
+import { Coins, ArrowUpRight, ArrowDownLeft, ShoppingCart, Banknote, CheckCircle, Clock, XCircle, Copy, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -39,13 +39,18 @@ const WalletPage = () => {
   const [myPayments, setMyPayments] = useState<any[]>([]);
   const [paymentsLoaded, setPaymentsLoaded] = useState(false);
   const [bdtRate, setBdtRate] = useState<number>(120);
+  const [withdrawalEnabled, setWithdrawalEnabled] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const fetchBdtRate = async () => {
-      const { data } = await supabase.rpc("get_usd_to_bdt_rate");
-      if (data) setBdtRate(Number(data));
+    const fetchSettings = async () => {
+      const [bdtRes, wdRes] = await Promise.all([
+        supabase.rpc("get_usd_to_bdt_rate"),
+        supabase.rpc("get_withdrawal_enabled" as any),
+      ]);
+      if (bdtRes.data) setBdtRate(Number(bdtRes.data));
+      setWithdrawalEnabled(!!wdRes.data);
     };
-    fetchBdtRate();
+    fetchSettings();
   }, []);
 
   const CREDITS_PER_DOLLAR = 100;
@@ -284,7 +289,19 @@ const WalletPage = () => {
           </div>
         )}
 
-        {tab === "withdraw" && (
+        {tab === "withdraw" && !withdrawalEnabled && (
+          <div className="animate-fade-in flex flex-col items-center justify-center py-16 text-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-accent mb-5">
+              <Rocket className="h-10 w-10 text-primary" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground mb-2">Coming Soon</h3>
+            <p className="text-sm text-muted-foreground max-w-[260px]">
+              The withdrawal feature is currently being prepared. Stay tuned — it will be available soon!
+            </p>
+          </div>
+        )}
+
+        {tab === "withdraw" && withdrawalEnabled && (
           <div className="space-y-4 animate-fade-in">
             <Card className="border-border">
               <CardContent className="p-4 space-y-4">

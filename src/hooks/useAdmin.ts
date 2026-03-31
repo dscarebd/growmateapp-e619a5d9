@@ -80,6 +80,7 @@ export const useAdmin = () => {
   const [minCampaignBudgetReferral, setMinCampaignBudgetReferral] = useState(500);
   const [usdToBdtRate, setUsdToBdtRate] = useState(120);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [withdrawalEnabled, setWithdrawalEnabled] = useState(false);
 
   const checkAdmin = useCallback(async () => {
     if (!user) { setIsAdmin(false); setLoading(false); return; }
@@ -115,6 +116,8 @@ export const useAdmin = () => {
       if (budgetVal) setMinCampaignBudgetReferral(parseInt(budgetVal.value) || 500);
       const bdtVal = settings.find((s: any) => s.key === "usd_to_bdt_rate");
       if (bdtVal) setUsdToBdtRate(parseFloat(bdtVal.value) || 120);
+      const wdVal = settings.find((s: any) => s.key === "withdrawal_enabled");
+      if (wdVal) setWithdrawalEnabled(wdVal.value === "true");
     }
   }, [isAdmin]);
 
@@ -333,11 +336,18 @@ export const useAdmin = () => {
     fetchAll();
   };
 
+  const toggleWithdrawal = async (enabled: boolean) => {
+    const { error } = await supabase.from("site_settings" as any).update({ value: enabled.toString(), updated_at: new Date().toISOString() }).eq("key", "withdrawal_enabled");
+    if (error) { toast.error("Failed to update withdrawal setting"); return; }
+    setWithdrawalEnabled(enabled);
+    toast.success(`Withdrawal system ${enabled ? "enabled" : "disabled"}`);
+  };
+
   return {
     isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses,
-    referralBonusAmount, minCampaignBudgetReferral, usdToBdtRate, paymentMethods,
+    referralBonusAmount, minCampaignBudgetReferral, usdToBdtRate, paymentMethods, withdrawalEnabled,
     updateCampaignStatus, updateWithdrawalStatus, updateUserCredits, updateUserTrustScore,
     approvePayment, rejectPayment, addCreditsManually, updateReferralBonusAmount, updateMinCampaignBudgetReferral,
-    updateUsdToBdtRate, addPaymentMethod, updatePaymentMethod, deletePaymentMethod, fetchAll,
+    updateUsdToBdtRate, addPaymentMethod, updatePaymentMethod, deletePaymentMethod, toggleWithdrawal, fetchAll,
   };
 };

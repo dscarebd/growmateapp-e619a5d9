@@ -10,6 +10,7 @@ import {
   Users, Megaphone, Banknote, TrendingUp, Shield, CheckCircle2, XCircle,
   Pause, Play, Search, Plus, CreditCard, Eye, Wallet, ChevronLeft, ChevronRight, Gift, ArrowLeft, Pencil, Trash2, ToggleLeft, ToggleRight,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -737,6 +738,17 @@ const Admin = () => {
                     <Button size="sm" className="h-9 rounded-xl gradient-primary text-primary-foreground" disabled={!editMinBudget || parseInt(editMinBudget) < 1} onClick={() => { admin.updateMinCampaignBudgetReferral(parseInt(editMinBudget)); setEditMinBudget(""); }}>
                       Update
                     </Button>
+                  </div>
+                </div>
+
+                <div className="border-t border-border pt-4 mt-4">
+                  <h4 className="text-xs font-semibold text-foreground mb-2">System Toggles</h4>
+                  <div className="flex items-center justify-between rounded-xl bg-muted/50 p-3 mb-4">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Withdrawal System</p>
+                      <p className="text-[10px] text-muted-foreground">Users can request credit withdrawals</p>
+                    </div>
+                    <Switch checked={admin.withdrawalEnabled} onCheckedChange={(checked) => admin.toggleWithdrawal(checked)} />
                   </div>
                 </div>
 

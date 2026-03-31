@@ -528,6 +528,7 @@ export type Database = {
       get_min_campaign_budget_referral: { Args: never; Returns: number }
       get_referral_bonus_amount: { Args: never; Returns: number }
       get_usd_to_bdt_rate: { Args: never; Returns: number }
+      get_withdrawal_enabled: { Args: never; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
