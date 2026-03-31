@@ -63,6 +63,9 @@ const Admin = () => {
   const [creditMethod, setCreditMethod] = useState("bKash");
   const [creditRef, setCreditRef] = useState("");
   const [creditNotes, setCreditNotes] = useState("");
+  const [reduceCreditsDialog, setReduceCreditsDialog] = useState<string | null>(null);
+  const [reduceAmount, setReduceAmount] = useState("");
+  const [reduceReason, setReduceReason] = useState("");
   const [userDetailDialog, setUserDetailDialog] = useState<string | null>(null);
   const [editTrust, setEditTrust] = useState("");
   const [withdrawalFilter, setWithdrawalFilter] = useState<"all" | "pending" | "approved" | "rejected" | "processing">("all");
