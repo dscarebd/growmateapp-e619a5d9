@@ -1,43 +1,41 @@
 
 
-## Plan: Admin-Managed USD-to-BDT Exchange Rate
+## Plan: Make User Details Selectable/Copyable
 
-Add a configurable USD-to-BDT exchange rate that admins can set, displayed to users on the Buy Credits and Wallet pages so they can see BDT equivalents.
+The global CSS protection in `src/index.css` blocks all text selection. Inputs/textareas are already exempted. We need to add a `.selectable` utility class and apply it to user-facing data elements across the app.
 
-### Database Change
+### Changes
 
-Insert a new `site_settings` row with key `usd_to_bdt_rate` and default value `120` (approximate current rate).
+**1. `src/index.css`**
+- Add a `.selectable` class that overrides user-select to `text`
 
-### Admin Panel (`src/pages/Admin.tsx`)
+**2. `src/pages/Profile.tsx`**
+- Apply `.selectable` to: user name, email, referral code, trust score value
 
-Add a "Currency Settings" section (in the referrals/settings tab or a new settings area) with:
-- Current USD-to-BDT rate display
-- Input + Update button to change the rate
+**3. `src/pages/SecurityPage.tsx`**
+- Apply `.selectable` to: email display
 
-### useAdmin Hook (`src/hooks/useAdmin.ts`)
+**4. `src/pages/WalletPage.tsx`**
+- Apply `.selectable` to: wallet address/account details, withdrawal amounts, transaction references
 
-- Add `usdToBdtRate` state (default 120), populated from `site_settings` in `fetchAll`
-- Add `updateUsdToBdtRate` function
+**5. `src/pages/BuyCredits.tsx`**
+- Apply `.selectable` to: payment method details (account numbers, instructions), transaction references
 
-### Buy Credits Page (`src/pages/BuyCredits.tsx`)
+**6. `src/pages/SettingsPage.tsx`** (if it has user details)
+- Apply `.selectable` to any displayed user info
 
-- Fetch `usd_to_bdt_rate` from `site_settings` on mount
-- Show BDT equivalent next to each credit pack price (e.g., "$10 ≈ ৳1,200")
-- Show BDT equivalent in the payment step summary
-
-### Wallet Page (`src/pages/WalletPage.tsx`)
-
-- Fetch `usd_to_bdt_rate` from `site_settings` on mount
-- Show BDT equivalent for withdrawal net amount (e.g., "Net: $4.25 ≈ ৳510")
-- Show BDT in the withdrawal confirmation dialog
+This ensures users can long-press/select their own details (name, email, referral codes, payment info, amounts) while keeping the rest of the UI protected.
 
 ### Technical Details
-- Uses existing `site_settings` table (no schema migration needed)
-- BDT symbol: `৳`
-- Rate fetched via public-facing query; RLS already allows admin read on `site_settings`, but we need to add a SELECT policy for authenticated users on the `usd_to_bdt_rate` key, OR use a security-definer function similar to `get_referral_bonus_amount()`
+- Single CSS class: `.selectable { -webkit-user-select: text !important; user-select: text !important; -webkit-touch-callout: default !important; }`
+- Applied via `className="selectable"` on relevant `<span>`, `<p>`, `<div>` elements
+- No database or backend changes needed
 
-### Files
-- **Data insert**: `site_settings` row for `usd_to_bdt_rate`
-- **New migration**: Add a DB function `get_usd_to_bdt_rate()` (security definer) so non-admin users can read the rate
-- **Modified**: `src/hooks/useAdmin.ts`, `src/pages/Admin.tsx`, `src/pages/BuyCredits.tsx`, `src/pages/WalletPage.tsx`
+### Files Modified
+- `src/index.css`
+- `src/pages/Profile.tsx`
+- `src/pages/SecurityPage.tsx`
+- `src/pages/WalletPage.tsx`
+- `src/pages/BuyCredits.tsx`
+- `src/pages/SettingsPage.tsx` (if applicable)
 
