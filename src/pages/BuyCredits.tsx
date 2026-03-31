@@ -329,7 +329,7 @@ const BuyCredits = () => {
                 <div className="rounded-xl bg-accent/50 border border-border p-3.5 space-y-2">
                   <p className="text-xs font-semibold text-foreground">{selected.instructions}</p>
                   <div className="flex items-center gap-2">
-                    <code className="text-sm font-bold text-primary bg-primary/10 px-2.5 py-1.5 rounded-lg flex-1 break-all">
+                    <code className="text-sm font-bold text-primary bg-primary/10 px-2.5 py-1.5 rounded-lg flex-1 break-all selectable">
                       {selected.detail}
                     </code>
                     <button
