@@ -54,10 +54,11 @@ export const TelegramIcon = ({ className = "h-6 w-6" }: { className?: string }) 
 
 export const AppDownloadIcon = ({ className = "h-6 w-6" }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ minWidth: '1em', minHeight: '1em' }}>
-    <rect width="24" height="24" rx="5" fill="#22C55E"/>
-    <rect x="8" y="4" width="8" height="16" rx="2" stroke="#fff" strokeWidth="1.5" fill="none"/>
-    <line x1="12" y1="9" x2="12" y2="15" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/>
-    <polyline points="9.5,13 12,15.5 14.5,13" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    <rect width="24" height="24" rx="5" fill="#01875F"/>
+    <path d="M5.5 4.3c-.2.3-.3.7-.3 1.2v13c0 .5.1.9.3 1.2l.1.1L12 13.4v-.1-.1L5.6 6.8 5.5 4.3z" fill="#32BBFF"/>
+    <path d="M14.2 15.5L12 13.3v-.3-.3l2.2-2.2.1.1 2.6 1.5c.7.4.7 1.1 0 1.6l-2.6 1.5-.1.3z" fill="#FFCF00"/>
+    <path d="M14.3 15.5L12 13.2 5.5 19.7c.3.3.6.3 1 .1l7.8-4.3z" fill="#F14934"/>
+    <path d="M14.3 10.9L6.5 6.5c-.4-.2-.8-.2-1 .1L12 13.2l2.3-2.3z" fill="#48FF48"/>
   </svg>
 );
 

@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, XCircle, Flame, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon } from "@/components/PlatformIcons";
+import { YouTubeIcon, InstagramIcon, TikTokIcon, FacebookIcon, TwitterIcon, TelegramIcon, AppDownloadIcon, WebsiteVisitIcon } from "@/components/PlatformIcons";
 
 const platforms: { key: Platform | "all"; label: string; icon: ReactNode }[] = [
   { key: "all", label: "All", icon: <Globe className="h-4 w-4" /> },
@@ -17,6 +17,8 @@ const platforms: { key: Platform | "all"; label: string; icon: ReactNode }[] = [
   { key: "facebook", label: "Facebook", icon: <FacebookIcon className="h-4 w-4" /> },
   { key: "twitter", label: "X", icon: <TwitterIcon className="h-4 w-4" /> },
   { key: "telegram", label: "Telegram", icon: <TelegramIcon className="h-4 w-4" /> },
+  { key: "app_download", label: "App", icon: <AppDownloadIcon className="h-4 w-4" /> },
+  { key: "website_visit", label: "Website", icon: <WebsiteVisitIcon className="h-4 w-4" /> },
 ];
 
 const Tasks = () => {
