@@ -89,7 +89,7 @@ const MyCampaigns = () => {
                 <CardContent className="p-3">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
-                      <PlatformIcons platform={c.platform} className="h-5 w-5" />
+                      {(() => { const Icon = platformIconMap[c.platform] || Megaphone; return <Icon className="h-5 w-5" />; })()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{c.title}</p>

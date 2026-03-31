@@ -114,7 +114,7 @@ const TasksCompleted = () => {
               <Card key={sub.id} className="border-border">
                 <CardContent className="p-3 flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
-                    <PlatformIcons platform={sub.task?.platform || "website_visit"} className="h-5 w-5" />
+                    {(() => { const Icon = platformIconMap[sub.task?.platform || ""] || CheckCircle2; return <Icon className="h-5 w-5" />; })()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{sub.task?.title || "Unknown Task"}</p>
