@@ -1,36 +1,50 @@
 
 
-## Plan: Admin-Controlled Withdraw Toggle
+## Plan: 3 Dedicated Detail Pages for Profile Stats
 
-### How It Works
-- Add a `withdrawal_enabled` key to the `site_settings` table (default: `"false"`)
-- Admin panel gets a toggle switch in the Referrals/Settings tab to enable/disable withdrawals
-- WalletPage checks this setting on load; if disabled, the withdraw tab shows a "Coming Soon" message instead of the form
+### Overview
+Remove `<CompletedTasks />` from Profile, make the 3 stat cards clickable, and create 3 new pages they navigate to.
+
+### Pages to Create
+
+**1. `/tasks-completed` — Tasks Completed Page**
+- Fetch all approved submissions for the current user from `task_submissions` (joined with `tasks` for title/platform/reward)
+- Show list with platform icon, task title, reward earned, date completed
+- Summary card at top showing total count
+
+**2. `/my-campaigns` — My Campaigns Page**
+- Fetch all campaigns for the current user from `campaigns` table
+- Show each campaign with platform icon, title, status badge (active/paused/completed), budget, completed actions count
+- Summary card at top showing total campaign count
+
+**3. `/earnings` — Total Earnings Page**
+- Fetch all transactions for the current user from `transactions` table
+- Show transaction list with type badge (earned/spent/purchased/withdrawn), amount, description, date
+- Summary card at top showing total earned amount
 
 ### Changes
 
-**1. Database: Insert new site setting**
-- Insert `withdrawal_enabled = "false"` into `site_settings`
+**`src/pages/Profile.tsx`**
+- Remove `CompletedTasks` import and `<CompletedTasks />` usage
+- Make each stat card clickable: Tasks Done → `/tasks-completed`, Campaigns → `/my-campaigns`, Total Earned → `/earnings`
+- Add chevron icon and hover effect on cards
 
-**2. `src/hooks/useAdmin.ts`**
-- Add `withdrawalEnabled` state (boolean), parse from `site_settings` fetch
-- Add `toggleWithdrawal` function to update the setting
+**`src/pages/TasksCompleted.tsx`** (new)
+- Back button header, list of approved submissions with task details
 
-**3. `src/pages/Admin.tsx`**
-- Add a Switch toggle in the Referrals tab settings section: "Withdrawal System" on/off
-- Uses `admin.withdrawalEnabled` and `admin.toggleWithdrawal`
+**`src/pages/MyCampaigns.tsx`** (new)
+- Back button header, list of user's campaigns with status/budget info
 
-**4. `src/pages/WalletPage.tsx`**
-- On mount, fetch `withdrawal_enabled` from `site_settings` via an RPC or direct query
-- Since `site_settings` RLS only allows admin reads, we need a small RPC function `get_withdrawal_enabled()` (similar to existing `get_usd_to_bdt_rate`)
-- If disabled, render a "Coming Soon" card with a rocket icon when the withdraw tab is selected, hiding the form
+**`src/pages/Earnings.tsx`** (new)
+- Back button header, transaction history with type/amount/date
 
-**5. Database Migration**
-- Create `get_withdrawal_enabled()` SQL function (SECURITY DEFINER, returns boolean)
+**`src/App.tsx`**
+- Add 3 new protected routes: `/tasks-completed`, `/my-campaigns`, `/earnings`
 
 ### Files Modified
-- New migration (insert setting + create RPC function)
-- `src/hooks/useAdmin.ts` — add state + toggle
-- `src/pages/Admin.tsx` — add Switch UI
-- `src/pages/WalletPage.tsx` — conditional "Coming Soon" view
+- `src/pages/Profile.tsx` — remove CompletedTasks, make cards clickable
+- `src/pages/TasksCompleted.tsx` — new page
+- `src/pages/MyCampaigns.tsx` — new page
+- `src/pages/Earnings.tsx` — new page
+- `src/App.tsx` — 3 new routes
 
