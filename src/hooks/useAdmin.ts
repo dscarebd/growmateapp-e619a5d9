@@ -116,6 +116,8 @@ export const useAdmin = () => {
       if (budgetVal) setMinCampaignBudgetReferral(parseInt(budgetVal.value) || 500);
       const bdtVal = settings.find((s: any) => s.key === "usd_to_bdt_rate");
       if (bdtVal) setUsdToBdtRate(parseFloat(bdtVal.value) || 120);
+      const wdVal = settings.find((s: any) => s.key === "withdrawal_enabled");
+      if (wdVal) setWithdrawalEnabled(wdVal.value === "true");
     }
   }, [isAdmin]);
 
