@@ -189,7 +189,7 @@ const BuyCredits = () => {
                       </div>
                       <p className="text-sm font-bold text-foreground">{pack.credits.toLocaleString()}</p>
                       <p className="text-[11px] text-muted-foreground">credits</p>
-                      <p className="text-base font-bold text-primary mt-1">${pack.price}</p>
+                      <p className="text-base font-bold text-primary mt-1">${pack.price} <span className="text-[10px] font-normal text-muted-foreground">≈ ৳{(pack.price * bdtRate).toLocaleString()}</span></p>
                     </button>
                   );
                 })}
