@@ -302,6 +302,14 @@ export const useAdmin = () => {
     toast.success(`Min campaign budget updated to ${amount} credits`);
   };
 
+  const updateUsdToBdtRate = async (rate: number) => {
+    if (rate < 1 || rate > 1000000) { toast.error("Rate must be between 1 and 1,000,000"); return; }
+    const { error } = await supabase.from("site_settings" as any).update({ value: rate.toString(), updated_at: new Date().toISOString() }).eq("key", "usd_to_bdt_rate");
+    if (error) { toast.error("Failed to update rate"); return; }
+    setUsdToBdtRate(rate);
+    toast.success(`USD to BDT rate updated to ৳${rate}`);
+  };
+
   // Payment method CRUD
   const addPaymentMethod = async (method: { name: string; instructions: string; detail: string; note: string; icon_url?: string }) => {
     const maxOrder = paymentMethods.reduce((m, p) => Math.max(m, p.sort_order || 0), -1);
