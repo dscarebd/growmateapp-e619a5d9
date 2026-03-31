@@ -75,6 +75,7 @@ const Admin = () => {
   const [editBonusAmount, setEditBonusAmount] = useState("");
   const [editMinBudget, setEditMinBudget] = useState("");
   const [editBdtRate, setEditBdtRate] = useState("");
+  const [editWelcomeBonus, setEditWelcomeBonus] = useState("");
   const [editPaymentDialog, setEditPaymentDialog] = useState<string | null>(null);
   const [editPaymentMethod, setEditPaymentMethod] = useState("");
   const [editPaymentRef, setEditPaymentRef] = useState("");
@@ -739,6 +740,18 @@ const Admin = () => {
                       Update
                     </Button>
                   </div>
+                </div>
+
+                <div className="border-t border-border pt-4 mt-4">
+                  <h4 className="text-xs font-semibold text-foreground mb-2">Welcome Bonus</h4>
+                  <p className="text-[11px] text-muted-foreground mb-1.5">Auto-award on signup: <span className="font-bold text-foreground">{admin.welcomeBonusAmount > 0 ? `${admin.welcomeBonusAmount} credits` : "Disabled"}</span></p>
+                  <div className="flex gap-2">
+                    <Input type="number" placeholder={admin.welcomeBonusAmount.toString()} value={editWelcomeBonus} onChange={e => setEditWelcomeBonus(e.target.value)} className="h-9 rounded-xl flex-1" min={0} max={100000} />
+                    <Button size="sm" className="h-9 rounded-xl gradient-primary text-primary-foreground" disabled={editWelcomeBonus === "" || parseInt(editWelcomeBonus) < 0} onClick={() => { admin.updateWelcomeBonusAmount(parseInt(editWelcomeBonus)); setEditWelcomeBonus(""); }}>
+                      Update
+                    </Button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1">Set to 0 to disable. New users will automatically receive this many credits.</p>
                 </div>
 
                 <div className="border-t border-border pt-4 mt-4">

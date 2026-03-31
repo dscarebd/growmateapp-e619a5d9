@@ -81,6 +81,7 @@ export const useAdmin = () => {
   const [usdToBdtRate, setUsdToBdtRate] = useState(120);
   const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
   const [withdrawalEnabled, setWithdrawalEnabled] = useState(false);
+  const [welcomeBonusAmount, setWelcomeBonusAmount] = useState(0);
 
   const checkAdmin = useCallback(async () => {
     if (!user) { setIsAdmin(false); setLoading(false); return; }
@@ -118,6 +119,8 @@ export const useAdmin = () => {
       if (bdtVal) setUsdToBdtRate(parseFloat(bdtVal.value) || 120);
       const wdVal = settings.find((s: any) => s.key === "withdrawal_enabled");
       if (wdVal) setWithdrawalEnabled(wdVal.value === "true");
+      const wbVal = settings.find((s: any) => s.key === "welcome_bonus_amount");
+      if (wbVal) setWelcomeBonusAmount(parseInt(wbVal.value) || 0);
     }
   }, [isAdmin]);
 
@@ -343,11 +346,19 @@ export const useAdmin = () => {
     toast.success(`Withdrawal system ${enabled ? "enabled" : "disabled"}`);
   };
 
+  const updateWelcomeBonusAmount = async (amount: number) => {
+    if (amount < 0 || amount > 100000) { toast.error("Bonus must be between 0 and 100,000"); return; }
+    const { error } = await supabase.from("site_settings" as any).update({ value: amount.toString(), updated_at: new Date().toISOString() }).eq("key", "welcome_bonus_amount");
+    if (error) { toast.error("Failed to update welcome bonus"); return; }
+    setWelcomeBonusAmount(amount);
+    toast.success(amount > 0 ? `Welcome bonus set to ${amount} credits` : "Welcome bonus disabled");
+  };
+
   return {
     isAdmin, loading, profiles, campaigns, withdrawals, payments, transactions, referralBonuses,
-    referralBonusAmount, minCampaignBudgetReferral, usdToBdtRate, paymentMethods, withdrawalEnabled,
+    referralBonusAmount, minCampaignBudgetReferral, usdToBdtRate, paymentMethods, withdrawalEnabled, welcomeBonusAmount,
     updateCampaignStatus, updateWithdrawalStatus, updateUserCredits, updateUserTrustScore,
     approvePayment, rejectPayment, addCreditsManually, updateReferralBonusAmount, updateMinCampaignBudgetReferral,
-    updateUsdToBdtRate, addPaymentMethod, updatePaymentMethod, deletePaymentMethod, toggleWithdrawal, fetchAll,
+    updateUsdToBdtRate, addPaymentMethod, updatePaymentMethod, deletePaymentMethod, toggleWithdrawal, updateWelcomeBonusAmount, fetchAll,
   };
 };
