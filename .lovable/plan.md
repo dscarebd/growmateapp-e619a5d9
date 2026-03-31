@@ -1,50 +1,42 @@
 
 
-## Plan: 3 Dedicated Detail Pages for Profile Stats
+## Plan: Admin Campaign Removal, Credit Reduction & User Ban System
 
-### Overview
-Remove `<CompletedTasks />` from Profile, make the 3 stat cards clickable, and create 3 new pages they navigate to.
+### What will be built
 
-### Pages to Create
+1. **Remove demo tasks from database** -- Delete any existing demo/test tasks from the tasks table.
 
-**1. `/tasks-completed` — Tasks Completed Page**
-- Fetch all approved submissions for the current user from `task_submissions` (joined with `tasks` for title/platform/reward)
-- Show list with platform icon, task title, reward earned, date completed
-- Summary card at top showing total count
+2. **Admin can delete/remove running campaigns** -- Add a "Remove" button on campaigns in the admin Campaigns tab. This will delete the campaign and its associated tasks, refund remaining budget to the campaign owner, and notify them.
 
-**2. `/my-campaigns` — My Campaigns Page**
-- Fetch all campaigns for the current user from `campaigns` table
-- Show each campaign with platform icon, title, status badge (active/paused/completed), budget, completed actions count
-- Summary card at top showing total campaign count
+3. **Admin can reduce user credits** -- Add a "Reduce Credits" button alongside the existing "Add Credits" button in the Users tab, with a dialog to enter the amount and reason.
 
-**3. `/earnings` — Total Earnings Page**
-- Fetch all transactions for the current user from `transactions` table
-- Show transaction list with type badge (earned/spent/purchased/withdrawn), amount, description, date
-- Summary card at top showing total earned amount
+4. **Admin can ban/unban users** -- Add a `is_banned` column to the profiles table. Banned users will be blocked from logging in. Admin gets a "Ban/Unban" toggle in the User Details dialog.
 
-### Changes
+---
 
-**`src/pages/Profile.tsx`**
-- Remove `CompletedTasks` import and `<CompletedTasks />` usage
-- Make each stat card clickable: Tasks Done → `/tasks-completed`, Campaigns → `/my-campaigns`, Total Earned → `/earnings`
-- Add chevron icon and hover effect on cards
+### Technical Details
 
-**`src/pages/TasksCompleted.tsx`** (new)
-- Back button header, list of approved submissions with task details
+#### Database Migration
+- Add `is_banned boolean NOT NULL DEFAULT false` to `profiles` table
+- Create a `delete_campaign` function (SECURITY DEFINER) that:
+  - Deletes associated tasks and task_submissions
+  - Refunds unspent budget to the campaign owner
+  - Deletes the campaign record
+  - Creates a refund transaction and notification
 
-**`src/pages/MyCampaigns.tsx`** (new)
-- Back button header, list of user's campaigns with status/budget info
+#### Hook Changes (`src/hooks/useAdmin.ts`)
+- Add `deleteCampaign(id)` -- calls the delete campaign function or does inline deletion + refund
+- Add `reduceUserCredits(userId, amount, reason)` -- reduces credits, creates transaction, sends notification
+- Add `toggleUserBan(userId, banned)` -- updates `is_banned` on profile, sends notification
 
-**`src/pages/Earnings.tsx`** (new)
-- Back button header, transaction history with type/amount/date
+#### Admin UI (`src/pages/Admin.tsx`)
+- **Campaigns tab**: Add a red "Remove" button on all campaign cards (with confirmation)
+- **Users tab**: Add "Reduce Credits" button next to "Add Credits"; add ban/unban status badge and toggle in User Details dialog
+- Add a "Reduce Credits" dialog similar to the existing "Add Credits" dialog
 
-**`src/App.tsx`**
-- Add 3 new protected routes: `/tasks-completed`, `/my-campaigns`, `/earnings`
+#### Auth Guard (`src/contexts/AuthContext.tsx`)
+- After session load, check `profiles.is_banned` -- if true, sign the user out and show an error toast
 
-### Files Modified
-- `src/pages/Profile.tsx` — remove CompletedTasks, make cards clickable
-- `src/pages/TasksCompleted.tsx` — new page
-- `src/pages/MyCampaigns.tsx` — new page
-- `src/pages/Earnings.tsx` — new page
-- `src/App.tsx` — 3 new routes
+#### Demo Tasks Cleanup
+- Run a migration or data delete to remove any leftover demo/test task rows (via SQL `DELETE` on tasks where appropriate, if any exist in DB)
 
