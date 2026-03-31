@@ -119,6 +119,8 @@ export const useAdmin = () => {
       if (bdtVal) setUsdToBdtRate(parseFloat(bdtVal.value) || 120);
       const wdVal = settings.find((s: any) => s.key === "withdrawal_enabled");
       if (wdVal) setWithdrawalEnabled(wdVal.value === "true");
+      const wbVal = settings.find((s: any) => s.key === "welcome_bonus_amount");
+      if (wbVal) setWelcomeBonusAmount(parseInt(wbVal.value) || 0);
     }
   }, [isAdmin]);
 
