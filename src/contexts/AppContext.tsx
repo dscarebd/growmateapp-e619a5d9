@@ -142,7 +142,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       reward_per_action: campaign.rewardPerAction,
       estimated_reach: estimatedReach,
       status: "active" as const,
-    }).select().single();
+    } as any).select().single();
 
     if (newCampaign) setCampaigns(prev => [newCampaign, ...prev]);
 
