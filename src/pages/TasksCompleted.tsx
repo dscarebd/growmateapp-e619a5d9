@@ -2,7 +2,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, CheckCircle2, Coins } from "lucide-react";
+import { CheckCircle2, Coins } from "lucide-react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import * as PlatformIcons from "@/components/PlatformIcons";
@@ -76,9 +76,6 @@ const TasksCompleted = () => {
     <div className="min-h-screen bg-background pb-24">
       <div className="gradient-primary px-5 pb-6 pt-12 rounded-b-3xl">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="text-primary-foreground">
-            <ArrowLeft className="h-5 w-5" />
-          </button>
           <h1 className="text-lg font-bold text-primary-foreground">Tasks Completed</h1>
         </div>
       </div>
