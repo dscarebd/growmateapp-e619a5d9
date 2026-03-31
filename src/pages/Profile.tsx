@@ -264,7 +264,7 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <CompletedTasks />
+        
 
         <div className="space-y-1">
           {menuItems.map(item => (

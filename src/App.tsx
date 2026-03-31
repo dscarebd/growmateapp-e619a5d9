@@ -124,6 +124,9 @@ const AnimatedRoutes = () => {
           <Route path="/policies" element={<ProtectedRoute><PoliciesPage /></ProtectedRoute>} />
           <Route path="/developer" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
           <Route path="/buy-credits" element={<ProtectedRoute><BuyCredits /></ProtectedRoute>} />
+          <Route path="/tasks-completed" element={<ProtectedRoute><TasksCompleted /></ProtectedRoute>} />
+          <Route path="/my-campaigns" element={<ProtectedRoute><MyCampaigns /></ProtectedRoute>} />
+          <Route path="/earnings" element={<ProtectedRoute><Earnings /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
