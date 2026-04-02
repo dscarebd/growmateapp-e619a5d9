@@ -47,7 +47,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24 md:pb-8">
       <div className="gradient-primary px-5 pb-8 pt-12 rounded-b-3xl">
         <div className="flex items-center justify-between mb-6">
           <div>
