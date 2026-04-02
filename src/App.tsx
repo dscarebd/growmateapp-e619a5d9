@@ -9,6 +9,7 @@ import { AppProvider } from "@/contexts/AppContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { AnimatePresence, motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
+import DesktopSidebar from "@/components/DesktopSidebar";
 import Splash from "@/pages/Splash";
 import Onboarding from "@/pages/Onboarding";
 import Auth from "@/pages/Auth";
@@ -145,11 +146,14 @@ const AppLayout = () => {
   const hideNav = ["/", "/onboarding", "/auth"].includes(location.pathname);
 
   return (
-    <>
-      <ScrollToTop />
-      <AnimatedRoutes />
-      {!hideNav && <BottomNav />}
-    </>
+    <div className="flex min-h-screen">
+      {!hideNav && <DesktopSidebar />}
+      <div className="flex-1 flex flex-col min-w-0">
+        <ScrollToTop />
+        <AnimatedRoutes />
+        {!hideNav && <div className="md:hidden"><BottomNav /></div>}
+      </div>
+    </div>
   );
 };
 

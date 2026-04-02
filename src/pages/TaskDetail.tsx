@@ -151,7 +151,7 @@ const TaskDetail = () => {
   const isOwnTask = authUser?.id === task.user_id;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24 md:pb-8">
       {/* Header */}
       <div className="gradient-primary px-5 pb-6 pt-12 rounded-b-3xl">
         <div className="flex items-start gap-3">

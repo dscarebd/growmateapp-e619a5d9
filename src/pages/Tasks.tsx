@@ -62,7 +62,7 @@ const Tasks = () => {
     .sort((a, b) => b.reward - a.reward);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24 md:pb-8">
       <div className="gradient-primary px-5 pb-6 pt-12 rounded-b-3xl">
         <h1 className="text-xl font-bold text-primary-foreground mb-4">Task Marketplace</h1>
         <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">

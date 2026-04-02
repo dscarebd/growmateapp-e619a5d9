@@ -38,7 +38,7 @@ const Earnings = () => {
   const totalSpent = transactions.filter((t) => t.type === "spent" || t.type === "withdrawn").reduce((s, t) => s + t.amount, 0);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24 md:pb-8">
       <div className="gradient-primary px-5 pb-6 pt-12 rounded-b-3xl">
         <div className="flex items-center gap-3">
           <h1 className="text-lg font-bold text-primary-foreground">Earnings & Transactions</h1>

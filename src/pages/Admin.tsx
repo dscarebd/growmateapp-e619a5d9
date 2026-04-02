@@ -162,7 +162,7 @@ const Admin = () => {
   const selectedUser = admin.profiles.find(p => p.id === userDetailDialog);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24 md:pb-8">
       {/* Header */}
       <div className="gradient-primary px-5 pt-12 pb-6 rounded-b-3xl">
         <div className="mb-4 flex items-center justify-between">
