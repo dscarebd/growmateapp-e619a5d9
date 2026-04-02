@@ -114,7 +114,7 @@ const WalletPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-24 md:pb-8">
       <div className="gradient-primary px-5 pb-8 pt-12 rounded-b-3xl">
         <h1 className="text-xl font-bold text-primary-foreground mb-4">Wallet</h1>
         <Card className="border-0 shadow-lg">
