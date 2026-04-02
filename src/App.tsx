@@ -146,11 +146,14 @@ const AppLayout = () => {
   const hideNav = ["/", "/onboarding", "/auth"].includes(location.pathname);
 
   return (
-    <>
-      <ScrollToTop />
-      <AnimatedRoutes />
-      {!hideNav && <BottomNav />}
-    </>
+    <div className="flex min-h-screen">
+      {!hideNav && <DesktopSidebar />}
+      <div className="flex-1 flex flex-col min-w-0">
+        <ScrollToTop />
+        <AnimatedRoutes />
+        {!hideNav && <div className="md:hidden"><BottomNav /></div>}
+      </div>
+    </div>
   );
 };
 
