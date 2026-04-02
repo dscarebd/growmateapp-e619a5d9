@@ -107,7 +107,7 @@ const AnimatedRoutes = () => {
         className="min-h-screen"
       >
         <Routes location={location}>
-          <Route path="/" element={<Splash />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
