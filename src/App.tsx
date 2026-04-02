@@ -9,6 +9,7 @@ import { AppProvider } from "@/contexts/AppContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { AnimatePresence, motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
+import DesktopSidebar from "@/components/DesktopSidebar";
 import Splash from "@/pages/Splash";
 import Onboarding from "@/pages/Onboarding";
 import Auth from "@/pages/Auth";
