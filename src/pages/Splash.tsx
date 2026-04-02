@@ -26,7 +26,7 @@ const Splash = () => {
         <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary-foreground/20 backdrop-blur-sm">
           <Zap className="h-10 w-10 text-primary-foreground" fill="currentColor" />
         </div>
-        <h1 className="text-4xl font-bold text-primary-foreground tracking-tight">Boostly</h1>
+        <h1 className="text-4xl font-bold text-primary-foreground tracking-tight"><h1 className="text-4xl font-bold text-primary-foreground tracking-tight">Grow Mate</h1></h1>
         <p className="text-primary-foreground/70 text-sm font-medium">Grow your social presence</p>
       </div>
       <div className="absolute bottom-12 flex gap-1">
