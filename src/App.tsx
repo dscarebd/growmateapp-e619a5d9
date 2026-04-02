@@ -143,7 +143,7 @@ const ScrollToTop = () => {
 
 const AppLayout = () => {
   const location = useLocation();
-  const hideNav = ["/", "/onboarding", "/auth"].includes(location.pathname);
+  const hideNav = ["/onboarding", "/auth"].includes(location.pathname);
 
   return (
     <div className="flex min-h-screen">
