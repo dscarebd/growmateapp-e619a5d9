@@ -69,7 +69,7 @@ const Home = () => {
         </Card>
       </div>
 
-      <div className="px-5 mt-6 space-y-6">
+      <div className="px-5 mt-6 space-y-6 md:max-w-3xl md:mx-auto">
         <div className="grid grid-cols-3 gap-3 animate-fade-in-up">
           {quickActions.map(a => (
             <button key={a.label} onClick={() => navigate(a.path)} className="hover-scale flex flex-col items-center gap-2 rounded-2xl bg-card p-4 shadow-sm border border-border">
