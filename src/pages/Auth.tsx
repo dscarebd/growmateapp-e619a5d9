@@ -60,7 +60,7 @@ const Auth = () => {
           <Zap className="h-8 w-8 text-primary-foreground" fill="currentColor" />
         </div>
         <h1 className="text-2xl font-bold text-foreground">{isLogin ? "Welcome back" : "Create account"}</h1>
-        <p className="text-muted-foreground text-sm mt-1">{isLogin ? "Sign in to continue" : "Join Boostly today"}</p>
+        <p className="text-muted-foreground text-sm mt-1">{isLogin ? "Sign in to continue" : "<p className="text-muted-foreground text-sm mt-1">{isLogin ? "Sign in to continue" : "Join Grow Mate today"}</p>"}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="animate-fade-in-up flex flex-col gap-4 max-w-sm mx-auto w-full">
