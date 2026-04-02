@@ -10,7 +10,7 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 import { AnimatePresence, motion } from "framer-motion";
 import BottomNav from "@/components/BottomNav";
 import DesktopSidebar from "@/components/DesktopSidebar";
-import Splash from "@/pages/Splash";
+
 import Onboarding from "@/pages/Onboarding";
 import Auth from "@/pages/Auth";
 import Home from "@/pages/Home";
@@ -107,7 +107,7 @@ const AnimatedRoutes = () => {
         className="min-h-screen"
       >
         <Routes location={location}>
-          <Route path="/" element={<Splash />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
@@ -143,7 +143,7 @@ const ScrollToTop = () => {
 
 const AppLayout = () => {
   const location = useLocation();
-  const hideNav = ["/", "/onboarding", "/auth"].includes(location.pathname);
+  const hideNav = ["/onboarding", "/auth"].includes(location.pathname);
 
   return (
     <div className="flex min-h-screen">
