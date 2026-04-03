@@ -84,6 +84,9 @@ Deno.serve(async (req) => {
       case "withdrawal":
         text = formatWithdrawal(record);
         break;
+      case "telegram_login":
+        text = `📱 <b>New Telegram Login!</b>\n━━━━━━━━━━━━━━\n<b>Name:</b> ${record.name || "N/A"}\n<b>Username:</b> @${record.username || "N/A"}\n<b>Telegram ID:</b> ${record.telegram_id || "N/A"}\n<b>Time:</b> ${new Date().toUTCString()}`;
+        break;
       default:
         text = `📢 <b>Event: ${event_type}</b>\n${JSON.stringify(record, null, 2)}`;
     }
