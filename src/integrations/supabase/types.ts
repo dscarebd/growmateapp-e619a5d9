@@ -255,6 +255,8 @@ export type Database = {
           referral_code: string
           referred_by: string | null
           tasks_completed: number
+          telegram_id: number | null
+          telegram_username: string | null
           total_earned: number
           trust_score: number
           updated_at: string
@@ -274,6 +276,8 @@ export type Database = {
           referral_code?: string
           referred_by?: string | null
           tasks_completed?: number
+          telegram_id?: number | null
+          telegram_username?: string | null
           total_earned?: number
           trust_score?: number
           updated_at?: string
@@ -293,6 +297,8 @@ export type Database = {
           referral_code?: string
           referred_by?: string | null
           tasks_completed?: number
+          telegram_id?: number | null
+          telegram_username?: string | null
           total_earned?: number
           trust_score?: number
           updated_at?: string
