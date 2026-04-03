@@ -9,7 +9,9 @@ interface AuthContextType {
   loading: boolean;
   signUp: (email: string, password: string, name: string, referralCode?: string, deviceFingerprint?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signInWithTelegram: (initData: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
+  isTelegram: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,11 +20,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const isTelegram = !!(window as any).Telegram?.WebApp?.initData;
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
-        // Check if user is banned
         const { data: profile } = await supabase.from("profiles").select("is_banned").eq("id", session.user.id).single();
         if (profile && (profile as any).is_banned) {
           await supabase.auth.signOut();
@@ -79,12 +81,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error: error as Error | null };
   };
 
+  const signInWithTelegram = async (initData: string) => {
+    try {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/telegram-auth`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ initData }),
+        }
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        return { error: new Error(data.error || "Telegram auth failed") };
+      }
+
+      const { error } = await supabase.auth.setSession({
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+      });
+
+      return { error: error as Error | null };
+    } catch (err: any) {
+      return { error: err as Error };
+    }
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signInWithTelegram, signOut, isTelegram }}>
       {children}
     </AuthContext.Provider>
   );

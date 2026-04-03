@@ -198,10 +198,18 @@ const Profile = () => {
               </button>
             </div>
             <div className="flex items-center gap-1.5">
-              <p className="text-sm text-primary-foreground/70 truncate selectable">{user.email}</p>
-              <button onClick={() => { setNewEmail(""); setEmailDialog(true); }} className="shrink-0">
-                <Mail className="h-3 w-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors" />
-              </button>
+              {user.email?.includes("@telegram.growmate.app") ? (
+                <p className="text-sm text-primary-foreground/70 truncate selectable">
+                  @{(user as any).telegram_username || "Telegram User"}
+                </p>
+              ) : (
+                <>
+                  <p className="text-sm text-primary-foreground/70 truncate selectable">{user.email}</p>
+                  <button onClick={() => { setNewEmail(""); setEmailDialog(true); }} className="shrink-0">
+                    <Mail className="h-3 w-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors" />
+                  </button>
+                </>
+              )}
             </div>
             <div className="flex items-center gap-1 mt-1">
               <Shield className="h-3 w-3 text-primary-foreground/70" />

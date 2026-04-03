@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,8 +16,35 @@ const Auth = () => {
   const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [telegramLoading, setTelegramLoading] = useState(false);
   const navigate = useNavigate();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, signInWithTelegram, isTelegram, user } = useAuth();
+
+  // Auto-login for Telegram Mini App
+  useEffect(() => {
+    if (user) {
+      navigate("/home", { replace: true });
+      return;
+    }
+
+    if (isTelegram && !telegramLoading) {
+      const tg = (window as any).Telegram?.WebApp;
+      if (tg?.initData) {
+        setTelegramLoading(true);
+        tg.ready();
+        tg.expand();
+
+        signInWithTelegram(tg.initData).then(({ error }) => {
+          if (error) {
+            toast.error("Telegram login failed: " + error.message);
+            setTelegramLoading(false);
+          } else {
+            navigate("/home", { replace: true });
+          }
+        });
+      }
+    }
+  }, [isTelegram, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +58,6 @@ const Auth = () => {
         return;
       }
     } else {
-      // Device fingerprint check
       const fingerprint = generateDeviceFingerprint();
       const { data: exists } = await supabase.rpc("check_device_fingerprint", { _fingerprint: fingerprint });
       if (exists) {
@@ -52,6 +78,19 @@ const Auth = () => {
     navigate("/home", { replace: true });
     setLoading(false);
   };
+
+  // Show loading spinner for Telegram auto-login
+  if (telegramLoading) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary mb-4">
+          <Zap className="h-8 w-8 text-primary-foreground" fill="currentColor" />
+        </div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground text-sm">Signing in with Telegram...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-background px-6 pt-16">
